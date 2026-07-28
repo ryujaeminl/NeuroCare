@@ -50,6 +50,10 @@ export default function HomePage() {
     subtitle = engine.assistantDraft || "답하는 중...";
   } else if (engine.vadUserSpeaking) {
     subtitle = "듣고 있어요...";
+  } else if (engine.log.length > 0) {
+    // 턴이 끝나도 방금 오간 말이 자막처럼 남아있어야 한다. 여기서 안 잡으면
+    // 매번 인삿말로 되돌아가 대화가 계속 안 되는 것처럼 보인다.
+    subtitle = engine.log[0].text;
   }
 
   const mascotGlow = engine.vadUserSpeaking
