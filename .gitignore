@@ -72,3 +72,6 @@ everything-claude-code/
 
 # 서버 로그 (전사 내용이 남을 수 있음)
 server/*.log
+
+.vercel
+.env*
