@@ -70,12 +70,26 @@ class WakeWordService : Service() {
 
         segmenter = SpeechSegmenter(sileroVad) { segment -> handleSpeechSegment(segment) }
 
-        audioCapture = AudioCapture { frame ->
-            // MainActivity(WebView)가 화면에 떠 있는 동안은 그쪽이 마이크를 쓰므로 겹치지 않게 쉰다.
-            if (!isAppInForeground) {
-                segmenter?.processFrame(frame)
-            }
-        }.also { it.start() }
+        audioCapture = AudioCapture { frame -> segmenter?.processFrame(frame) }
+
+        instance = this
+        // 앱이 이미 화면에 떠 있으면 마이크는 WebView 몫이므로 캡처를 시작하지 않는다.
+        applyForegroundState(isAppInForeground)
+    }
+
+    /**
+     * 마이크는 한 번에 하나만 잡을 수 있다. 앱이 앞에 있으면 AudioRecord를 아예 놓아줘야
+     * WebView의 getUserMedia가 마이크를 얻는다. 프레임만 무시하고 열어두면 점유가 풀리지 않아
+     * 웹 대화의 마이크가 통째로 죽는다.
+     */
+    private fun applyForegroundState(foreground: Boolean) {
+        if (foreground) {
+            audioCapture?.stop()
+            Log.d(TAG, "앱이 앞에 있어 마이크를 놓아줌")
+        } else if (hasMicPermission()) {
+            audioCapture?.start()
+            Log.d(TAG, "백그라운드 - 웨이크워드 감시 재개")
+        }
     }
 
     private fun hasMicPermission() =
@@ -137,6 +151,7 @@ class WakeWordService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
+        instance = null
         audioCapture?.stop()
         vad?.close()
         wakeLock?.takeIf { it.isHeld }?.release()
@@ -176,8 +191,18 @@ class WakeWordService : Service() {
         private const val CHANNEL_ID = "wakeword_channel"
         private const val NOTIFICATION_ID = 1
 
-        /** MainActivity가 onResume/onPause에서 갱신한다. */
+        @Volatile
+        private var instance: WakeWordService? = null
+
+        /**
+         * MainActivity가 onResume/onPause에서 갱신한다.
+         * 값이 바뀌는 즉시 마이크를 놓거나 다시 잡아야 하므로 setter에서 바로 반영한다.
+         */
         @Volatile
         var isAppInForeground: Boolean = false
+            set(value) {
+                field = value
+                instance?.applyForegroundState(value)
+            }
     }
 }

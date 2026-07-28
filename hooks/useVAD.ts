@@ -63,7 +63,17 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
       vad.start();
       setListening(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "VAD 초기화에 실패했습니다.");
+      // getUserMedia 실패는 원인마다 대응이 다르다(NotAllowedError=권한, NotReadableError=다른 앱이
+      // 마이크 점유). 기기에서만 보이면 원격에서 못 고치므로 이름까지 서버로 올린다.
+      // ponytail: 진단용. 원인이 잡히면 이 report 호출만 지운다.
+      const name = err instanceof Error ? err.name : "Unknown";
+      const message = err instanceof Error ? err.message : String(err);
+      void fetch("/api/client-log", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: `마이크 실패: ${name} - ${message}` }),
+      }).catch(() => undefined);
+      setError(`${name}: ${message}`);
     }
   }, []);
 

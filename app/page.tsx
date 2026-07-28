@@ -6,6 +6,7 @@ import { useState } from "react";
 import { useConversationEngine } from "@/hooks/useConversationEngine";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { ProgressRing } from "@/components/ProgressRing";
+import { TodayMoodCard } from "@/components/TodayMoodCard";
 
 interface DashboardCardProps {
   icon: string;
@@ -93,7 +94,12 @@ export default function HomePage() {
           <div>
             <h2 className="text-2xl font-bold">안녕하세요! 무엇을 도와드릴까요?</h2>
             <p className="mt-2 text-muted-foreground">{subtitle}</p>
-            {engine.errorMsg && <p className="mt-1 text-sm text-danger-foreground">{engine.errorMsg}</p>}
+            {/* 마이크가 잡히지 않으면 대화가 통째로 죽는데 지금까지 화면에 아무 표시가 없었다. */}
+            {(engine.errorMsg ?? engine.vadError) && (
+              <p className="mt-1 text-sm text-danger-foreground">
+                {engine.vadError ? `마이크를 사용할 수 없습니다: ${engine.vadError}` : engine.errorMsg}
+              </p>
+            )}
           </div>
         </section>
 
@@ -147,23 +153,7 @@ export default function HomePage() {
             <span className="text-sm font-medium text-accent">일정 더 보기 →</span>
           </DashboardCard>
 
-          <DashboardCard
-            icon="🙂"
-            iconClassName="bg-gray-500/20 text-gray-300"
-            title="기분 체크"
-            description="오늘 컨디션은 어떠신가요? 이야기 나눠요."
-          >
-            <div className="flex gap-2">
-              {["😊", "🙂", "😐"].map((emoji) => (
-                <span
-                  key={emoji}
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-base"
-                >
-                  {emoji}
-                </span>
-              ))}
-            </div>
-          </DashboardCard>
+          <TodayMoodCard refreshKey={engine.log.length} />
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

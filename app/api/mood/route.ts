@@ -13,7 +13,11 @@ const CRITICAL_MOOD_CONFIDENCE = 0.85;
 export async function POST(request: NextRequest) {
   try {
     const auth = await requirePatientSelf();
-    const { sessionId } = (await request.json()) as { sessionId?: string };
+    // final=true는 세션을 정말 끝낼 때만. 대화 도중 중간 분석은 세션을 닫지 않는다.
+    const { sessionId, final } = (await request.json()) as {
+      sessionId?: string;
+      final?: boolean;
+    };
 
     if (!sessionId) {
       return Response.json({ error: "sessionId가 필요합니다." }, { status: 400 });
@@ -31,10 +35,12 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "세션을 찾을 수 없습니다." }, { status: 404 });
     }
 
-    await prisma.conversationSession.update({
-      where: { id: sessionId },
-      data: { endedAt: new Date() },
-    });
+    if (final) {
+      await prisma.conversationSession.update({
+        where: { id: sessionId },
+        data: { endedAt: new Date() },
+      });
+    }
 
     // 대화가 너무 짧으면 정서를 읽어낼 근거가 없으므로 분석을 건너뛴다.
     if (conversation.turns.length < 2) {

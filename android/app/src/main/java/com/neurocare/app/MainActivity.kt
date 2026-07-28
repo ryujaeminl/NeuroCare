@@ -38,6 +38,23 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
 
+    /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */
+    private var pendingMicRequest: PermissionRequest? = null
+
+    private val requestMicForWebView =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            val request = pendingMicRequest
+            pendingMicRequest = null
+            if (granted) {
+                request?.grant(request.resources)
+                // 권한이 생겼으니 마이크를 못 잡아 멈춰 있던 페이지를 다시 띄운다.
+                webView.reload()
+            } else {
+                request?.deny()
+                showError("마이크 권한이 없어 대화를 시작할 수 없습니다.")
+            }
+        }
+
     private val requestPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             // 결과와 상관없이 마이크 권한 요청은 WebView의 onPermissionRequest에서 다시 확인한다.
@@ -87,7 +104,11 @@ class MainActivity : AppCompatActivity() {
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            // 개발 서버를 다시 빌드하면 JS 청크 파일명이 바뀐다. 캐시된 HTML이 사라진 옛
+            // 청크를 계속 가리키면 화면만 그려지고 스크립트가 하나도 안 붙는다.
+            cacheMode = WebSettings.LOAD_NO_CACHE
         }
+        webView.clearCache(true)
 
         // 자체서명 인증서 신뢰는 res/xml/network_security_config.xml에서 처리한다.
         // onReceivedSslError로 우회하면 메인 프레임만 통과하고 JS 청크 같은 하위 리소스는
@@ -104,7 +125,9 @@ class MainActivity : AppCompatActivity() {
                 val url = request?.url?.toString().orEmpty()
                 val detail = "로딩 실패: ${error?.description} ($url)"
                 Log.e(TAG, detail)
-                if (request?.isForMainFrame == true) showError(detail)
+                // 하위 리소스(JS 청크) 실패도 보여준다. 메인 프레임만 보면 화면은 멀쩡한데
+                // 스크립트만 죽은 상태를 놓친다 - 실제로 이것 때문에 원인을 늦게 찾았다.
+                showError(detail)
             }
 
             override fun onReceivedHttpError(
@@ -112,7 +135,9 @@ class MainActivity : AppCompatActivity() {
                 request: WebResourceRequest?,
                 errorResponse: WebResourceResponse?,
             ) {
-                Log.e(TAG, "HTTP ${errorResponse?.statusCode} ${request?.url}")
+                val detail = "HTTP ${errorResponse?.statusCode}: ${request?.url}"
+                Log.e(TAG, detail)
+                showError(detail)
             }
         }
 
@@ -128,16 +153,25 @@ class MainActivity : AppCompatActivity() {
 
             override fun onPermissionRequest(request: PermissionRequest) {
                 val wantsMic = request.resources.any { it == PermissionRequest.RESOURCE_AUDIO_CAPTURE }
-                val hasMicPermission = ContextCompat.checkSelfPermission(
+                if (!wantsMic) {
+                    request.deny()
+                    return
+                }
+
+                val granted = ContextCompat.checkSelfPermission(
                     this@MainActivity,
                     Manifest.permission.RECORD_AUDIO,
                 ) == PackageManager.PERMISSION_GRANTED
 
-                if (wantsMic && hasMicPermission) {
+                if (granted) {
                     request.grant(request.resources)
-                } else {
-                    request.deny()
+                    return
                 }
+
+                // 안드로이드 권한이 아직 없으면 그냥 거부하면 안 된다. 웹은 NotAllowedError만 받고
+                // 사용자는 영영 마이크를 못 쓴다. 여기서 실제로 권한을 물어보고 결과에 따라 처리한다.
+                pendingMicRequest = request
+                requestMicForWebView.launch(Manifest.permission.RECORD_AUDIO)
             }
         }
     }
