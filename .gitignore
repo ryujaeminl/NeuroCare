@@ -1,7 +1,14 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
 # dependencies
 /node_modules
 /.pnp
-.pnp.js
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
 
 # testing
 /coverage
@@ -13,20 +20,55 @@
 # production
 /build
 
-# env files (실제 API 키가 들어있으므로 절대 커밋하지 않음)
-.env
-.env*.local
-
 # misc
 .DS_Store
 *.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+!.env.local.example
+
+# vercel
+.vercel
+
+# typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# python (whisper-service)
-whisper-service/.venv/
-whisper-service/__pycache__/
-whisper-service/*.pyc
+# python backend
+server/.venv/
+server/__pycache__/
+server/**/__pycache__/
+
+# 환자 대화 내용이 들어있는 로컬 DB - 민감정보라 절대 커밋하지 않는다
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# 등록된 성문(생체정보) - 절대 커밋하지 않는다
+server/voiceprints/
+
+# 보호자가 업로드한 가족 사진 - 로컬 개발용 저장소, 커밋하지 않는다
+public/uploads/
+
+# npm postinstall(scripts/copy-vad-assets.mjs)이 node_modules에서 복사해 생성하는 파일
+public/vad/*.onnx
+public/vad/*.wasm
+public/vad/*.mjs
+public/vad/vad.worklet.bundle.min.js
+
+# 개발용 자체서명 인증서
+certificates/
+
+# 이 프로젝트와 무관한 별도 저장소 (Claude Code 룰 모음)
+everything-claude-code/
+
+# 서버 로그 (전사 내용이 남을 수 있음)
+server/*.log

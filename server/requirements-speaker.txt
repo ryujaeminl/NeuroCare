@@ -1,0 +1,10 @@
+# 화자 인식용 추가 설치 (requirements.txt 설치 후 별도로 실행)
+#
+#   # 1) CPU 전용 PyTorch (기본 인덱스로 받으면 GPU 빌드라 수 GB가 된다)
+#   uv pip install --python server/.venv torch --index-url https://download.pytorch.org/whl/cpu
+#
+#   # 2) resemblyzer 본체 (webrtcvad 소스 빌드를 피하려고 --no-deps)
+#   uv pip install --python server/.venv --no-deps -r server/requirements-speaker.txt
+#
+# 의존성(webrtcvad-wheels, librosa, scipy)은 requirements.txt에 이미 들어있다.
+resemblyzer==0.1.4

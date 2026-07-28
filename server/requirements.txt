@@ -1,0 +1,16 @@
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+faster-whisper==1.1.1
+python-multipart==0.0.20
+av==13.1.0
+requests==2.32.3
+edge-tts==7.2.8
+
+# --- 화자 인식(resemblyzer) 관련 ---
+# resemblyzer는 webrtcvad에 의존하는데, webrtcvad는 소스 배포만 있어서 Windows에서
+# "Microsoft Visual C++ 14.0 or greater is required" 빌드 실패가 난다.
+# 그래서 동일한 `webrtcvad` 모듈을 제공하는 프리빌드 휠 패키지로 대체하고,
+# resemblyzer 자체는 --no-deps로 설치한다 (아래 README 참고).
+webrtcvad-wheels==2.0.14
+librosa
+scipy
