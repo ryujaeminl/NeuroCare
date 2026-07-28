@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
       include: { familyMember: { select: { id: true, name: true, relation: true } } },
     });
     return Response.json({
-      memories: memories.map((memory) => ({ ...memory, tags: parseTags(memory.tags) })),
+      memories: memories.map((memory: { tags: string }) => ({ ...memory, tags: parseTags(memory.tags) })),
     });
   } catch (err) {
     return authErrorResponse(err) ?? Response.json({ error: "조회 실패" }, { status: 500 });
