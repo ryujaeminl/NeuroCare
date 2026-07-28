@@ -98,6 +98,12 @@ class WakeWordService : Service() {
 
     private fun handleSpeechSegment(segment: FloatArray) {
         if (checkingWakeWord || isAppInForeground) return
+        if (computeDbfs(segment) < MIN_SPEECH_DBFS) {
+            // 다른 방 TV나 대화처럼 멀리서 들린 소리 - VAD는 "말소리"로 보지만 whisper까지
+            // 보내면 배경 소음이 우연히 호출어와 비슷하게 인식되어 안 불렀는데 깨어나는
+            // 오탐(false wake)의 주된 원인이 된다. 웹 대화 엔진의 MIN_SPEECH_DBFS와 동일 기준.
+            return
+        }
         checkingWakeWord = true
         thread(name = "neurocare-wakeword-check") {
             try {
@@ -149,6 +155,14 @@ class WakeWordService : Service() {
 
     private fun normalize(text: String) = text.replace(Regex("\\s+"), "").lowercase()
 
+    /** 발화 구간의 평균 음량(dBFS). hooks/useConversationEngine.ts의 computeDbfs와 동일 계산. */
+    private fun computeDbfs(samples: FloatArray): Double {
+        var sumSquares = 0.0
+        for (s in samples) sumSquares += s.toDouble() * s.toDouble()
+        val rms = kotlin.math.sqrt(sumSquares / samples.size)
+        return if (rms > 0) 20 * kotlin.math.log10(rms) else Double.NEGATIVE_INFINITY
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         instance = null
@@ -190,6 +204,9 @@ class WakeWordService : Service() {
         private const val TAG = "WakeWordService"
         private const val CHANNEL_ID = "wakeword_channel"
         private const val NOTIFICATION_ID = 1
+
+        /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
+        private const val MIN_SPEECH_DBFS = -40.0
 
         @Volatile
         private var instance: WakeWordService? = null

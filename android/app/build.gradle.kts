@@ -14,13 +14,11 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // 개발용 기본값 - 실제 기기에서는 설정 화면 등으로 바꿀 수 있게 추후 확장.
-        // 에뮬레이터의 10.0.2.2는 호스트 PC의 127.0.0.1을 가리키는 특수 별칭이다.
-        // 실기기 배포용 LAN 주소. 에뮬레이터로 되돌리려면 10.0.2.2 로 바꾼다.
-        // WebView의 마이크(getUserMedia)는 보안 컨텍스트에서만 동작하므로 웹앱은 반드시 https다.
-        // (Next.js `--experimental-https`가 만든 자체서명 인증서 — MainActivity에서 이 호스트만 예외 처리)
-        buildConfigField("String", "BACKEND_HTTP_BASE", "\"http://192.168.219.103:8000\"")
-        buildConfigField("String", "WEBAPP_BASE_URL", "\"https://192.168.219.103:3000\"")
+        // 배포된 Vercel 사이트 + STT 백엔드(로컬 FastAPI를 cloudflared로 임시 공개한 URL).
+        // ponytail: cloudflared quick tunnel은 무료지만 재시작하면 URL이 바뀐다 - 백엔드를
+        // 다시 켜면 이 값도 새로 받아와 갱신해야 한다. LAN 개발로 되돌리려면 192.168.x/10.0.2.2로.
+        buildConfigField("String", "BACKEND_HTTP_BASE", "\"https://courtesy-pot-resulting-organizer.trycloudflare.com\"")
+        buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neuro-care-sand.vercel.app\"")
         buildConfigField("String", "WAKE_WORD_LABEL", "\"복실아\"")
         // 태블릿 1대 = 환자 1명 전제. 이 기기에서 등록된 성문의 ID.
         buildConfigField("String", "SPEAKER_ID", "\"device\"")
