@@ -90,7 +90,6 @@ export default function HomePage() {
         <section className="flex flex-col items-center gap-4 text-center">
           <div className="relative flex items-center justify-center overflow-hidden rounded-2xl bg-white">
             <div className={`absolute inset-0 rounded-2xl blur-xl transition ${mascotGlow}`} aria-hidden />
-            {/* TODO: 실제 사진(흰 배경) 받으면 교체 - 지금은 투명 배경 에셋을 흰 박스 위에 얹은 임시 상태 */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/mascot-dog.png" alt="" className="relative h-56 w-56 object-contain p-4" />
           </div>
