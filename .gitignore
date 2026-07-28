@@ -69,3 +69,6 @@ certificates/
 
 # 이 프로젝트와 무관한 별도 저장소 (Claude Code 룰 모음)
 everything-claude-code/
+
+# 서버 로그 (전사 내용이 남을 수 있음)
+server/*.log
