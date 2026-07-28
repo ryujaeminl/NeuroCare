@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  개발용 LAN 서버의 자체서명 인증서를 이 앱 안에서만 신뢰하도록 못 박는다.
+
+  WebView는 onReceivedSslError를 메인 프레임에만 호출하고 JS/CSS 같은 하위 리소스의
+  인증서 오류는 조용히 버린다. 그래서 SSL 예외를 코드로 우회하면 HTML만 뜨고 스크립트가
+  로드되지 않아 화면이 굳는다. 인증서를 신뢰 앵커로 등록하면 그런 구멍이 없다.
+
+  cleartext는 STT/TTS 백엔드(8000 포트, http)를 위해 같은 호스트에만 허용한다.
+-->
+<network-security-config>
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">192.168.219.103</domain>
+        <trust-anchors>
+            <certificates src="@raw/lan_cert" />
+            <certificates src="system" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

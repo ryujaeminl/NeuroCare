@@ -1,0 +1,230 @@
+// 알츠하이머 환자의 대화 기록은 민감정보이므로, 저장 항목을 필요한 최소한으로 유지한다.
+// SQLite는 배열/enum 타입이 없어서 목록성 데이터는 JSON 문자열로 저장하고 읽을 때 파싱한다
+// (lib/db/serialize.ts 참고).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Prisma 7부터 접속 URL은 스키마가 아니라 prisma.config.ts / 드라이버 어댑터에서 온다.
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  /// "patient" | "guardian" - SQLite에 enum이 없어 문자열로 두고 TS 유니온으로 제약한다.
+  role         String
+  /// 환자 계정만 보유. 보호자가 이 코드를 입력해 연동한다.
+  inviteCode   String?  @unique
+  createdAt    DateTime @default(now())
+
+  guardianLinks PatientGuardianLink[] @relation("PatientToLinks")
+  patientLinks  PatientGuardianLink[] @relation("GuardianToLinks")
+  sessions      ConversationSession[]
+
+  // 아래는 전부 환자 계정에만 달린다 (보호자가 환자를 위해 입력한 자료).
+  medications     Medication[]
+  familyMembers   FamilyMember[]
+  memories        Memory[]
+  photos          Photo[]
+  emergencyEvents EmergencyEvent[]
+
+  // 보호자 계정 전용
+  preference        GuardianPreference?
+  pushSubscriptions PushSubscription[]
+
+  @@index([role])
+}
+
+/// 환자-보호자 다대다 연결. 보호자 여러 명이 환자 한 명을 볼 수 있고 그 반대도 가능하다.
+model PatientGuardianLink {
+  id         String   @id @default(cuid())
+  patientId  String
+  guardianId String
+  createdAt  DateTime @default(now())
+
+  patient  User @relation("PatientToLinks", fields: [patientId], references: [id], onDelete: Cascade)
+  guardian User @relation("GuardianToLinks", fields: [guardianId], references: [id], onDelete: Cascade)
+
+  @@unique([patientId, guardianId])
+  @@index([guardianId])
+}
+
+model ConversationSession {
+  id        String    @id @default(cuid())
+  patientId String
+  startedAt DateTime  @default(now())
+  endedAt   DateTime?
+
+  patient User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  turns   Turn[]
+  mood    MoodAnalysis?
+
+  @@index([patientId, startedAt])
+}
+
+model Turn {
+  id        String   @id @default(cuid())
+  sessionId String
+  /// "user"(환자 발화) | "assistant"(AI 응답)
+  role      String
+  text      String
+  createdAt DateTime @default(now())
+  /// Pinecone에 upsert된 벡터 ID. Pinecone 미설정 시 null로 남는다.
+  pineconeId String?
+
+  session ConversationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId, createdAt])
+}
+
+/// 세션당 1개. 임상 진단이 아니라 "대화에서 드러난 정서적 톤" 참고용이다.
+model MoodAnalysis {
+  id        String   @id @default(cuid())
+  sessionId String   @unique
+  /// "positive" | "neutral" | "anxious" | "confused" | "sad"
+  mood      String
+  confidence Float
+  summary   String
+  /// 근거가 된 대화 구절 목록 - JSON 문자열 배열
+  notableMoments String
+  createdAt DateTime @default(now())
+
+  session ConversationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+/// 보호자가 등록한 복용약. 실제 복약 알림 로직은 이번 범위 밖이고 데이터만 갖춘다.
+model Medication {
+  id        String    @id @default(cuid())
+  patientId String
+  name      String
+  dosage    String
+  frequency String
+  startDate DateTime
+  endDate   DateTime?
+  notes     String?
+  /// 등록한 보호자 User ID - 감사/분쟁 방지 목적
+  addedBy   String
+  createdAt DateTime  @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+/// 가족 구성원. 이름/관계는 환자용 AI 대화 프롬프트에 그대로 주입되므로 정확성이 중요하다.
+model FamilyMember {
+  id        String   @id @default(cuid())
+  patientId String
+  name      String
+  relation  String
+  birthYear Int?
+  addedBy   String
+  createdAt DateTime @default(now())
+
+  patient User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  memories Memory[]
+  photos   Photo[]
+
+  @@index([patientId])
+}
+
+/// 보호자가 입력하는 기억 본문. 저장 시 Pinecone에도 upsert되어 대화 중 RAG로 검색된다.
+model Memory {
+  id             String    @id @default(cuid())
+  patientId      String
+  familyMemberId String?
+  title          String
+  content        String
+  dateOccurred   DateTime?
+  /// 검색/분류용 태그 - JSON 문자열 배열 (lib/db/types.ts의 parse/serialize 패턴 재사용)
+  tags           String    @default("[]")
+  addedBy        String
+  createdAt      DateTime  @default(now())
+  /// Pinecone에 upsert된 벡터 ID. Pinecone 미설정 시 null로 남는다 (Turn.pineconeId와 동일 패턴).
+  pineconeId     String?
+
+  patient      User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  familyMember FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
+  photos       Photo[]
+
+  @@index([patientId])
+  @@index([familyMemberId])
+}
+
+model Photo {
+  id             String   @id @default(cuid())
+  patientId      String
+  familyMemberId String?
+  memoryId       String?
+  /// 오브젝트 스토리지(S3/R2) URL. DB에는 URL만 저장한다.
+  url            String
+  caption        String?
+  addedBy        String
+  createdAt      DateTime @default(now())
+
+  patient      User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  familyMember FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
+  memory       Memory?       @relation(fields: [memoryId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+}
+
+/// 보호자 계정 단위 설정. 같은 환자를 보는 보호자끼리도 완전히 독립적으로 동작한다.
+model GuardianPreference {
+  id      String @id @default(cuid())
+  guardianId String @unique
+
+  moodAlertEnabled Boolean @default(true)
+  /// "sensitive" | "moderate" | "low"
+  moodAlertThreshold String @default("moderate")
+  medicationReminderOptIn Boolean @default(false)
+  /// 로그인 시 기본으로 보여줄 환자 (다중 환자 관리 시). FK를 걸지 않는다 - 링크 해제되어도
+  /// 설정 자체는 남아있다가 다음 로그인 때 자연스럽게 무시되면 된다.
+  defaultPatientId String?
+  /// 대시보드 위젯 순서/노출 여부 - JSON 문자열 (예: {"order": ["mood","medication"]})
+  dashboardLayout String?
+  /// "push" | "email" | "sms" | "none"
+  notificationChannel String @default("push")
+  /// 긴급 알림 SMS/전화 fallback(Twilio)에 쓰는 번호. 없으면 그 보호자는 fallback 대상에서 빠진다.
+  phone String?
+  updatedAt DateTime @updatedAt
+
+  guardian User @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+}
+
+/// Web Push 구독 정보. 보호자 1명이 여러 기기에서 구독할 수 있다.
+model PushSubscription {
+  id        String   @id @default(cuid())
+  guardianId String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+
+  guardian User @relation(fields: [guardianId], references: [id], onDelete: Cascade)
+
+  @@index([guardianId])
+}
+
+/// 긴급 상황 이벤트. 일반 기분 알림과 달리 GuardianPreference 설정과 무관하게 전원에게 발송된다.
+model EmergencyEvent {
+  id        String   @id @default(cuid())
+  patientId String
+  /// "voice_distress" | "manual_button" | "session_timeout" | "mood_critical"
+  triggerType String
+  detail    String?
+  /// "open" | "acknowledged" | "resolved"
+  status    String   @default("open")
+  acknowledgedBy String?
+  acknowledgedAt DateTime?
+  createdAt DateTime @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, status])
+}
