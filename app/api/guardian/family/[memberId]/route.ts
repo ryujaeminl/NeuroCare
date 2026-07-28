@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import type { Memory } from "@prisma/client";
 import { prisma } from "@/lib/db/prisma";
 import { authErrorResponse, requireGuardianAccess, requirePatientAccess } from "@/lib/auth/permissions";
 import { parseTags } from "@/lib/db/types";
@@ -27,7 +26,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
     return Response.json({
       member: {
         ...member,
-        memories: member.memories.map((memory: Memory) => ({ ...memory, tags: parseTags(memory.tags) })),
+        memories: member.memories.map((memory: { tags: string }) => ({ ...memory, tags: parseTags(memory.tags) })),
       },
     });
   } catch (err) {
