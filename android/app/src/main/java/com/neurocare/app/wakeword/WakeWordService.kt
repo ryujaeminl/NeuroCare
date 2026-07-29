@@ -109,7 +109,11 @@ class WakeWordService : Service() {
 
     private fun handleSpeechSegment(segment: FloatArray) {
         if (checkingWakeWord) return
-        if (computeDbfs(segment) < MIN_SPEECH_DBFS) {
+        val dbfs = computeDbfs(segment)
+        // ponytail: 호출어가 왜 감지 안 되는지 원격으로 확인하려고 매 구간마다 남긴다.
+        // 원인이 잡히면 이 report 호출만 지운다.
+        reportToServer("발화 구간 감지 dbfs=$dbfs (기준 $MIN_SPEECH_DBFS)")
+        if (dbfs < MIN_SPEECH_DBFS) {
             // 다른 방 TV나 대화처럼 멀리서 들린 소리 - VAD는 "말소리"로 보지만 whisper까지
             // 보내면 배경 소음이 우연히 호출어와 비슷하게 인식되어 안 불렀는데 깨어나는
             // 오탐(false wake)의 주된 원인이 된다. 웹 대화 엔진의 MIN_SPEECH_DBFS와 동일 기준.
@@ -123,6 +127,7 @@ class WakeWordService : Service() {
                     segment,
                     speakerId = if (enrolled) BuildConfig.SPEAKER_ID else null,
                 )
+                reportToServer("전사 결과: \"$text\" (enrolled=$enrolled)")
                 val target = normalize(BuildConfig.WAKE_WORD_LABEL)
                 if (target.isEmpty() || !normalize(text).contains(target)) return@thread
 
