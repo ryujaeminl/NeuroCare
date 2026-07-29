@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     private val requestPermissions =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             // 결과와 상관없이 마이크 권한 요청은 WebView의 onPermissionRequest에서 다시 확인한다.
-            startWakeWordService()
+            // 웨이크워드 서비스는 여기서 켜지 않는다 - onPause에서 백그라운드로 갈 때만 띄운다.
             webView.loadUrl(BuildConfig.WEBAPP_BASE_URL)
         }
 
@@ -246,7 +246,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (missing.isEmpty()) {
-            startWakeWordService()
+            // 웨이크워드 서비스는 여기서 켜지 않는다 - onPause에서 백그라운드로 갈 때만 띄운다.
             webView.loadUrl(BuildConfig.WEBAPP_BASE_URL)
         } else {
             requestPermissions.launch(missing.toTypedArray())
@@ -258,19 +258,25 @@ class MainActivity : AppCompatActivity() {
         ContextCompat.startForegroundService(this, intent)
     }
 
+    private fun stopWakeWordService() {
+        stopService(Intent(this, WakeWordService::class.java))
+    }
+
     override fun onResume() {
         super.onResume()
-        reportToServer("MainActivity.onResume: isAppInForeground=true로 설정")
-        // 앱이 화면에 떠 있는 동안은 WebView(웹앱)가 마이크를 쓰므로, 백그라운드 서비스는
-        // 듣기를 멈춰서 마이크 자원 충돌을 피한다.
-        WakeWordService.isAppInForeground = true
+        // 실제 기기 로그로 확인된 원인: "마이크 사용" 타입 포그라운드 서비스가 실제로 녹음
+        // 중이 아니어도, 떠 있는 것 자체가 같은 앱(UID)의 WebView 오디오 세션과 충돌해
+        // getUserMedia가 NotReadableError로 실패했다. 내부 녹음만 껐다 켰다 하는 대신,
+        // 화면에 떠 있는 동안은 서비스 자체를 완전히 종료해 충돌 여지를 없앤다.
+        reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
+        stopWakeWordService()
     }
 
     override fun onPause() {
         super.onPause()
-        reportToServer("MainActivity.onPause: isAppInForeground=false로 설정")
+        reportToServer("MainActivity.onPause: 웨이크워드 서비스 시작")
         // 화면을 벗어나면 다시 백그라운드에서 이름 호출을 감시한다.
-        WakeWordService.isAppInForeground = false
+        startWakeWordService()
     }
 
 }

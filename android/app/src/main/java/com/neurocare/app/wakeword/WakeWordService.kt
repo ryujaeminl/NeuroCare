@@ -51,7 +51,7 @@ class WakeWordService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        reportToServer("onCreate 시작. isAppInForeground=$isAppInForeground")
+        reportToServer("onCreate 시작")
         startForeground(NOTIFICATION_ID, buildNotification())
 
         // 화면이 꺼져도 CPU가 멈추면 오디오 캡처 스레드가 같이 죽는다.
@@ -76,32 +76,14 @@ class WakeWordService : Service() {
 
         segmenter = SpeechSegmenter(sileroVad) { segment -> handleSpeechSegment(segment) }
 
+        // 이 서비스는 이제 MainActivity가 백그라운드로 갈 때만 시작되고, 화면에 돌아오면
+        // 통째로 종료된다(MainActivity.onResume/onPause 참고) - "마이크 사용" 포그라운드
+        // 서비스가 실제 녹음 여부와 무관하게 떠 있는 것만으로 같은 앱의 WebView 오디오 세션과
+        // 충돌해 getUserMedia가 NotReadableError로 실패하는 게 실기기 로그로 확인됐기 때문이다.
+        // 그래서 살아있는 동안은 항상 바로 캡처를 시작한다 - 켜져 있으면서 안 듣는 상태는 없다.
         audioCapture = AudioCapture { frame -> segmenter?.processFrame(frame) }
-
-        instance = this
-        reportToServer("WakeWordService 준비 완료. isAppInForeground=$isAppInForeground")
-        // 앱이 이미 화면에 떠 있으면 마이크는 WebView 몫이므로 캡처를 시작하지 않는다.
-        applyForegroundState(isAppInForeground)
-    }
-
-    /**
-     * 마이크는 한 번에 하나만 잡을 수 있다. 앱이 앞에 있으면 AudioRecord를 아예 놓아줘야
-     * WebView의 getUserMedia가 마이크를 얻는다. 프레임만 무시하고 열어두면 점유가 풀리지 않아
-     * 웹 대화의 마이크가 통째로 죽는다.
-     * ponytail: 시각/시간 로그는 진단용. WebView 마이크 점유 충돌 원인이 잡히면 지운다.
-     */
-    private fun applyForegroundState(foreground: Boolean) {
-        if (foreground) {
-            val before = System.currentTimeMillis()
-            audioCapture?.stop()
-            val elapsed = System.currentTimeMillis() - before
-            Log.d(TAG, "앱이 앞에 있어 마이크를 놓아줌 (${elapsed}ms)")
-            reportToServer("마이크 놓아줌 시도, ${elapsed}ms 걸림")
-        } else if (hasMicPermission()) {
-            audioCapture?.start()
-            Log.d(TAG, "백그라운드 - 웨이크워드 감시 재개")
-            reportToServer("웨이크워드 감시 재개(마이크 다시 잡음)")
-        }
+        audioCapture?.start()
+        reportToServer("웨이크워드 감시 시작(마이크 잡음)")
     }
 
     private fun reportToServer(message: String) {
@@ -125,7 +107,7 @@ class WakeWordService : Service() {
             PackageManager.PERMISSION_GRANTED
 
     private fun handleSpeechSegment(segment: FloatArray) {
-        if (checkingWakeWord || isAppInForeground) return
+        if (checkingWakeWord) return
         if (computeDbfs(segment) < MIN_SPEECH_DBFS) {
             // 다른 방 TV나 대화처럼 멀리서 들린 소리 - VAD는 "말소리"로 보지만 whisper까지
             // 보내면 배경 소음이 우연히 호출어와 비슷하게 인식되어 안 불렀는데 깨어나는
@@ -193,7 +175,7 @@ class WakeWordService : Service() {
 
     override fun onDestroy() {
         super.onDestroy()
-        instance = null
+        reportToServer("onDestroy: 마이크 놓아줌")
         audioCapture?.stop()
         vad?.close()
         wakeLock?.takeIf { it.isHeld }?.release()
@@ -235,19 +217,5 @@ class WakeWordService : Service() {
 
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         private const val MIN_SPEECH_DBFS = -40.0
-
-        @Volatile
-        private var instance: WakeWordService? = null
-
-        /**
-         * MainActivity가 onResume/onPause에서 갱신한다.
-         * 값이 바뀌는 즉시 마이크를 놓거나 다시 잡아야 하므로 setter에서 바로 반영한다.
-         */
-        @Volatile
-        var isAppInForeground: Boolean = false
-            set(value) {
-                field = value
-                instance?.applyForegroundState(value)
-            }
     }
 }
