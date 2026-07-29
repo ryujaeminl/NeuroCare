@@ -285,7 +285,14 @@ class WakeWordService : Service() {
         val keyguardManager = getSystemService(KeyguardManager::class.java)
         val powerManager = getSystemService(PowerManager::class.java)
         val isLockedOrScreenOff = keyguardManager.isKeyguardLocked || !powerManager.isInteractive
-        if (!isLockedOrScreenOff && Settings.canDrawOverlays(this)) {
+        val canOverlay = Settings.canDrawOverlays(this)
+        // ponytail: 진단용. 잠금해제+배경 상태에서 앱이 안 열리는 사례가 있어 원인을
+        // 원격에서 확인하려고 남긴다. 원인이 잡히면 이 report 호출만 지운다.
+        reportToServer(
+            "launchMainActivity: isKeyguardLocked=${keyguardManager.isKeyguardLocked} " +
+                "isInteractive=${powerManager.isInteractive} canOverlay=$canOverlay",
+        )
+        if (!isLockedOrScreenOff && canOverlay) {
             launchViaOverlay(intent)
         }
     }
@@ -309,8 +316,10 @@ class WakeWordService : Service() {
         try {
             windowManager.addView(overlayView, params)
             startActivity(intent)
+            reportToServer("오버레이로 앱 실행 성공")
         } catch (e: Exception) {
             Log.w(TAG, "오버레이로 앱 실행 실패", e)
+            reportToServer("오버레이로 앱 실행 실패: ${e.javaClass.simpleName} - ${e.message}")
         } finally {
             Handler(Looper.getMainLooper()).postDelayed({
                 runCatching { windowManager.removeView(overlayView) }
