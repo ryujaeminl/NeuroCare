@@ -22,8 +22,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# CPU 환경 기준 기본값. GPU가 있으면 device="cuda", compute_type="float16"으로 바꾸면 더 빠름.
-model = WhisperModel("small", device="cpu", compute_type="int8")
+# GPU(A100)에서 float16으로 돌린다 - CPU/int8 대비 전사 지연이 크게 줄어든다.
+model = WhisperModel("small", device="cuda", compute_type="float16")
 
 # 차분하고 안정적인 톤의 한국어 여성 뉴스캐스터 보이스. 감정 기복이 큰 보이스는 피한다.
 DEFAULT_TTS_VOICE = "ko-KR-SunHiNeural"
