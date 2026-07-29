@@ -38,42 +38,62 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
   const start = useCallback(async () => {
     if (vadRef.current) return;
     setError(null);
-    try {
-      const { MicVAD } = await import("@ricky0123/vad-web");
-      const vad = await MicVAD.new({
-        model: "legacy",
-        baseAssetPath: "/vad/",
-        onnxWASMBasePath: "/vad/",
-        // 기본값(0.5)보다 훨씬 높여서 TV 소리 등 마이크에서 멀리 떨어진/작은 소리에는
-        // 덜 반응하고, 환자가 마이크 가까이서 또렷하게 말할 때만 발화로 인식하게 한다.
-        // 실사용 피드백: 잡음이 너무 많이 인식되어 0.7/0.55 -> 0.8/0.65로 상향(더 엄격하게) 조정함.
-        positiveSpeechThreshold: 0.8,
-        negativeSpeechThreshold: 0.65,
-        // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 늘린다.
-        // 실사용 피드백: 잡음이 너무 많이 인식되어 500ms -> 700ms로 상향 조정함.
-        minSpeechMs: 700,
-        onSpeechStart: () => setUserSpeaking(true),
-        onSpeechEnd: (audio) => {
-          setUserSpeaking(false);
-          onSpeechSegmentRef.current?.(audio);
-        },
-        onVADMisfire: () => setUserSpeaking(false),
-      });
-      vadRef.current = vad;
-      vad.start();
-      setListening(true);
-    } catch (err) {
-      // getUserMedia 실패는 원인마다 대응이 다르다(NotAllowedError=권한, NotReadableError=다른 앱이
-      // 마이크 점유). 기기에서만 보이면 원격에서 못 고치므로 이름까지 서버로 올린다.
-      // ponytail: 진단용. 원인이 잡히면 이 report 호출만 지운다.
-      const name = err instanceof Error ? err.name : "Unknown";
-      const message = err instanceof Error ? err.message : String(err);
-      void fetch("/api/client-log", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: `마이크 실패: ${name} - ${message}` }),
-      }).catch(() => undefined);
-      setError(`${name}: ${message}`);
+
+    // 안드로이드 앱에서는 화면 전환 직후 백그라운드 웨이크워드 서비스가 마이크를 놓아주는
+    // 시점과 여기서 잡으려는 시점이 살짝 겹칠 수 있다 - 그 찰나엔 마이크가 아직 다른
+    // 프로세스에 물려있어 NotReadableError가 난다. 이건 곧 풀리는 일시적 상태라 재시도한다.
+    const MAX_ATTEMPTS = 4;
+    const RETRY_DELAY_MS = 400;
+
+    for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        const { MicVAD } = await import("@ricky0123/vad-web");
+        const vad = await MicVAD.new({
+          model: "legacy",
+          baseAssetPath: "/vad/",
+          onnxWASMBasePath: "/vad/",
+          // 기본값(0.5)보다 훨씬 높여서 TV 소리 등 마이크에서 멀리 떨어진/작은 소리에는
+          // 덜 반응하고, 환자가 마이크 가까이서 또렷하게 말할 때만 발화로 인식하게 한다.
+          // 실사용 피드백: 잡음이 너무 많이 인식되어 0.7/0.55 -> 0.8/0.65로 상향(더 엄격하게) 조정함.
+          positiveSpeechThreshold: 0.8,
+          negativeSpeechThreshold: 0.65,
+          // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 늘린다.
+          // 실사용 피드백: 잡음이 너무 많이 인식되어 500ms -> 700ms로 상향 조정함.
+          minSpeechMs: 700,
+          onSpeechStart: () => setUserSpeaking(true),
+          onSpeechEnd: (audio) => {
+            setUserSpeaking(false);
+            onSpeechSegmentRef.current?.(audio);
+          },
+          onVADMisfire: () => setUserSpeaking(false),
+        });
+        vadRef.current = vad;
+        vad.start();
+        setListening(true);
+        return;
+      } catch (err) {
+        const name = err instanceof Error ? err.name : "Unknown";
+        const message = err instanceof Error ? err.message : String(err);
+        const isBusy = name === "NotReadableError";
+        const willRetry = isBusy && attempt < MAX_ATTEMPTS;
+
+        if (!willRetry) {
+          // getUserMedia 실패는 원인마다 대응이 다르다(NotAllowedError=권한, NotReadableError=다른 앱이
+          // 마이크 점유). 기기에서만 보이면 원격에서 못 고치므로 이름까지 서버로 올린다.
+          // ponytail: 진단용. 원인이 잡히면 이 report 호출만 지운다.
+          void fetch("/api/client-log", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              message: `마이크 실패: ${name} - ${message} (시도 ${attempt}/${MAX_ATTEMPTS})`,
+            }),
+          }).catch(() => undefined);
+          setError(`${name}: ${message}`);
+          return;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
+      }
     }
   }, []);
 
