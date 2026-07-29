@@ -3,25 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { MicVAD } from "@ricky0123/vad-web";
 
-/**
- * vad-web은 getUserMedia를 echoCancellation/autoGainControl/noiseSuppression을
- * 모두 켠 채로 내부에서 직접 호출하고, 그 제약조건을 옵션으로 바꿀 방법을 안 준다.
- * 그런데 일부 안드로이드 기기(삼성 WebView 등)는 그 조합으로 마이크를 잡을 때
- * NotReadableError를 내는 경우가 실제로 보고되어 있다 - 일반 Chrome 앱은 되고
- * WebView 안에서만 안 되는 것도 이 처리 차이 때문일 가능성이 크다.
- * getStream을 직접 넘겨 더 단순한 제약조건으로 요청하게 우회한다.
- */
-async function getStreamWithPlainConstraints(): Promise<MediaStream> {
-  return navigator.mediaDevices.getUserMedia({
-    audio: {
-      channelCount: 1,
-      echoCancellation: false,
-      autoGainControl: false,
-      noiseSuppression: false,
-    },
-  });
-}
-
 /** vad-web이 onSpeechEnd로 넘겨주는 오디오의 고정 샘플레이트 */
 export const VAD_SAMPLE_RATE = 16000;
 
@@ -85,8 +66,6 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
             onSpeechSegmentRef.current?.(audio);
           },
           onVADMisfire: () => setUserSpeaking(false),
-          getStream: getStreamWithPlainConstraints,
-          resumeStream: () => getStreamWithPlainConstraints(),
         });
         vadRef.current = vad;
         vad.start();

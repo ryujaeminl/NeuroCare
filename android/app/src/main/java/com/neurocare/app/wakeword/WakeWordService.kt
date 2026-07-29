@@ -161,7 +161,12 @@ class WakeWordService : Service() {
      * 안드로이드 10+는 백그라운드 서비스에서의 startActivity()를 조용히 막을 수 있다
      * (특히 최근 버전일수록 더 엄격함) - 그래서 호출어가 인식돼도 화면이 안 켜지는
      * 증상이 있었다. EmergencyAlertActivity와 같은 방식(전체화면 알림)을 쓰면 이 제약을
-     * 우회해 확실하게 액티비티가 뜬다. 직접 startActivity()도 안전망으로 같이 시도한다.
+     * 우회해 확실하게 액티비티가 뜬다.
+     *
+     * ponytail 교훈: 여기에 안전망으로 startActivity()도 같이 불렀다가, 화면이 꺼진
+     * 상태(=이 앱의 실제 사용 시나리오)에서는 전체화면 알림이 자동으로도 열리면서
+     * 액티비티/웹뷰가 두 번 뜨는 레이스가 생겨 TTS 오디오가 겹쳐 재생됐다.
+     * 알림 하나에만 맡긴다 - EmergencyAlertActivity도 원래 이렇게만 한다.
      */
     private fun launchMainActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
@@ -195,12 +200,6 @@ class WakeWordService : Service() {
             .setAutoCancel(true)
             .build()
         NotificationManagerCompat.from(this).notify(WAKE_NOTIFICATION_ID, notification)
-
-        try {
-            startActivity(intent)
-        } catch (e: Exception) {
-            Log.w(TAG, "startActivity 직접 호출 실패 - 알림에 의존", e)
-        }
     }
 
     private fun normalize(text: String) = text.replace(Regex("\\s+"), "").lowercase()
