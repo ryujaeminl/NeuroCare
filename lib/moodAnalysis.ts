@@ -39,7 +39,8 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자의 대화 기록을 읽�
 규칙:
 - mood는 다음 다섯 개 중 하나만 사용하세요: ${MOOD_VALUES.join(", ")}
 - confidence는 0과 1 사이의 숫자입니다.
-- summary는 보호자가 읽을 2~3문장입니다.
+- summary는 보호자가 읽을 2~3문장이며, 반드시 "(환자 이름)님은 오늘"로 시작하세요.
+  예: "철수님은 오늘 손주 이야기를 하며 밝은 모습을 보이셨습니다."
 - notable_moments는 대화에 실제로 나온 짧은 구절들의 배열입니다.
   각 구절 안에 따옴표를 넣지 마세요. 근거가 없으면 빈 배열로 두세요.
 - 환자를 존중하는 표현을 쓰세요.`;
@@ -82,7 +83,7 @@ function toMoodResult(parsed: unknown): MoodResult {
   };
 }
 
-export async function analyzeMood(turns: AnalyzableTurn[]): Promise<MoodResult> {
+export async function analyzeMood(turns: AnalyzableTurn[], patientName: string): Promise<MoodResult> {
   if (!UPSTAGE_API_KEY) {
     throw new Error("UPSTAGE_API_KEY가 설정되지 않았습니다.");
   }
@@ -101,7 +102,10 @@ export async function analyzeMood(turns: AnalyzableTurn[]): Promise<MoodResult> 
       model: UPSTAGE_MODEL,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `아래는 오늘의 대화 기록입니다.\n\n${transcript}` },
+        {
+          role: "user",
+          content: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다.\n\n${transcript}`,
+        },
       ],
       // 모델이 설명을 덧붙이거나 깨진 JSON을 내놓지 않도록 형식을 강제한다.
       response_format: { type: "json_object" },

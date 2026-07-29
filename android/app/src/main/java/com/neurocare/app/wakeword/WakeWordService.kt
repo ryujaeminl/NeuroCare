@@ -69,6 +69,16 @@ class WakeWordService : Service() {
     private var pendingAckShutdown: (() -> Unit)? = null
 
     /**
+     * speak()는 비동기라 호출 직후엔 아직 재생이 시작되기 전(버퍼링 중)일 수 있다 -
+     * 그 찰나에 onDestroy가 tts.isSpeaking()을 보면 false가 나와 "재생 중 아님"으로
+     * 오판하고 곧바로 shutdown()해버려 "네"까지만 나오고 끊기는 사례가 실사용에서
+     * 나왔다(오버레이 실행이 빨라지면서 이 경쟁 구간을 더 자주 때리게 됨). isSpeaking()
+     * 순간값 대신 "이 발화가 완료 콜백을 받았는가"로 명확히 추적한다.
+     */
+    @Volatile
+    private var ackUtteranceDone = true
+
+    /**
      * ackTts가 어느 스트림으로 나갈지 명시한다 - 지정하지 않으면 기기별로 알림/최대 음량 등
      * 사용자가 조절하는 미디어 볼륨과 무관한 크기로 나갈 수 있어(실기기에서 "너무 크다" 보고됨),
      * 사용자가 볼륨 버튼으로 맞추는 미디어(STREAM_MUSIC) 볼륨을 그대로 따르게 한다.
@@ -190,6 +200,7 @@ class WakeWordService : Service() {
                 if (dist > WAKE_WORD_MAX_JAMO_DIST) return@thread
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
+                ackUtteranceDone = false
                 ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, ackTtsParams, "wake-ack")
                 if (!enrolled) rememberVoice(boosted)
                 launchMainActivity()
@@ -397,15 +408,13 @@ class WakeWordService : Service() {
 
         // 호출어 인식 -> "네, 부르셨어요" 재생 시작 -> launchMainActivity()로 앱이 뜨면
         // MainActivity.onResume()이 곧바로 stopWakeWordService()를 불러 이 onDestroy가
-        // 실행되는데, 여기서 즉시 shutdown()하면 TTS가 재생 중이어도 그대로 끊겨버렸다
-        // (실사용 보고: "네 부르셨어요"가 끝까지 안 나오고 앱 켜지면 멈춤). 재생 중이면
-        // 실제로 끝나는 시점(onAckUtteranceFinished)까지만 기다렸다가 종료한다 - 고정
-        // 시간을 무작정 기다리면 웹 앱 대화가 그만큼 늦게 시작되거나, 반대로 아직 재생
-        // 중인데 겹쳐 들릴 여지가 생긴다.
+        // 실행되는데, 여기서 즉시 shutdown()하면 TTS가 끊겨버렸다(실사용 보고: "네"까지만
+        // 나오고 멈춤). tts.isSpeaking()은 speak() 호출 직후 아직 버퍼링 중일 때 false를
+        // 줄 수 있어 순간값으로는 못 믿는다 - "발화 완료 콜백을 받았는가"로 정확히 추적한다.
         val tts = ackTts
         ackTts = null
-        if (tts?.isSpeaking == true) {
-            pendingAckShutdown = { tts.shutdown() }
+        if (!ackUtteranceDone) {
+            pendingAckShutdown = { tts?.shutdown() }
             Handler(Looper.getMainLooper()).postDelayed({
                 pendingAckShutdown?.invoke()
                 pendingAckShutdown = null
@@ -418,6 +427,7 @@ class WakeWordService : Service() {
     /** "wake-ack" 발화가 끝나면(정상/오류 무관) 대기 중이던 종료를 즉시 실행한다. */
     private fun onAckUtteranceFinished(utteranceId: String?) {
         if (utteranceId != "wake-ack") return
+        ackUtteranceDone = true
         pendingAckShutdown?.invoke()
         pendingAckShutdown = null
     }

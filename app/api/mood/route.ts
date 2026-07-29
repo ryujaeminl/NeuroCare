@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
       return Response.json({ analyzed: false, reason: "대화가 너무 짧습니다." });
     }
 
-    const result = await analyzeMood(conversation.turns);
+    const result = await analyzeMood(conversation.turns, auth.user.name ?? "환자");
 
     const saved = await prisma.moodAnalysis.upsert({
       where: { sessionId },
