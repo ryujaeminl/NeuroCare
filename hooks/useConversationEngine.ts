@@ -8,6 +8,7 @@ import { useBargeIn } from "@/hooks/useBargeIn";
 import { useConversationPersistence } from "@/hooks/useConversationPersistence";
 import { isUtteranceComplete } from "@/lib/turnDetector";
 import { encodeWav } from "@/lib/audio/encodeWav";
+import { normalizeGain } from "@/lib/audio/normalizeGain";
 import { streamChat, type ChatMessage } from "@/lib/llmStream";
 import { ttsProvider } from "@/lib/tts/ttsClient";
 import { speechQueue } from "@/lib/speechQueue";
@@ -230,7 +231,7 @@ export function useConversationEngine(
       setErrorMsg(null);
 
       try {
-        const wav = encodeWav(audio, VAD_SAMPLE_RATE);
+        const wav = encodeWav(normalizeGain(audio), VAD_SAMPLE_RATE);
         const form = new FormData();
         form.append("file", wav, "segment.wav");
 
