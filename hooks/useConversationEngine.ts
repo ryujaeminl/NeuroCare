@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useVAD, VAD_SAMPLE_RATE } from "@/hooks/useVAD";
+import { useVAD, VAD_SAMPLE_RATE, type UseVADResult } from "@/hooks/useVAD";
 import { useSpeechCalibration } from "@/hooks/useSpeechCalibration";
 import { useAudioQueue } from "@/hooks/useAudioQueue";
 import { useBargeIn } from "@/hooks/useBargeIn";
@@ -50,6 +50,16 @@ function computeDbfs(samples: Float32Array): number {
  * 환자가 크게 또박또박 말하지 않는 게 일반적이므로 -50으로 완화. */
 const MIN_SPEECH_DBFS = -50;
 
+/** LLM에 보내는 대화 기록(턴 수, user+assistant 합산)의 최대 길이. 웨이크워드로 하루 종일
+ * 같은 웹뷰가 재사용되며 대화 기록이 무제한으로 쌓이면, 오래된(테스트 중 나온 이상한 STT
+ * 결과 등도 포함된) 맥락이 쌓여 최근 대화와 무관한 엉뚱한 응답을 유도하는 문제가 있었다.
+ * 보호자용 기록(DB)에는 영향 없음 - LLM에 보내는 컨텍스트만 최근 것으로 제한한다. */
+const MAX_HISTORY_TURNS = 16;
+
+function trimHistory(messages: ChatMessage[]): ChatMessage[] {
+  return messages.length > MAX_HISTORY_TURNS ? messages.slice(-MAX_HISTORY_TURNS) : messages;
+}
+
 /**
  * 버튼이나 웨이크워드 없이, 마이크가 항상 켜져 있는 화면에서 바로 대화를 주고받게 하는 엔진.
  * VAD로 발화 구간을 감지 -> whisper 전사 -> 문장 완결성 판단(자동 턴 종료) -> LLM 스트리밍
@@ -78,6 +88,10 @@ export function useConversationEngine(
   // 조각별로 각각 전사한 뒤 텍스트만 이어붙인다 (오디오를 이어붙이면 이음매에서
   // 부자연스러운 끊김이 생겨 whisper 인식이 흐트러진다).
   const turnTextRef = useRef("");
+  // respondTo가 vad를 참조해야 하는데 vad(useVAD 호출)는 respondTo가 정의된 뒤에야
+  // 만들 수 있다(handleSpeechSegment -> finalizeTurn -> respondTo 의존 순서 때문) -
+  // ref로 우회해 순환 선언 문제를 피한다.
+  const vadRef = useRef<UseVADResult | null>(null);
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -138,6 +152,12 @@ export function useConversationEngine(
       audioQueue.stop();
       speechQueue.stop();
 
+      // AI가 말하는 동안 마이크가 그 소리를 다시 주워듣고 엉뚱한 새 턴으로 이어지는
+      // 경우가 있었다(에코) - 트랙만 잠깐 끄고(스트림 자체는 유지) AI가 말하는 동안은
+      // 새 입력을 안 받는다. vad-web 기본 pause처럼 마이크를 통째로 stop()했다가 다시
+      // getUserMedia()하는 방식이 아니라서, 매 턴 반복해도 안정적이다.
+      void vadRef.current?.pause();
+
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -175,11 +195,11 @@ export function useConversationEngine(
           onSentence: (sentence) => queueSentence(sentence, controller.signal),
         });
 
-        messagesRef.current = [
+        messagesRef.current = trimHistory([
           ...messagesRef.current,
           { role: "user", content: userText },
           { role: "assistant", content: reply },
-        ];
+        ]);
         setLog((prev) => [{ id: Date.now(), role: "assistant", text: reply }, ...prev]);
         persistence.saveTurn("assistant", reply);
 
@@ -195,6 +215,7 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
+        void vadRef.current?.resume();
       }
     },
     [audioQueue, queueSentence, persistence],
@@ -280,6 +301,9 @@ export function useConversationEngine(
   );
 
   const vad = useVAD(handleSpeechSegment);
+  useEffect(() => {
+    vadRef.current = vad;
+  }, [vad]);
 
   // 진짜 끼어들기: AI가 생각 중이거나 말하는 도중 사용자가 다시 말하면
   // 즉시 오디오/요청을 멈추고 그 발화를 새 턴의 시작으로 삼는다.
