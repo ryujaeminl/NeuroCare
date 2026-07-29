@@ -146,8 +146,11 @@ class WakeWordService : Service() {
                     speakerId = if (enrolled) BuildConfig.SPEAKER_ID else null,
                 )
                 reportToServer("전사 결과: \"$text\" (enrolled=$enrolled)")
-                val target = normalize(BuildConfig.WAKE_WORD_LABEL)
-                if (target.isEmpty() || !normalize(text).contains(target)) return@thread
+                val targetJamo = decomposeHangul(normalize(BuildConfig.WAKE_WORD_LABEL))
+                if (targetJamo.isEmpty()) return@thread
+                val dist = approxEditDistance(decomposeHangul(normalize(text)), targetJamo)
+                reportToServer("호출어 자모거리: $dist (기준 <=$WAKE_WORD_MAX_JAMO_DIST)")
+                if (dist > WAKE_WORD_MAX_JAMO_DIST) return@thread
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
                 ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, null, "wake-ack")
@@ -240,6 +243,46 @@ class WakeWordService : Service() {
 
     private fun normalize(text: String) = text.replace(Regex("\\s+"), "").lowercase()
 
+    /**
+     * 완성형 한글 음절을 초성/중성/종성 자모로 풀어헤친다(유니코드 산술 분해).
+     * whisper가 "복실아"처럼 낯선 짧은 단어를 음이 비슷한 흔한 단어("봅시다")로 잘못
+     * 알아듣는 경우가 많아서, 글자 단위 완전 일치 대신 자모 단위 편집거리로 "소리가
+     * 비슷한지"를 비교한다 - 글자는 달라도 초성/중성이 겹치면 편집거리가 작게 나온다.
+     */
+    private fun decomposeHangul(text: String): List<Char> {
+        val jamo = mutableListOf<Char>()
+        for (ch in text) {
+            val code = ch.code - 0xAC00
+            if (code < 0 || code > 11171) {
+                jamo.add(ch)
+                continue
+            }
+            val initial = code / (21 * 28)
+            val medial = (code / 28) % 21
+            val final = code % 28
+            jamo.add(HANGUL_INITIALS[initial])
+            jamo.add(HANGUL_MEDIALS[medial])
+            if (final != 0) jamo.add(HANGUL_FINALS[final])
+        }
+        return jamo
+    }
+
+    /** text 안 어딘가에 target이 [편집거리 이하]로 들어있으면 그 최소 편집거리를 돌려준다(자유 시작점 DP). */
+    private fun approxEditDistance(text: List<Char>, target: List<Char>): Int {
+        if (target.isEmpty()) return Int.MAX_VALUE
+        var prev = IntArray(target.size + 1) { it }
+        for (tc in text) {
+            val curr = IntArray(target.size + 1)
+            curr[0] = 0
+            for (j in 1..target.size) {
+                val cost = if (tc == target[j - 1]) 0 else 1
+                curr[j] = minOf(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost)
+            }
+            prev = curr
+        }
+        return prev.min()
+    }
+
     /** 발화 구간의 평균 음량(dBFS). hooks/useConversationEngine.ts의 computeDbfs와 동일 계산. */
     private fun computeDbfs(samples: FloatArray): Double {
         var sumSquares = 0.0
@@ -297,5 +340,20 @@ class WakeWordService : Service() {
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         // 실기기 측정치(-55.5dBFS로 부른 "복실아"가 걸러짐) 기준으로 여유를 두고 낮췄다.
         private const val MIN_SPEECH_DBFS = -62.0
+
+        /**
+         * 호출어 자모 편집거리 허용치. 실기기 로그에서 "복실아"가 "봅시다"로 오인식된
+         * 사례(자모 8개 중 다수 불일치)를 근거로 잡은 값 - 너무 크면 무관한 말에도
+         * 반응하고, 너무 작으면 여전히 놓친다. 오탐/미탐 로그 보고 조정.
+         */
+        private const val WAKE_WORD_MAX_JAMO_DIST = 4
+
+        // 유니코드 한글 완성형 분해표(초성 19 / 중성 21 / 종성 28, 종성 0번=받침 없음).
+        private val HANGUL_INITIALS =
+            "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ".toList()
+        private val HANGUL_MEDIALS =
+            "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ".toList()
+        private val HANGUL_FINALS =
+            " ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ".toList()
     }
 }

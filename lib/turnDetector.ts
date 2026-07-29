@@ -1,5 +1,5 @@
 /** 완결된 문장으로 끝났다고 볼 때 적용할 짧은 무음 임계값 (ms) */
-export const COMPLETE_SILENCE_MS = 700;
+export const COMPLETE_SILENCE_MS = 500;
 
 /** 미완결(머뭇거림)로 보일 때 적용할 기본 무음 임계값 (ms) - useSpeechCalibration이 개인화한다 */
 export const DEFAULT_INCOMPLETE_SILENCE_MS = 2500;
