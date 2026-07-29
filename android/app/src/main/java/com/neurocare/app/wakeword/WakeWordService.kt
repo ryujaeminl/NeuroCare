@@ -9,7 +9,9 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.AudioManager
 import android.os.Build
+import android.os.Bundle
 import android.os.IBinder
 import android.os.PowerManager
 import android.speech.tts.TextToSpeech
@@ -48,6 +50,15 @@ class WakeWordService : Service() {
      * 있었다 - 안드로이드 기본 TTS로 완전히 분리해서 무조건 빠르고 예측 가능하게 만든다.
      */
     private var ackTts: TextToSpeech? = null
+
+    /**
+     * ackTts가 어느 스트림으로 나갈지 명시한다 - 지정하지 않으면 기기별로 알림/최대 음량 등
+     * 사용자가 조절하는 미디어 볼륨과 무관한 크기로 나갈 수 있어(실기기에서 "너무 크다" 보고됨),
+     * 사용자가 볼륨 버튼으로 맞추는 미디어(STREAM_MUSIC) 볼륨을 그대로 따르게 한다.
+     */
+    private val ackTtsParams = Bundle().apply {
+        putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_MUSIC)
+    }
 
     @Volatile
     private var checkingWakeWord = false
@@ -140,11 +151,12 @@ class WakeWordService : Service() {
         val boosted = normalizeGain(segment)
         thread(name = "neurocare-wakeword-check") {
             try {
-                // 등록 후에는 speakerId를 넘겨 본인 목소리가 아니면 빈 텍스트를 받는다.
-                val text = whisperClient.transcribe(
-                    boosted,
-                    speakerId = if (enrolled) BuildConfig.SPEAKER_ID else null,
-                )
+                // 호출어 감지 단계에서는 화자 인증을 넘기지 않는다. "복실아"만 반복해 만든
+                // 성문은 음소가 단조로워(server/speaker.py 주석 참고) 본인 목소리조차 유사도가
+                // 임계값 밑으로 떨어져 whisper가 빈 텍스트를 돌려주는 경우가 실기기 로그로
+                // 확인됐다(dBFS 정상인데도 계속 ""). 호출어는 이미 자모 편집거리로 충분히
+                // 걸러지므로 이중으로 화자까지 확인할 필요가 없다.
+                val text = whisperClient.transcribe(boosted)
                 reportToServer("전사 결과: \"$text\" (enrolled=$enrolled)")
                 val targetJamo = decomposeHangul(normalize(BuildConfig.WAKE_WORD_LABEL))
                 if (targetJamo.isEmpty()) return@thread
@@ -153,7 +165,7 @@ class WakeWordService : Service() {
                 if (dist > WAKE_WORD_MAX_JAMO_DIST) return@thread
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
-                ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, null, "wake-ack")
+                ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, ackTtsParams, "wake-ack")
                 if (!enrolled) rememberVoice(boosted)
                 launchMainActivity()
             } finally {

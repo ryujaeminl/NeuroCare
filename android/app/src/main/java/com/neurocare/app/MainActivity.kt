@@ -1,7 +1,10 @@
 package com.neurocare.app
 
 import android.Manifest
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -44,6 +47,23 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
 
+    /**
+     * MainActivity는 웨이크워드로 잠금화면 위에 뜨기 위해 showWhenLocked/turnScreenOn을
+     * 매니페스트에 켜 두는데, 실기기 확인 결과 이 플래그 때문에 사용자가 그냥 전원 버튼으로
+     * 화면을 끄기만 해도(=실사용에서 가장 흔한 시나리오) onPause가 아예 호출되지 않는다
+     * (홈 버튼으로 나가는 건 정상적으로 onPause가 호출됨 - 실기기 dumpsys로 확인).
+     * 그래서 웨이크워드 서비스가 영영 시작되지 않아 "복실아"를 불러도 반응이 없었다.
+     * 화면 꺼짐은 실제 물리 신호(ACTION_SCREEN_OFF)로 직접 감지해 보완한다.
+     */
+    private val screenOffReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (intent?.action == Intent.ACTION_SCREEN_OFF) {
+                reportToServer("ACTION_SCREEN_OFF: 웨이크워드 서비스 시작(onPause 보완)")
+                startWakeWordService()
+            }
+        }
+    }
+
     /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */
     private var pendingMicRequest: PermissionRequest? = null
 
@@ -81,6 +101,8 @@ class MainActivity : AppCompatActivity() {
 
         // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
+        registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
 
         webView = WebView(this)
         setContentView(webView)
@@ -282,6 +304,11 @@ class MainActivity : AppCompatActivity() {
         reportToServer("MainActivity.onPause: 웨이크워드 서비스 시작")
         // 화면을 벗어나면 다시 백그라운드에서 이름 호출을 감시한다.
         startWakeWordService()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(screenOffReceiver)
     }
 
 }
