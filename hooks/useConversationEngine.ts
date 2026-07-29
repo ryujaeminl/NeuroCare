@@ -210,12 +210,20 @@ export function useConversationEngine(
     [clearFinalizeTimer, respondTo, persistence],
   );
 
+  // vad-web이 같은 발화에 대해 onSpeechEnd를 수십ms 간격으로 두 번 쏘는 경우가 실사용에서
+  // 확인됐다(원인 불명) - 그대로 두면 같은 말에 STT/응답이 통째로 두 번 일어나 음성이 겹쳐
+  // 재생된다. 이전 구간 처리가 끝나기 전에 들어온 호출은 무시해 재진입을 막는다.
+  const processingSegmentRef = useRef(false);
+
   const handleSpeechSegment = useCallback(
     async (audio: Float32Array) => {
       if (computeDbfs(audio) < MIN_SPEECH_DBFS) {
         // 너무 조용한/먼 소리 - 기존 턴 상태를 건드리지 않고 조용히 무시한다.
         return;
       }
+
+      if (processingSegmentRef.current) return;
+      processingSegmentRef.current = true;
 
       setPhase("transcribing");
       setErrorMsg(null);
@@ -257,6 +265,8 @@ export function useConversationEngine(
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : "전사에 실패했습니다.");
         setPhase("listening");
+      } finally {
+        processingSegmentRef.current = false;
       }
     },
     [calibration, finalizeTurn],
