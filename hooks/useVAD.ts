@@ -30,13 +30,19 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
   const [userSpeaking, setUserSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const vadRef = useRef<MicVAD | null>(null);
+  // MicVAD.new()는 비동기라, 그게 끝나기 전에 start()가 한 번 더 불리면 vadRef.current가
+  // 아직 null이라 아래 가드를 통과해버려 VAD 인스턴스가 두 개 생길 수 있다 - 그럼 같은
+  // 발화를 두 인스턴스가 각각 감지해 STT/응답이 통째로 두 번 돈다(실사용에서 확인된 버그).
+  // 비동기 구간 전체를 이 플래그로 막아 재진입을 원천 차단한다.
+  const startingRef = useRef(false);
   const onSpeechSegmentRef = useRef(onSpeechSegment);
   useEffect(() => {
     onSpeechSegmentRef.current = onSpeechSegment;
   }, [onSpeechSegment]);
 
   const start = useCallback(async () => {
-    if (vadRef.current) return;
+    if (vadRef.current || startingRef.current) return;
+    startingRef.current = true;
     setError(null);
 
     // 안드로이드 앱에서는 화면 전환 직후 백그라운드 웨이크워드 서비스가 마이크를 놓아주는
@@ -45,6 +51,7 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
     const MAX_ATTEMPTS = 4;
     const RETRY_DELAY_MS = 400;
 
+    try {
     for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
       try {
         const { MicVAD } = await import("@ricky0123/vad-web");
@@ -94,6 +101,9 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
 
         await new Promise((resolve) => setTimeout(resolve, RETRY_DELAY_MS));
       }
+    }
+    } finally {
+      startingRef.current = false;
     }
   }, []);
 
