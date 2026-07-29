@@ -2,6 +2,7 @@ package com.neurocare.app.wakeword
 
 import ai.onnxruntime.OrtEnvironment
 import android.Manifest
+import android.app.KeyguardManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,6 +10,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.PixelFormat
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
@@ -16,8 +18,12 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.provider.Settings
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import android.view.View
+import android.view.WindowManager
 import java.util.Locale
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -52,6 +58,15 @@ class WakeWordService : Service() {
      * 있었다 - 안드로이드 기본 TTS로 완전히 분리해서 무조건 빠르고 예측 가능하게 만든다.
      */
     private var ackTts: TextToSpeech? = null
+
+    /**
+     * onDestroy가 "wake-ack" 발화 완료를 정확히 기다리는 콜백. 고정 시간을 무작정 기다리면
+     * (예: 2초) 실제로는 더 일찍 끝났는데도 서비스 종료가 그만큼 늦어져, 그사이 웹 앱이
+     * 이미 마이크를 잡고 대화를 시작하면 "네, 부르셨어요" 꼬리와 겹쳐 들릴 여지가 있었다.
+     * 실제 완료 시점을 콜백으로 받아 그 즉시 정리하고, 콜백이 안 오는 경우를 대비한
+     * 안전망(ACK_TTS_SHUTDOWN_GRACE_MS)만 최후 수단으로 둔다.
+     */
+    private var pendingAckShutdown: (() -> Unit)? = null
 
     /**
      * ackTts가 어느 스트림으로 나갈지 명시한다 - 지정하지 않으면 기기별로 알림/최대 음량 등
@@ -93,6 +108,11 @@ class WakeWordService : Service() {
         ackTts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) ackTts?.language = Locale.KOREAN
         }
+        ackTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {}
+            override fun onDone(utteranceId: String?) = onAckUtteranceFinished(utteranceId)
+            override fun onError(utteranceId: String?) = onAckUtteranceFinished(utteranceId)
+        })
 
         if (!hasMicPermission()) {
             Log.w(TAG, "RECORD_AUDIO 권한이 없어 웨이크워드 감시를 시작하지 않습니다.")
@@ -256,6 +276,46 @@ class WakeWordService : Service() {
             .setAutoCancel(true)
             .build()
         NotificationManagerCompat.from(this).notify(WAKE_NOTIFICATION_ID, notification)
+
+        // 전체화면 알림은 잠금화면(또는 화면 꺼짐)에서만 자동으로 액티비티를 띄운다.
+        // 화면이 켜져 있고 잠금 해제된 상태(다른 앱 사용 중/홈화면)에서는 배너만 뜨고
+        // 자동으로 안 열려서, 그럴 때만 오버레이 트릭으로 직접 startActivity()한다 -
+        // 잠금/화면꺼짐 상태에서 둘 다 실행하면 액티비티가 두 번 떠 TTS가 겹치는(위에서
+        // 이미 겪은) 문제가 재발하므로 반드시 상호 배타적으로 나눈다.
+        val keyguardManager = getSystemService(KeyguardManager::class.java)
+        val powerManager = getSystemService(PowerManager::class.java)
+        val isLockedOrScreenOff = keyguardManager.isKeyguardLocked || !powerManager.isInteractive
+        if (!isLockedOrScreenOff && Settings.canDrawOverlays(this)) {
+            launchViaOverlay(intent)
+        }
+    }
+
+    /**
+     * "다른 앱 위에 그리기" 권한으로 아주 짧게(1x1, 안 보임) 오버레이 창을 띄워 이 프로세스를
+     * "화면에 떠 있는" 상태로 만든다 - 안드로이드는 이 상태의 앱에 한해 백그라운드에서도
+     * startActivity()를 허용한다(원래는 다른 앱 사용 중일 때 막힘). 액티비티가 뜨고 나면
+     * 오버레이는 곧바로 치운다.
+     */
+    private fun launchViaOverlay(intent: Intent) {
+        val windowManager = getSystemService(WindowManager::class.java) ?: return
+        val overlayView = View(this)
+        val params = WindowManager.LayoutParams(
+            1,
+            1,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+            PixelFormat.TRANSLUCENT,
+        )
+        try {
+            windowManager.addView(overlayView, params)
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "오버레이로 앱 실행 실패", e)
+        } finally {
+            Handler(Looper.getMainLooper()).postDelayed({
+                runCatching { windowManager.removeView(overlayView) }
+            }, 1000L)
+        }
     }
 
     private fun normalize(text: String) = text.replace(Regex("\\s+"), "").lowercase()
@@ -323,14 +383,27 @@ class WakeWordService : Service() {
         // MainActivity.onResume()이 곧바로 stopWakeWordService()를 불러 이 onDestroy가
         // 실행되는데, 여기서 즉시 shutdown()하면 TTS가 재생 중이어도 그대로 끊겨버렸다
         // (실사용 보고: "네 부르셨어요"가 끝까지 안 나오고 앱 켜지면 멈춤). 재생 중이면
-        // 끝날 시간만큼 유예를 두고 종료한다.
+        // 실제로 끝나는 시점(onAckUtteranceFinished)까지만 기다렸다가 종료한다 - 고정
+        // 시간을 무작정 기다리면 웹 앱 대화가 그만큼 늦게 시작되거나, 반대로 아직 재생
+        // 중인데 겹쳐 들릴 여지가 생긴다.
         val tts = ackTts
         ackTts = null
         if (tts?.isSpeaking == true) {
-            Handler(Looper.getMainLooper()).postDelayed({ tts.shutdown() }, ACK_TTS_SHUTDOWN_GRACE_MS)
+            pendingAckShutdown = { tts.shutdown() }
+            Handler(Looper.getMainLooper()).postDelayed({
+                pendingAckShutdown?.invoke()
+                pendingAckShutdown = null
+            }, ACK_TTS_SHUTDOWN_GRACE_MS)
         } else {
             tts?.shutdown()
         }
+    }
+
+    /** "wake-ack" 발화가 끝나면(정상/오류 무관) 대기 중이던 종료를 즉시 실행한다. */
+    private fun onAckUtteranceFinished(utteranceId: String?) {
+        if (utteranceId != "wake-ack") return
+        pendingAckShutdown?.invoke()
+        pendingAckShutdown = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

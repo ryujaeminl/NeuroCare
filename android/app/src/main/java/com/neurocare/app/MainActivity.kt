@@ -6,8 +6,10 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.WindowManager
 import android.webkit.PermissionRequest
 import android.util.Log
@@ -98,6 +100,16 @@ class MainActivity : AppCompatActivity() {
         // 안드로이드 14+는 전체화면 알림 권한이 기본 꺼짐 상태라, 없으면 웨이크워드로
         // 부를 때도, 긴급 알림 때도 화면이 자동으로 안 뜬다. 한 번 켜두면 계속 유지된다.
         EmergencyNotifier.ensureFullScreenIntentPermission(this)
+
+        // 전체화면 알림은 잠금화면에서만 자동으로 앱을 띄운다 - 화면이 켜져 있고 다른 앱을
+        // 쓰는 중이거나 홈화면일 땐 배너만 뜨고 자동으로 안 열린다(안드로이드가 의도적으로
+        // 막아둔 동작). "다른 앱 위에 그리기" 권한이 있으면 WakeWordService가 짧게 오버레이
+        // 창을 띄워 그 제약을 풀고 바로 앱을 띄울 수 있다.
+        if (!Settings.canDrawOverlays(this)) {
+            startActivity(
+                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
+            )
+        }
 
         // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

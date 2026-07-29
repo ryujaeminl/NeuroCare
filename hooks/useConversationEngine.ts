@@ -133,6 +133,11 @@ export function useConversationEngine(
       setErrorMsg(null);
       spokenTextRef.current = "";
 
+      // 직전 턴의 오디오가 아직 큐에 남아있으면(레이스로 정리가 안 된 경우 등) 이번 턴의
+      // 첫 문장과 겹쳐 재생될 수 있다 - 새 턴을 시작하기 전에 항상 깨끗이 비운다.
+      audioQueue.stop();
+      speechQueue.stop();
+
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;

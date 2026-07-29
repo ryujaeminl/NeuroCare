@@ -16,6 +16,11 @@
     <!-- 긴급 알림을 잠금화면 위로 즉시 띄우기 위한 권한. Android 14+는 기본 꺼짐 상태라
          EmergencyNotifier.ensureFullScreenIntentPermission()에서 사용자 동의를 받아 설정 화면으로 보낸다. -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
+    <!-- 화면이 켜져 있고 다른 앱을 쓰는 중일 때도 호출어로 앱을 띄우기 위한 권한. 전체화면
+         알림은 잠금화면에서만 자동으로 열리고, 다른 앱 사용 중엔 배너만 뜨고 안 열린다 -
+         이 권한으로 만든 오버레이 창이 떠 있는 동안은 백그라운드 startActivity() 제약이
+         풀린다. 특수 권한이라 설정 화면에서 별도 동의가 필요하다. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <application
         android:allowBackup="true"
