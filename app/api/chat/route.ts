@@ -14,7 +14,7 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 대화하며 기억 �
 - 의학적 진단이나 치료 조언은 하지 마세요.`;
 
 interface ChatMessage {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "system";
   content: string;
 }
 

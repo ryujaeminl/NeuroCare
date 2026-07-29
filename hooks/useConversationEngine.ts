@@ -89,6 +89,15 @@ export function useConversationEngine(
   // 이 체인으로 보장한다 - 나중에 요청한 문장이 먼저 응답으로 와도 순서가 꼬이지 않는다.
   const ttsChainRef = useRef<Promise<void>>(Promise.resolve());
 
+  // barge-in 판정 시점에 최신 phase를 읽기 위한 ref (state는 클로저에서 stale할 수 있음).
+  const phaseRef = useRef<ConversationPhase>("listening");
+  // barge-in 처리용: assistantDraft(state)는 클로저에서 stale할 수 있어 최신값을 ref로도 들고 있는다.
+  const assistantDraftRef = useRef("");
+  // 이번 턴에서 실제로 끝까지 재생된(=환자가 진짜로 들은) 문장만 여기 쌓인다.
+  const spokenTextRef = useRef("");
+  // 직전 턴이 끼어들기로 중단됐을 때, 못다 한 말을 바로 다음 LLM 호출 한 번에만 힌트로 넘긴다.
+  const interruptedNoteRef = useRef<string | null>(null);
+
   const clearFinalizeTimer = useCallback(() => {
     if (finalizeTimerRef.current) {
       clearTimeout(finalizeTimerRef.current);
@@ -99,15 +108,22 @@ export function useConversationEngine(
   const queueSentence = useCallback(
     (sentence: string, signal: AbortSignal) => {
       const synthesisPromise = ttsProvider.synthesize(sentence, signal).catch(() => null);
+      // 이 문장이 실제로 끝까지 재생됐을 때만 불린다 - barge-in으로 잘리면 안 불려서,
+      // spokenTextRef는 언제나 "환자가 진짜로 들은 부분"만 반영한다.
+      const markSpoken = () => {
+        spokenTextRef.current = spokenTextRef.current
+          ? `${spokenTextRef.current} ${sentence}`
+          : sentence;
+      };
       ttsChainRef.current = ttsChainRef.current.then(async () => {
         if (signal.aborted) return;
         const blob = await synthesisPromise;
         if (signal.aborted) return;
         if (blob) {
-          audioQueue.enqueue(blob);
+          audioQueue.enqueue(blob, markSpoken);
         } else {
           // TTS(CLOVA Voice/edge-tts) 실패 시 브라우저 내장 SpeechSynthesis로 폴백 (이중 안전장치)
-          speechQueue.enqueue(sentence);
+          speechQueue.enqueue(sentence, markSpoken);
         }
       });
     },
@@ -118,6 +134,7 @@ export function useConversationEngine(
     async (userText: string) => {
       setPhase("thinking");
       setErrorMsg(null);
+      spokenTextRef.current = "";
 
       abortControllerRef.current?.abort();
       const controller = new AbortController();
@@ -126,18 +143,39 @@ export function useConversationEngine(
       const cacheKey = normalize(userText);
       const cached = replyCacheRef.current.get(cacheKey);
 
+      // 직전 턴이 끼어들기로 끊겼다면, 못다 한 말을 이번 LLM 호출에만 상황 힌트로 붙인다.
+      // 대화 기록(messagesRef/log)에는 안 남긴다 - 실제로 오간 말이 아니라 내부 힌트라서다.
+      const interruptedRemainder = interruptedNoteRef.current;
+      interruptedNoteRef.current = null;
+
       try {
         let reply: string;
         if (cached) {
           reply = cached;
+          assistantDraftRef.current = reply;
           setAssistantDraft(reply);
           setPhase("speaking");
           queueSentence(reply, controller.signal);
         } else {
-          reply = await streamChat([...messagesRef.current, { role: "user", content: userText }], {
+          const history: ChatMessage[] = interruptedRemainder
+            ? [
+                ...messagesRef.current,
+                {
+                  role: "system",
+                  content:
+                    `방금 응답 중 "${interruptedRemainder}"라고 이어 말하려던 참이었는데 환자가 ` +
+                    `끼어들어 다시 말을 걸었습니다. 하려던 말을 그대로 반복하지 말고, 필요하면 자연스럽게 ` +
+                    `이어가거나 새 이야기에 맞춰 응답하세요.`,
+                },
+                { role: "user", content: userText },
+              ]
+            : [...messagesRef.current, { role: "user", content: userText }];
+
+          reply = await streamChat(history, {
             signal: controller.signal,
             onChunk: (fullSoFar) => {
               setPhase("speaking");
+              assistantDraftRef.current = fullSoFar;
               setAssistantDraft(fullSoFar);
             },
             onSentence: (sentence) => queueSentence(sentence, controller.signal),
@@ -156,11 +194,12 @@ export function useConversationEngine(
         await audioQueue.whenIdle();
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
-          // 끼어들기 등으로 의도적으로 취소됨 - 별도 오류 표시 없음
+          // 끼어들기 등으로 의도적으로 취소됨 - 별도 오류 표시 없음 (handleBargeIn이 처리함)
         } else {
           setErrorMsg(err instanceof Error ? err.message : "응답 생성에 실패했습니다.");
         }
       } finally {
+        assistantDraftRef.current = "";
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
@@ -220,14 +259,16 @@ export function useConversationEngine(
           return;
         }
 
-        if (isUtteranceComplete(text)) {
-          finalizeTurn(text);
-        } else {
-          setPhase("waiting-more");
-          waitingSinceRef.current = Date.now();
-          const waitMs = calibration.getIncompleteSilenceMs();
-          finalizeTimerRef.current = setTimeout(() => finalizeTurn(turnTextRef.current), waitMs);
-        }
+        // 하이브리드 엔드포인팅: 문장이 완결됐다고 보이면 아주 짧게만 대기하고(끊어서 다시
+        // 말할 여지는 남겨두되 응답은 최대한 빨리 시작), 미완결로 보이면 기존처럼 더 기다린다.
+        // 고정 무음 타임아웃 하나에만 기대지 않고, 매번 STT 결과의 문장 완결성으로 그 타임아웃
+        // 자체를 짧게/길게 고른다.
+        setPhase("waiting-more");
+        waitingSinceRef.current = Date.now();
+        const waitMs = isUtteranceComplete(text)
+          ? calibration.completeSilenceMs
+          : calibration.getIncompleteSilenceMs();
+        finalizeTimerRef.current = setTimeout(() => finalizeTurn(turnTextRef.current), waitMs);
       } catch (err) {
         setErrorMsg(err instanceof Error ? err.message : "전사에 실패했습니다.");
         setPhase("listening");
@@ -241,14 +282,30 @@ export function useConversationEngine(
   // 진짜 끼어들기: AI가 생각 중이거나 말하는 도중 사용자가 다시 말하면
   // 즉시 오디오/요청을 멈추고 그 발화를 새 턴의 시작으로 삼는다.
   const handleBargeIn = useCallback(() => {
+    // 응답이 오가던 중이었다면, 실제로 들려준 부분은 대화 기록에 남기고 못다 한 나머지는
+    // 다음 LLM 호출 힌트로 넘긴다 - 응답을 통째로 버리지 않고 끊긴 지점부터 이어가기 위함.
+    if (phaseRef.current === "thinking" || phaseRef.current === "speaking") {
+      const spoken = spokenTextRef.current.trim();
+      const fullSoFar = assistantDraftRef.current.trim();
+      const remainder = (fullSoFar.startsWith(spoken) ? fullSoFar.slice(spoken.length) : fullSoFar).trim();
+
+      if (spoken) {
+        messagesRef.current = [...messagesRef.current, { role: "assistant", content: spoken }];
+        setLog((prev) => [{ id: Date.now(), role: "assistant", text: spoken }, ...prev]);
+        persistence.saveTurn("assistant", spoken);
+      }
+      interruptedNoteRef.current = remainder || null;
+    }
+
     abortControllerRef.current?.abort();
     audioQueue.stop();
     speechQueue.stop();
     turnTextRef.current = "";
     setInterimText("");
+    assistantDraftRef.current = "";
     setAssistantDraft("");
     setPhase("listening");
-  }, [audioQueue]);
+  }, [audioQueue, persistence]);
 
   useBargeIn({
     userSpeaking: vad.userSpeaking,
@@ -279,6 +336,10 @@ export function useConversationEngine(
   }, [vad.userSpeaking, calibration, clearFinalizeTimer]);
 
   useEffect(() => clearFinalizeTimer, [clearFinalizeTimer]);
+
+  useEffect(() => {
+    phaseRef.current = phase;
+  }, [phase]);
 
   return {
     phase,

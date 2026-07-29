@@ -2,9 +2,17 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
+interface QueueItem {
+  blob: Blob;
+  /** 이 오디오가 끝까지(중단 없이) 재생을 마쳤을 때만 호출 - barge-in으로 잘리면 호출 안 됨 */
+  onDone?: () => void;
+}
+
 export interface UseAudioQueueResult {
   isPlaying: boolean;
-  enqueue: (blob: Blob) => void;
+  /** onDone은 이 오디오가 실제로 끝까지 재생됐을 때만 불린다 (barge-in으로 끊기면 안 불림 -
+   *  "어디까지 실제로 말했는지" 추적에 쓴다) */
+  enqueue: (blob: Blob, onDone?: () => void) => void;
   /** 현재 재생을 짧은 fade-out과 함께 즉시 멈추고 큐를 비운다 (barge-in용) */
   stop: () => void;
   /** 큐에 남은 오디오를 모두 재생하고 나면 resolve된다 */
@@ -16,7 +24,7 @@ const FADE_STEPS = 4;
 
 export function useAudioQueue(): UseAudioQueueResult {
   const [isPlaying, setIsPlaying] = useState(false);
-  const queueRef = useRef<Blob[]>([]);
+  const queueRef = useRef<QueueItem[]>([]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const playingRef = useRef(false);
   const idleWaitersRef = useRef<Array<() => void>>([]);
@@ -30,8 +38,8 @@ export function useAudioQueue(): UseAudioQueueResult {
 
   const pump = useCallback(() => {
     if (playingRef.current) return;
-    const blob = queueRef.current.shift();
-    if (!blob) {
+    const item = queueRef.current.shift();
+    if (!item) {
       setIsPlaying(false);
       notifyIdle();
       return;
@@ -39,19 +47,20 @@ export function useAudioQueue(): UseAudioQueueResult {
 
     playingRef.current = true;
     setIsPlaying(true);
-    const url = URL.createObjectURL(blob);
+    const url = URL.createObjectURL(item.blob);
     const audio = new Audio(url);
     audioRef.current = audio;
 
-    const advance = () => {
+    const advance = (finished: boolean) => {
       URL.revokeObjectURL(url);
       if (audioRef.current === audio) audioRef.current = null;
       playingRef.current = false;
+      if (finished) item.onDone?.();
       pumpRef.current();
     };
-    audio.onended = advance;
-    audio.onerror = advance;
-    audio.play().catch(advance);
+    audio.onended = () => advance(true);
+    audio.onerror = () => advance(false);
+    audio.play().catch(() => advance(false));
   }, [notifyIdle]);
 
   useEffect(() => {
@@ -59,8 +68,8 @@ export function useAudioQueue(): UseAudioQueueResult {
   }, [pump]);
 
   const enqueue = useCallback(
-    (blob: Blob) => {
-      queueRef.current.push(blob);
+    (blob: Blob, onDone?: () => void) => {
+      queueRef.current.push({ blob, onDone });
       pump();
     },
     [pump],

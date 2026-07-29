@@ -1,5 +1,6 @@
 export interface ChatMessage {
-  role: "user" | "assistant";
+  /** system은 대화 기록에는 안 남기고 이번 LLM 호출에만 상황을 알려주는 힌트용 (barge-in 등) */
+  role: "user" | "assistant" | "system";
   content: string;
 }
 
