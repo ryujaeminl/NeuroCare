@@ -24,6 +24,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.neurocare.app.emergency.EmergencyNotifier
 import com.neurocare.app.wakeword.WakeWordService
+import kotlin.concurrent.thread
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 /**
  * 웨이크워드로 켜지든 사용자가 직접 앱 아이콘을 누르든, 이 액티비티 하나가 전부다.
@@ -79,7 +85,15 @@ class MainActivity : AppCompatActivity() {
 
         // WebView가 오래되면 최신 JS 문법을 파싱하지 못해 화면만 그려지고 아무 동작도 하지 않는다.
         // 진단에 필요한 정보라 시작 시 한 번 남긴다.
-        Log.i(TAG, "WebView 버전: ${WebViewCompat.getCurrentWebViewPackage(this)?.versionName ?: "알 수 없음"}")
+        val webViewVersion = WebViewCompat.getCurrentWebViewPackage(this)?.versionName ?: "알 수 없음"
+        Log.i(TAG, "WebView 버전: $webViewVersion")
+        // ponytail: 기기에서 흰 화면/엉뚱한 URL 문제가 재현될 때 이 값들이 실제로 뭘로 컴파일됐는지
+        // 원격에서 바로 확인하려고 남긴다. 원인이 잡히면 지운다.
+        reportToServer(
+            "시작: WEBAPP_BASE_URL=${BuildConfig.WEBAPP_BASE_URL} " +
+                "versionCode=${BuildConfig.VERSION_CODE} versionName=${BuildConfig.VERSION_NAME} " +
+                "webview=$webViewVersion",
+        )
 
         onBackPressedDispatcher.addCallback(
             this,
@@ -139,6 +153,18 @@ class MainActivity : AppCompatActivity() {
                 Log.e(TAG, detail)
                 showError(detail)
             }
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                // 에러 콜백 없이 200으로 로드됐는데도 화면이 비어있는(=React가 마운트 전에
+                // 죽은) 경우는 위 콜백들이 전혀 못 잡는다. 실제로 그려진 글자 수로 확인한다.
+                view?.evaluateJavascript("document.body.innerText.length") { result ->
+                    val textLength = result?.toIntOrNull() ?: -1
+                    if (textLength in 0..10) {
+                        reportToServer("빈 화면 의심: url=$url bodyTextLength=$textLength")
+                    }
+                }
+            }
         }
 
         webView.webChromeClient = object : WebChromeClient() {
@@ -183,6 +209,30 @@ class MainActivity : AppCompatActivity() {
         if (detail == lastShownError) return
         lastShownError = detail
         runOnUiThread { Toast.makeText(this, detail.take(300), Toast.LENGTH_LONG).show() }
+        reportToServer(detail)
+    }
+
+    /**
+     * WebView가 실패하는 바로 그 순간엔 자기 자신을 통해 서버에 보고할 수 없으므로,
+     * WebView와 무관한 별도의 OkHttp 연결로 배포 서버에 직접 올린다.
+     * ponytail: 진단용. 원인이 잡히면 지운다.
+     */
+    private val diagnosticsClient = OkHttpClient()
+
+    private fun reportToServer(message: String) {
+        thread(name = "neurocare-client-log") {
+            try {
+                val body = JSONObject().put("message", message).toString()
+                    .toRequestBody("application/json".toMediaType())
+                val request = Request.Builder()
+                    .url("${BuildConfig.WEBAPP_BASE_URL}/api/client-log")
+                    .post(body)
+                    .build()
+                diagnosticsClient.newCall(request).execute().close()
+            } catch (e: Exception) {
+                Log.e(TAG, "원격 로그 전송 실패", e)
+            }
+        }
     }
 
     private fun ensurePermissionsThenStart() {
