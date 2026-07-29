@@ -14,9 +14,16 @@ class AudioCapture(private val onFrame: (FloatArray) -> Unit) {
     private var recording = false
     private var thread: Thread? = null
 
+    /**
+     * 성공하면 true. 직전에 서비스가 껐다 켜지는 등으로 안드로이드가 아직 이전 오디오
+     * 세션을 다 정리하지 못한 찰나에는 AudioRecord 초기화가 실패할 수 있는데, 예전엔
+     * 이걸 그냥 조용히 포기해서(실패해도 로그/신호 없음) "마이크가 있는 척"만 하고
+     * 실제로는 아무 소리도 못 듣는 상태로 남아있었다 - 앱을 완전히 껐다 켜야만
+     * 되살아나는 것처럼 보였던 원인 후보. 실패를 호출부에 알려 재시도할 수 있게 한다.
+     */
     @SuppressLint("MissingPermission") // 호출부(WakeWordService)에서 RECORD_AUDIO 권한을 먼저 확인한다.
-    fun start() {
-        if (recording) return
+    fun start(): Boolean {
+        if (recording) return true
 
         val minBufferSize = AudioRecord.getMinBufferSize(
             SAMPLE_RATE,
@@ -35,7 +42,7 @@ class AudioCapture(private val onFrame: (FloatArray) -> Unit) {
 
         if (record.state != AudioRecord.STATE_INITIALIZED) {
             record.release()
-            return
+            return false
         }
 
         audioRecord = record
@@ -52,6 +59,7 @@ class AudioCapture(private val onFrame: (FloatArray) -> Unit) {
                 }
             }
         }
+        return true
     }
 
     fun stop() {

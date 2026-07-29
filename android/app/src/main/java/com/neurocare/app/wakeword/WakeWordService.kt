@@ -125,6 +125,9 @@ class WakeWordService : Service() {
         })
 
         if (!hasMicPermission()) {
+            // ponytail: 진단용. 앱을 껐다 켜야 호출어가 작동한다는 실사용 보고가 있어,
+            // 이 조기 종료가 원인인지 원격에서 확인하려고 남긴다. 원인이 잡히면 지운다.
+            reportToServer("RECORD_AUDIO 권한 없음 - 웨이크워드 감시 시작 안 함")
             Log.w(TAG, "RECORD_AUDIO 권한이 없어 웨이크워드 감시를 시작하지 않습니다.")
             return
         }
@@ -142,8 +145,26 @@ class WakeWordService : Service() {
         // 충돌해 getUserMedia가 NotReadableError로 실패하는 게 실기기 로그로 확인됐기 때문이다.
         // 그래서 살아있는 동안은 항상 바로 캡처를 시작한다 - 켜져 있으면서 안 듣는 상태는 없다.
         audioCapture = AudioCapture { frame -> segmenter?.processFrame(frame) }
-        audioCapture?.start()
-        reportToServer("웨이크워드 감시 시작(마이크 잡음)")
+        startAudioCaptureWithRetry(attempt = 1)
+    }
+
+    /**
+     * 서비스가 빠르게 껐다 켜지는 직후엔 안드로이드가 이전 AudioRecord 세션을 아직 다
+     * 정리하지 못해 초기화가 실패할 수 있다(AudioCapture.start() 문서 참고) - 몇 번
+     * 짧은 간격으로 재시도한다. 다 실패하면 이번 서비스 생애주기 동안은 마이크 없이
+     * 떠 있게 된다(다음 onPause 때 새로 생성되면서 다시 시도됨).
+     */
+    private fun startAudioCaptureWithRetry(attempt: Int) {
+        if (audioCapture?.start() == true) {
+            reportToServer("웨이크워드 감시 시작(마이크 잡음)")
+            return
+        }
+        reportToServer("AudioRecord 초기화 실패 (시도 $attempt/$AUDIO_CAPTURE_MAX_ATTEMPTS)")
+        if (attempt >= AUDIO_CAPTURE_MAX_ATTEMPTS) return
+        Handler(Looper.getMainLooper()).postDelayed(
+            { startAudioCaptureWithRetry(attempt + 1) },
+            AUDIO_CAPTURE_RETRY_DELAY_MS,
+        )
     }
 
     private fun reportToServer(message: String) {
@@ -474,6 +495,9 @@ class WakeWordService : Service() {
 
         /** "네, 부르셨어요"(약 1초 내외)가 끝날 시간을 넉넉히 잡은 종료 유예 시간. */
         private const val ACK_TTS_SHUTDOWN_GRACE_MS = 2000L
+
+        private const val AUDIO_CAPTURE_MAX_ATTEMPTS = 4
+        private const val AUDIO_CAPTURE_RETRY_DELAY_MS = 400L
 
         /**
          * 호출어 자모 편집거리 허용치. 거리 2 이하만 인식해서 오탐을 줄인다.

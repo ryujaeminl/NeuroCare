@@ -64,9 +64,10 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           // 실사용 피드백: 잡음이 너무 많이 인식되어 0.7/0.55 -> 0.8/0.65로 상향(더 엄격하게) 조정함.
           positiveSpeechThreshold: 0.8,
           negativeSpeechThreshold: 0.65,
-          // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 늘린다.
-          // 실사용 피드백: 잡음이 너무 많이 인식되어 500ms -> 700ms로 상향 조정함.
-          minSpeechMs: 700,
+          // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 둔다.
+          // 실사용 피드백: "복실아"처럼 짧게 부르는 말이 700ms 미만이라 misfire로 통째로
+          // 무시돼 앱 안에서 호출어를 불러도 아무 반응이 없었다 - 400ms로 완화.
+          minSpeechMs: 400,
           onSpeechStart: () => setUserSpeaking(true),
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
