@@ -12,7 +12,9 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
+import android.speech.tts.TextToSpeech
 import android.util.Log
+import java.util.Locale
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
@@ -40,6 +42,13 @@ class WakeWordService : Service() {
     private var wakeLock: PowerManager.WakeLock? = null
     private lateinit var whisperClient: WhisperClient
 
+    /**
+     * 호출어에 "네, 부르셨어요"로 바로 답하는 용도. 이걸 웹 대화 엔진(LLM/STT) 쪽으로
+     * 넘기면 그 순간 마이크에 우연히 섞인 잡음까지 같이 넘어가 엉뚱한 대화로 새는 문제가
+     * 있었다 - 안드로이드 기본 TTS로 완전히 분리해서 무조건 빠르고 예측 가능하게 만든다.
+     */
+    private var ackTts: TextToSpeech? = null
+
     @Volatile
     private var checkingWakeWord = false
 
@@ -63,6 +72,10 @@ class WakeWordService : Service() {
         whisperClient = WhisperClient(BuildConfig.BACKEND_HTTP_BASE)
         thread(name = "neurocare-enroll-status") {
             enrolled = whisperClient.isEnrolled(BuildConfig.SPEAKER_ID)
+        }
+
+        ackTts = TextToSpeech(this) { status ->
+            if (status == TextToSpeech.SUCCESS) ackTts?.language = Locale.KOREAN
         }
 
         if (!hasMicPermission()) {
@@ -132,6 +145,7 @@ class WakeWordService : Service() {
                 if (target.isEmpty() || !normalize(text).contains(target)) return@thread
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
+                ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, null, "wake-ack")
                 if (!enrolled) rememberVoice(segment)
                 launchMainActivity()
             } finally {
@@ -223,6 +237,8 @@ class WakeWordService : Service() {
         audioCapture?.stop()
         vad?.close()
         wakeLock?.takeIf { it.isHeld }?.release()
+        ackTts?.shutdown()
+        ackTts = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
