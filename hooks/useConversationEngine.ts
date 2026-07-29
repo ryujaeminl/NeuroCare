@@ -50,6 +50,9 @@ function computeDbfs(samples: Float32Array): number {
  * 환자가 크게 또박또박 말하지 않는 게 일반적이므로 -50으로 완화. */
 const MIN_SPEECH_DBFS = -50;
 
+/** 다른 내용 없이 호출어("복실아")만 부른 발화를 판별한다 - 근처 발음 오차(예: "복실이")도 허용. */
+const WAKE_WORD_ONLY_PATTERN = /^복실[아이][.!?~,]*$/;
+
 /** LLM에 보내는 대화 기록(턴 수, user+assistant 합산)의 최대 길이. 웨이크워드로 하루 종일
  * 같은 웹뷰가 재사용되며 대화 기록이 무제한으로 쌓이면, 오래된(테스트 중 나온 이상한 STT
  * 결과 등도 포함된) 맥락이 쌓여 최근 대화와 무관한 엉뚱한 응답을 유도하는 문제가 있었다.
@@ -227,15 +230,28 @@ export function useConversationEngine(
       waitingSinceRef.current = null;
       turnTextRef.current = "";
       setInterimText("");
-      if (text.trim()) {
-        setLog((prev) => [{ id: Date.now(), role: "user", text }, ...prev]);
-        persistence.saveTurn("user", text);
-        void respondTo(text);
-      } else {
+      const trimmed = text.trim();
+      if (!trimmed) {
         setPhase("listening");
+        return;
       }
+
+      // 앱이 이미 열려있는 상태에서 "복실아"만(다른 내용 없이) 부른 경우 - 이걸 그대로
+      // LLM 대화 기록에 넣으면 AI가 그 단어를 사용자 이름처럼 오인해서 다음 응답부터
+      // 사용자를 "복실아"라고 부르는 혼란이 실사용에서 확인됐다. LLM 호출 없이 짧게만
+      // 반응하고, 대화 기록(messagesRef/서버 저장)에는 남기지 않는다.
+      if (WAKE_WORD_ONLY_PATTERN.test(trimmed.replace(/\s+/g, ""))) {
+        setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
+        queueSentence("네, 말씀하세요.", new AbortController().signal);
+        setPhase("listening");
+        return;
+      }
+
+      setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
+      persistence.saveTurn("user", trimmed);
+      void respondTo(trimmed);
     },
-    [clearFinalizeTimer, respondTo, persistence],
+    [clearFinalizeTimer, respondTo, persistence, queueSentence],
   );
 
   // vad-web이 같은 발화에 대해 onSpeechEnd를 수십ms 간격으로 두 번 쏘는 경우가 실사용에서
