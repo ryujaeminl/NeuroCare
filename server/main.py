@@ -35,6 +35,15 @@ class TTSRequest(BaseModel):
     text: str
     voice: str | None = None
 
+# whisper는 사투리를 켜고 끄는 설정이 따로 없다 - 표준어 위주로 학습돼 방언 억양은
+# 원래 인식률이 떨어진다. initial_prompt로 방언 어휘를 미리 보여주면 디코딩이 그
+# 쪽으로 살짝 유도되긴 하지만, 억양이 강한 경우엔 이것만으론 한계가 뚜렷하다 -
+# 근본적으로 개선하려면 방언 데이터로 파인튜닝하거나 방언 특화 STT로 바꿔야 한다.
+_DIALECT_PROMPT = (
+    "아이고, 뭐하노, 그카지 마라, 어데 가노, 밥 뭇나, 그랬당께, 워쩌까, "
+    "혔어, 겁나, 어서 옵서예, 이추룩, 게메마씀, 그려, 워째, 뭐여"
+)
+
 # 무음/잡음(TV 소리 등) 구간에서 whisper가 자주 만들어내는 정형 문구.
 # 발화 전체가 이 문구와 (거의) 일치할 때만 걸러낸다 - 짧은 일반 단어는 넣지 않는다.
 _HALLUCINATION_PHRASES = {
@@ -87,6 +96,7 @@ async def transcribe(
             # 잡음이 섞여 들어온 경우를 대비해 whisper 자체 VAD로 한 번 더 걸러낸다.
             vad_filter=True,
             vad_parameters=dict(min_silence_duration_ms=300),
+            initial_prompt=_DIALECT_PROMPT,
         )
 
         kept_text = []
