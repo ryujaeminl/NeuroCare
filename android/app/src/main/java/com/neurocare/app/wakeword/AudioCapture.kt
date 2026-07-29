@@ -26,7 +26,7 @@ class AudioCapture(private val onFrame: (FloatArray) -> Unit) {
         val bufferSize = maxOf(minBufferSize, FRAME_SAMPLES * 2 * 4)
 
         val record = AudioRecord(
-            MediaRecorder.AudioSource.VOICE_RECOGNITION,
+            MediaRecorder.AudioSource.MIC,
             SAMPLE_RATE,
             AudioFormat.CHANNEL_IN_MONO,
             AudioFormat.ENCODING_PCM_16BIT,

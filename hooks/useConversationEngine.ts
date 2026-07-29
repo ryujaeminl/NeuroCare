@@ -131,10 +131,6 @@ export function useConversationEngine(
       setErrorMsg(null);
       spokenTextRef.current = "";
 
-      // AI가 말하는 중에 마이크로 AI 음성을 다시 녹음하지 않도록 일시 중지
-      // eslint-disable-next-line @typescript-eslint/no-use-before-define
-      await vad.pause();
-
       abortControllerRef.current?.abort();
       const controller = new AbortController();
       abortControllerRef.current = controller;
@@ -192,9 +188,6 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
-        // 응답 끝나면 마이크 다시 켜기
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        await vad.resume();
       }
     },
     [audioQueue, queueSentence, persistence],

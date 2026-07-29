@@ -269,8 +269,9 @@ class WakeWordService : Service() {
 
     /** text 안 어딘가에 target이 [편집거리 이하]로 들어있으면 그 최소 편집거리를 돌려준다(자유 시작점 DP). */
     private fun approxEditDistance(text: List<Char>, target: List<Char>): Int {
-        if (target.isEmpty()) return Int.MAX_VALUE
+        if (target.isEmpty() || text.isEmpty()) return Int.MAX_VALUE
         var prev = IntArray(target.size + 1) { it }
+        var best = Int.MAX_VALUE
         for (tc in text) {
             val curr = IntArray(target.size + 1)
             curr[0] = 0
@@ -278,9 +279,12 @@ class WakeWordService : Service() {
                 val cost = if (tc == target[j - 1]) 0 else 1
                 curr[j] = minOf(prev[j] + 1, curr[j - 1] + 1, prev[j - 1] + cost)
             }
+            // curr[target.size]만 "target 전체가 여기서 끝나며 매칭됐다"는 뜻이다.
+            // curr 전체의 최솟값을 쓰면 curr[0]=0(자유 시작점)이 항상 껴서 매번 0이 나온다.
+            best = minOf(best, curr[target.size])
             prev = curr
         }
-        return prev.min()
+        return best
     }
 
     /** 발화 구간의 평균 음량(dBFS). hooks/useConversationEngine.ts의 computeDbfs와 동일 계산. */
@@ -342,11 +346,10 @@ class WakeWordService : Service() {
         private const val MIN_SPEECH_DBFS = -62.0
 
         /**
-         * 호출어 자모 편집거리 허용치. 실기기 로그에서 "복실아"가 "봅시다"로 오인식된
-         * 사례(자모 8개 중 다수 불일치)를 근거로 잡은 값 - 너무 크면 무관한 말에도
-         * 반응하고, 너무 작으면 여전히 놓친다. 오탐/미탐 로그 보고 조정.
+         * 호출어 자모 편집거리 허용치. 거리 2 이하만 인식해서 오탐을 줄인다.
+         * "복실아"와 비슷한 발음(2-3글자 차이)만 통과, 완전히 다른 단어는 무시한다.
          */
-        private const val WAKE_WORD_MAX_JAMO_DIST = 4
+        private const val WAKE_WORD_MAX_JAMO_DIST = 2
 
         // 유니코드 한글 완성형 분해표(초성 19 / 중성 21 / 종성 28, 종성 0번=받침 없음).
         private val HANGUL_INITIALS =

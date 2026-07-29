@@ -11,8 +11,8 @@ android {
         applicationId = "com.neurocare.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 16
-        versionName = "2.5"
+        versionCode = 19
+        versionName = "2.8"
 
         // 배포된 Vercel 사이트 + Railway에 상시 구동 중인 STT 백엔드(server/Dockerfile).
         // 더 이상 로컬 PC/터널에 의존하지 않는다. LAN 개발로 되돌리려면 192.168.x/10.0.2.2로.
