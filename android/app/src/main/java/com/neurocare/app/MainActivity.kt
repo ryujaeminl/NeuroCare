@@ -75,6 +75,9 @@ class MainActivity : AppCompatActivity() {
         // 되고 만들어 두어도 해가 없어서 여기서 같이 준비한다 - 실제 알림 발송은 보호자 쪽에서
         // 일어난다 (EmergencyNotifier 문서 참고).
         EmergencyNotifier.createChannel(this)
+        // 안드로이드 14+는 전체화면 알림 권한이 기본 꺼짐 상태라, 없으면 웨이크워드로
+        // 부를 때도, 긴급 알림 때도 화면이 자동으로 안 뜬다. 한 번 켜두면 계속 유지된다.
+        EmergencyNotifier.ensureFullScreenIntentPermission(this)
 
         // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)

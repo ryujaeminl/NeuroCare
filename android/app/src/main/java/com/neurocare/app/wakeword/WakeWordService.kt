@@ -14,6 +14,7 @@ import android.os.IBinder
 import android.os.PowerManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.neurocare.app.BuildConfig
 import com.neurocare.app.MainActivity
@@ -156,11 +157,50 @@ class WakeWordService : Service() {
         }
     }
 
+    /**
+     * 안드로이드 10+는 백그라운드 서비스에서의 startActivity()를 조용히 막을 수 있다
+     * (특히 최근 버전일수록 더 엄격함) - 그래서 호출어가 인식돼도 화면이 안 켜지는
+     * 증상이 있었다. EmergencyAlertActivity와 같은 방식(전체화면 알림)을 쓰면 이 제약을
+     * 우회해 확실하게 액티비티가 뜬다. 직접 startActivity()도 안전망으로 같이 시도한다.
+     */
     private fun launchMainActivity() {
         val intent = Intent(this, MainActivity::class.java).apply {
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         }
-        startActivity(intent)
+
+        val pendingIntent = PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                WAKE_ALERT_CHANNEL_ID,
+                "호출어 감지",
+                NotificationManager.IMPORTANCE_HIGH,
+            )
+            getSystemService(NotificationManager::class.java).createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(this, WAKE_ALERT_CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_btn_speak_now)
+            .setContentTitle(getString(R.string.notification_title))
+            .setContentText("\"${BuildConfig.WAKE_WORD_LABEL}\" 호출을 들었어요")
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_CALL)
+            .setFullScreenIntent(pendingIntent, true)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .build()
+        NotificationManagerCompat.from(this).notify(WAKE_NOTIFICATION_ID, notification)
+
+        try {
+            startActivity(intent)
+        } catch (e: Exception) {
+            Log.w(TAG, "startActivity 직접 호출 실패 - 알림에 의존", e)
+        }
     }
 
     private fun normalize(text: String) = text.replace(Regex("\\s+"), "").lowercase()
@@ -214,6 +254,8 @@ class WakeWordService : Service() {
         private const val TAG = "WakeWordService"
         private const val CHANNEL_ID = "wakeword_channel"
         private const val NOTIFICATION_ID = 1
+        private const val WAKE_ALERT_CHANNEL_ID = "wakeword_alert_channel"
+        private const val WAKE_NOTIFICATION_ID = 2
 
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         private const val MIN_SPEECH_DBFS = -40.0
