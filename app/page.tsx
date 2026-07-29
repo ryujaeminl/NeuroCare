@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useConversationEngine } from "@/hooks/useConversationEngine";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { ProgressRing } from "@/components/ProgressRing";
@@ -35,7 +36,16 @@ const DEFAULT_SUBTITLE = "오늘도 기분 좋은 하루네요. 필요한 것이
 
 export default function HomePage() {
   const [medsDismissed, setMedsDismissed] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  // 로그인 없이는 마이크도, 기분/기록 조회도 전부 401만 반복된다 - 대시보드를 보여주기 전에
+  // 먼저 로그인부터 시키는 게 맞다. status가 "loading"인 동안은 아직 세션 확인 중이라
+  // 섣불리 리다이렉트하지 않는다.
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/login");
+  }, [status, router]);
+
   // 로그인한 환자 계정일 때만 대화를 서버에 저장한다(보호자는 읽기 전용).
   const engine = useConversationEngine({ persist: session?.user?.role === "patient" });
 
@@ -63,6 +73,11 @@ export default function HomePage() {
       : engine.vadListening
         ? "bg-accent/10"
         : "bg-transparent";
+
+  // 로그인 확인 중이거나 로그인 화면으로 넘어가는 중에는 대시보드가 잠깐이라도 보이면 안 된다.
+  if (status !== "authenticated") {
+    return <div className="min-h-screen" />;
+  }
 
   return (
     <div className="flex min-h-screen flex-col">

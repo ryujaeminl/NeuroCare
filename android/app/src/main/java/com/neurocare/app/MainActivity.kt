@@ -154,7 +154,9 @@ class MainActivity : AppCompatActivity() {
             ) {
                 val detail = "HTTP ${errorResponse?.statusCode}: ${request?.url}"
                 Log.e(TAG, detail)
-                showError(detail)
+                // 401은 "로그인 안 됨"일 뿐이고 웹 쪽에서 이미 조용히 처리한다(예: 기분 카드는
+                // 실패해도 그냥 넘어감) - 실제 버그가 아닌데 매번 토스트로 놀라게 할 필요 없다.
+                if (errorResponse?.statusCode != 401) showError(detail)
             }
 
             override fun onPageFinished(view: WebView?, url: String?) {
