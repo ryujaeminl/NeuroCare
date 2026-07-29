@@ -12,7 +12,9 @@ import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.os.PowerManager
 import android.speech.tts.TextToSpeech
 import android.util.Log
@@ -58,6 +60,9 @@ class WakeWordService : Service() {
      */
     private val ackTtsParams = Bundle().apply {
         putInt(TextToSpeech.Engine.KEY_PARAM_STREAM, AudioManager.STREAM_MUSIC)
+        // 스트림을 미디어로 맞춰도 기본 크기 자체가 부담스럽다는 실사용 피드백이 있어
+        // 그 스트림 볼륨 대비 상대적으로 더 낮춰 재생한다.
+        putFloat(TextToSpeech.Engine.KEY_PARAM_VOLUME, 0.6f)
     }
 
     @Volatile
@@ -313,8 +318,19 @@ class WakeWordService : Service() {
         audioCapture?.stop()
         vad?.close()
         wakeLock?.takeIf { it.isHeld }?.release()
-        ackTts?.shutdown()
+
+        // 호출어 인식 -> "네, 부르셨어요" 재생 시작 -> launchMainActivity()로 앱이 뜨면
+        // MainActivity.onResume()이 곧바로 stopWakeWordService()를 불러 이 onDestroy가
+        // 실행되는데, 여기서 즉시 shutdown()하면 TTS가 재생 중이어도 그대로 끊겨버렸다
+        // (실사용 보고: "네 부르셨어요"가 끝까지 안 나오고 앱 켜지면 멈춤). 재생 중이면
+        // 끝날 시간만큼 유예를 두고 종료한다.
+        val tts = ackTts
         ackTts = null
+        if (tts?.isSpeaking == true) {
+            Handler(Looper.getMainLooper()).postDelayed({ tts.shutdown() }, ACK_TTS_SHUTDOWN_GRACE_MS)
+        } else {
+            tts?.shutdown()
+        }
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
@@ -356,6 +372,9 @@ class WakeWordService : Service() {
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         // 실기기 측정치(-55.5dBFS로 부른 "복실아"가 걸러짐) 기준으로 여유를 두고 낮췄다.
         private const val MIN_SPEECH_DBFS = -62.0
+
+        /** "네, 부르셨어요"(약 1초 내외)가 끝날 시간을 넉넉히 잡은 종료 유예 시간. */
+        private const val ACK_TTS_SHUTDOWN_GRACE_MS = 2000L
 
         /**
          * 호출어 자모 편집거리 허용치. 거리 2 이하만 인식해서 오탐을 줄인다.
