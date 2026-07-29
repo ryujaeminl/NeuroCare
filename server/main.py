@@ -23,7 +23,9 @@ app.add_middleware(
 )
 
 # GPU(A100)에서 float16으로 돌린다 - CPU/int8 대비 전사 지연이 크게 줄어든다.
-model = WhisperModel("small", device="cuda", compute_type="float16")
+# large-v3는 small보다 훨씬 정확한 한국어 인식을 하는데, A100에서는 지연 비용이
+# 거의 안 든다(VRAM도 80GB라 넉넉함) - 정확도 요구사항 때문에 큰 모델을 그대로 쓴다.
+model = WhisperModel("large-v3", device="cuda", compute_type="float16")
 
 # 차분하고 안정적인 톤의 한국어 여성 뉴스캐스터 보이스. 감정 기복이 큰 보이스는 피한다.
 DEFAULT_TTS_VOICE = "ko-KR-SunHiNeural"
