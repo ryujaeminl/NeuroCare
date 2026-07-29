@@ -31,10 +31,6 @@ export interface UseConversationEngineResult {
   vadError: string | null;
 }
 
-function normalize(text: string) {
-  return text.replace(/\s+/g, "").toLowerCase();
-}
-
 /** 발화 구간의 평균 음량(dBFS). VAD 확률만으로는 "말소리 같은 패턴"인지만 보고
  * 얼마나 크게/가까이서 들렸는지는 못 걸러내므로, 너무 작은(=먼 TV·다른 방 소리 등)
  * 구간은 whisper까지 보내지 않고 여기서 걸러낸다. */
@@ -83,7 +79,6 @@ export function useConversationEngine(
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
-  const replyCacheRef = useRef<Map<string, string>>(new Map());
   const abortControllerRef = useRef<AbortController | null>(null);
   // TTS 합성은 도착하는 즉시 병렬로 시작하되(지연 최소화), 재생 큐에 들어가는 "순서"는
   // 이 체인으로 보장한다 - 나중에 요청한 문장이 먼저 응답으로 와도 순서가 꼬이지 않는다.
@@ -140,48 +135,38 @@ export function useConversationEngine(
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      const cacheKey = normalize(userText);
-      const cached = replyCacheRef.current.get(cacheKey);
-
       // 직전 턴이 끼어들기로 끊겼다면, 못다 한 말을 이번 LLM 호출에만 상황 힌트로 붙인다.
       // 대화 기록(messagesRef/log)에는 안 남긴다 - 실제로 오간 말이 아니라 내부 힌트라서다.
       const interruptedRemainder = interruptedNoteRef.current;
       interruptedNoteRef.current = null;
 
       try {
-        let reply: string;
-        if (cached) {
-          reply = cached;
-          assistantDraftRef.current = reply;
-          setAssistantDraft(reply);
-          setPhase("speaking");
-          queueSentence(reply, controller.signal);
-        } else {
-          const history: ChatMessage[] = interruptedRemainder
-            ? [
-                ...messagesRef.current,
-                {
-                  role: "system",
-                  content:
-                    `방금 응답 중 "${interruptedRemainder}"라고 이어 말하려던 참이었는데 환자가 ` +
-                    `끼어들어 다시 말을 걸었습니다. 하려던 말을 그대로 반복하지 말고, 필요하면 자연스럽게 ` +
-                    `이어가거나 새 이야기에 맞춰 응답하세요.`,
-                },
-                { role: "user", content: userText },
-              ]
-            : [...messagesRef.current, { role: "user", content: userText }];
+        // 환자가 같은 말을 반복하는 건 흔한 일이라(페르소나 지침에도 명시), 매번 새로
+        // 생성해야 그때그때 대화 맥락에 맞게 답한다 - 예전엔 같은 문장이면 캐시된 답을
+        // 그대로 재생해서 대화가 앞으로 안 나가는 것처럼 느껴졌다.
+        const history: ChatMessage[] = interruptedRemainder
+          ? [
+              ...messagesRef.current,
+              {
+                role: "system",
+                content:
+                  `방금 응답 중 "${interruptedRemainder}"라고 이어 말하려던 참이었는데 환자가 ` +
+                  `끼어들어 다시 말을 걸었습니다. 하려던 말을 그대로 반복하지 말고, 필요하면 자연스럽게 ` +
+                  `이어가거나 새 이야기에 맞춰 응답하세요.`,
+              },
+              { role: "user", content: userText },
+            ]
+          : [...messagesRef.current, { role: "user", content: userText }];
 
-          reply = await streamChat(history, {
-            signal: controller.signal,
-            onChunk: (fullSoFar) => {
-              setPhase("speaking");
-              assistantDraftRef.current = fullSoFar;
-              setAssistantDraft(fullSoFar);
-            },
-            onSentence: (sentence) => queueSentence(sentence, controller.signal),
-          });
-          replyCacheRef.current.set(cacheKey, reply);
-        }
+        const reply = await streamChat(history, {
+          signal: controller.signal,
+          onChunk: (fullSoFar) => {
+            setPhase("speaking");
+            assistantDraftRef.current = fullSoFar;
+            setAssistantDraft(fullSoFar);
+          },
+          onSentence: (sentence) => queueSentence(sentence, controller.signal),
+        });
 
         messagesRef.current = [
           ...messagesRef.current,
