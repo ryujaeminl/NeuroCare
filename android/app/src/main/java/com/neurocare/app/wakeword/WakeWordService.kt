@@ -127,9 +127,10 @@ class WakeWordService : Service() {
         // 원인이 잡히면 이 report 호출만 지운다.
         reportToServer("발화 구간 감지 dbfs=$dbfs (기준 $MIN_SPEECH_DBFS)")
         if (dbfs < MIN_SPEECH_DBFS) {
-            // 다른 방 TV나 대화처럼 멀리서 들린 소리 - VAD는 "말소리"로 보지만 whisper까지
-            // 보내면 배경 소음이 우연히 호출어와 비슷하게 인식되어 안 불렀는데 깨어나는
-            // 오탐(false wake)의 주된 원인이 된다. 웹 대화 엔진의 MIN_SPEECH_DBFS와 동일 기준.
+            // 다른 방 TV나 대화처럼 멀리서 들린 소리를 거르려던 기준인데, 실기기 로그로
+            // 확인해보니 바로 앞에서 또렷하게 부른 "복실아"도 -55dBFS 근처로 측정돼
+            // 기존 기준(-40, 웹 getUserMedia 경로에서 튜닝된 값)에 전부 걸려 무시되고
+            // 있었다. 네이티브 AudioRecord 경로는 게인 특성이 달라 같은 기준을 못 쓴다.
             return
         }
         checkingWakeWord = true
@@ -278,6 +279,7 @@ class WakeWordService : Service() {
         private const val WAKE_NOTIFICATION_ID = 2
 
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
-        private const val MIN_SPEECH_DBFS = -40.0
+        // 실기기 측정치(-55.5dBFS로 부른 "복실아"가 걸러짐) 기준으로 여유를 두고 낮췄다.
+        private const val MIN_SPEECH_DBFS = -62.0
     }
 }
