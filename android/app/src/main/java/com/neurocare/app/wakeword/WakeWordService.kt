@@ -304,26 +304,33 @@ class WakeWordService : Service() {
      * 오버레이는 곧바로 치운다.
      */
     private fun launchViaOverlay(intent: Intent) {
-        val windowManager = getSystemService(WindowManager::class.java) ?: return
-        val overlayView = View(this)
-        val params = WindowManager.LayoutParams(
-            1,
-            1,
-            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-            PixelFormat.TRANSLUCENT,
-        )
-        try {
-            windowManager.addView(overlayView, params)
-            startActivity(intent)
-            reportToServer("오버레이로 앱 실행 성공")
-        } catch (e: Exception) {
-            Log.w(TAG, "오버레이로 앱 실행 실패", e)
-            reportToServer("오버레이로 앱 실행 실패: ${e.javaClass.simpleName} - ${e.message}")
-        } finally {
-            Handler(Looper.getMainLooper()).postDelayed({
-                runCatching { windowManager.removeView(overlayView) }
-            }, 1000L)
+        // View 생성과 WindowManager.addView()는 Looper가 준비된 스레드에서만 가능하다.
+        // 이 함수는 호출어 감지 스레드("neurocare-wakeword-check", Looper 없음)에서
+        // 불려서 매번 "Can't create handler inside thread that has not called
+        // Looper.prepare()" 예외로 조용히 실패하고 있었다(실기기 로그로 확인) - 메인
+        // 스레드로 넘겨서 실행한다.
+        Handler(Looper.getMainLooper()).post {
+            val windowManager = getSystemService(WindowManager::class.java) ?: return@post
+            val overlayView = View(this)
+            val params = WindowManager.LayoutParams(
+                1,
+                1,
+                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                PixelFormat.TRANSLUCENT,
+            )
+            try {
+                windowManager.addView(overlayView, params)
+                startActivity(intent)
+                reportToServer("오버레이로 앱 실행 성공")
+            } catch (e: Exception) {
+                Log.w(TAG, "오버레이로 앱 실행 실패", e)
+                reportToServer("오버레이로 앱 실행 실패: ${e.javaClass.simpleName} - ${e.message}")
+            } finally {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    runCatching { windowManager.removeView(overlayView) }
+                }, 1000L)
+            }
         }
     }
 
