@@ -134,11 +134,15 @@ class WakeWordService : Service() {
             return
         }
         checkingWakeWord = true
+        // VOICE_RECOGNITION 마이크 소스는 AGC(자동 볼륨 보정) 없이 순수 원음만 준다.
+        // 실기기 로그로 확인해보니 또렷하게 부른 소리도 -55~-61dBFS로 너무 작게 잡혀
+        // whisper가 빈 텍스트를 돌려줬다 - 보내기 전에 소프트웨어로 키운다.
+        val boosted = normalizeGain(segment)
         thread(name = "neurocare-wakeword-check") {
             try {
                 // 등록 후에는 speakerId를 넘겨 본인 목소리가 아니면 빈 텍스트를 받는다.
                 val text = whisperClient.transcribe(
-                    segment,
+                    boosted,
                     speakerId = if (enrolled) BuildConfig.SPEAKER_ID else null,
                 )
                 reportToServer("전사 결과: \"$text\" (enrolled=$enrolled)")
@@ -147,12 +151,24 @@ class WakeWordService : Service() {
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
                 ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, null, "wake-ack")
-                if (!enrolled) rememberVoice(segment)
+                if (!enrolled) rememberVoice(boosted)
                 launchMainActivity()
             } finally {
                 checkingWakeWord = false
             }
         }
+    }
+
+    /**
+     * 오디오 피크를 목표 수준까지 끌어올려 whisper가 들을 수 있게 한다. 잡음까지 과도하게
+     * 증폭되지 않도록 게인에 상한을 둔다 - 이미 dBFS 기준을 통과한(=먼 소리는 아닌) 구간만
+     * 여기 온다.
+     */
+    private fun normalizeGain(samples: FloatArray): FloatArray {
+        val peak = samples.maxOf { kotlin.math.abs(it) }
+        if (peak <= 0f) return samples
+        val gain = (0.9f / peak).coerceAtMost(20f)
+        return FloatArray(samples.size) { i -> (samples[i] * gain).coerceIn(-1f, 1f) }
     }
 
     /**
