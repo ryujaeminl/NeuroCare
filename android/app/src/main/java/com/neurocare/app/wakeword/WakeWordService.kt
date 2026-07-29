@@ -19,6 +19,11 @@ import com.neurocare.app.BuildConfig
 import com.neurocare.app.MainActivity
 import com.neurocare.app.R
 import kotlin.concurrent.thread
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
 
 /**
  * 앱이 화면에 없을 때(=백그라운드/화면 꺼짐) 계속 마이크를 감시하다가, 설정한 이름이
@@ -46,6 +51,7 @@ class WakeWordService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        reportToServer("onCreate 시작. isAppInForeground=$isAppInForeground")
         startForeground(NOTIFICATION_ID, buildNotification())
 
         // 화면이 꺼져도 CPU가 멈추면 오디오 캡처 스레드가 같이 죽는다.
@@ -73,6 +79,7 @@ class WakeWordService : Service() {
         audioCapture = AudioCapture { frame -> segmenter?.processFrame(frame) }
 
         instance = this
+        reportToServer("WakeWordService 준비 완료. isAppInForeground=$isAppInForeground")
         // 앱이 이미 화면에 떠 있으면 마이크는 WebView 몫이므로 캡처를 시작하지 않는다.
         applyForegroundState(isAppInForeground)
     }
@@ -81,14 +88,35 @@ class WakeWordService : Service() {
      * 마이크는 한 번에 하나만 잡을 수 있다. 앱이 앞에 있으면 AudioRecord를 아예 놓아줘야
      * WebView의 getUserMedia가 마이크를 얻는다. 프레임만 무시하고 열어두면 점유가 풀리지 않아
      * 웹 대화의 마이크가 통째로 죽는다.
+     * ponytail: 시각/시간 로그는 진단용. WebView 마이크 점유 충돌 원인이 잡히면 지운다.
      */
     private fun applyForegroundState(foreground: Boolean) {
         if (foreground) {
+            val before = System.currentTimeMillis()
             audioCapture?.stop()
-            Log.d(TAG, "앱이 앞에 있어 마이크를 놓아줌")
+            val elapsed = System.currentTimeMillis() - before
+            Log.d(TAG, "앱이 앞에 있어 마이크를 놓아줌 (${elapsed}ms)")
+            reportToServer("마이크 놓아줌 시도, ${elapsed}ms 걸림")
         } else if (hasMicPermission()) {
             audioCapture?.start()
             Log.d(TAG, "백그라운드 - 웨이크워드 감시 재개")
+            reportToServer("웨이크워드 감시 재개(마이크 다시 잡음)")
+        }
+    }
+
+    private fun reportToServer(message: String) {
+        thread(name = "neurocare-wakeword-log") {
+            try {
+                val body = JSONObject().put("message", "[웨이크워드] $message").toString()
+                    .toRequestBody("application/json".toMediaType())
+                val request = Request.Builder()
+                    .url("${BuildConfig.WEBAPP_BASE_URL}/api/client-log")
+                    .post(body)
+                    .build()
+                OkHttpClient().newCall(request).execute().close()
+            } catch (e: Exception) {
+                Log.e(TAG, "원격 로그 전송 실패", e)
+            }
         }
     }
 

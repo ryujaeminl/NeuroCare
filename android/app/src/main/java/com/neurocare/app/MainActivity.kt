@@ -260,6 +260,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        reportToServer("MainActivity.onResume: isAppInForeground=true로 설정")
         // 앱이 화면에 떠 있는 동안은 WebView(웹앱)가 마이크를 쓰므로, 백그라운드 서비스는
         // 듣기를 멈춰서 마이크 자원 충돌을 피한다.
         WakeWordService.isAppInForeground = true
@@ -267,6 +268,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        reportToServer("MainActivity.onPause: isAppInForeground=false로 설정")
         // 화면을 벗어나면 다시 백그라운드에서 이름 호출을 감시한다.
         WakeWordService.isAppInForeground = false
     }
