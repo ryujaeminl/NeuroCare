@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { Medication } from "@prisma/client";
+import { parseReminderTimes } from "@/lib/db/types";
 
 interface MedicationFormProps {
   patientId: string;
@@ -23,8 +24,21 @@ export function MedicationForm({ patientId, initial, onSaved, onCancel }: Medica
   const [startDate, setStartDate] = useState(toDateInput(initial?.startDate) || toDateInput(new Date()));
   const [endDate, setEndDate] = useState(toDateInput(initial?.endDate));
   const [notes, setNotes] = useState(initial?.notes ?? "");
+  const [reminderTimes, setReminderTimes] = useState<string[]>(
+    initial ? parseReminderTimes(initial.reminderTimes) : [],
+  );
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+
+  function updateReminderTime(index: number, value: string) {
+    setReminderTimes((prev) => prev.map((t, i) => (i === index ? value : t)));
+  }
+  function removeReminderTime(index: number) {
+    setReminderTimes((prev) => prev.filter((_, i) => i !== index));
+  }
+  function addReminderTime() {
+    setReminderTimes((prev) => [...prev, "08:00"]);
+  }
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -44,6 +58,7 @@ export function MedicationForm({ patientId, initial, onSaved, onCancel }: Medica
           startDate,
           endDate: endDate || null,
           notes: notes || null,
+          reminderTimes,
         }),
       });
       const data = await response.json();
@@ -94,6 +109,37 @@ export function MedicationForm({ patientId, initial, onSaved, onCancel }: Medica
           className="rounded-xl border border-surface-border bg-background px-3 py-2 outline-none focus:border-accent"
         />
       </label>
+
+      <div className="flex flex-col gap-2 text-sm">
+        <span>
+          알림 시각 (선택){" "}
+          <span className="text-muted-foreground">- 설정에서 복약 알림을 켠 보호자에게 이 시각마다 발송</span>
+        </span>
+        {reminderTimes.map((time, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <input
+              type="time"
+              value={time}
+              onChange={(e) => updateReminderTime(index, e.target.value)}
+              className="rounded-xl border border-surface-border bg-background px-3 py-2 outline-none focus:border-accent"
+            />
+            <button
+              type="button"
+              onClick={() => removeReminderTime(index)}
+              className="rounded-full border border-surface-border px-3 py-1 text-xs hover:border-accent/50"
+            >
+              삭제
+            </button>
+          </div>
+        ))}
+        <button
+          type="button"
+          onClick={addReminderTime}
+          className="self-start rounded-full border border-dashed border-surface-border px-4 py-1.5 text-xs hover:border-accent/50"
+        >
+          + 알림 시각 추가
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         <label className="flex flex-col gap-1 text-sm">

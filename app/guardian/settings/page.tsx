@@ -138,7 +138,7 @@ export default function SettingsPage() {
         </label>
 
         <label className="flex flex-col gap-1 text-sm">
-          알림 수신 채널
+          알림 수신 채널 (기분 알림/복약 알림에 적용)
           <select
             value={pref.notificationChannel}
             onChange={(e) => save({ notificationChannel: e.target.value as NotificationChannel })}
@@ -150,6 +150,10 @@ export default function SettingsPage() {
               </option>
             ))}
           </select>
+          <span className="text-xs text-muted-foreground">
+            이메일은 로그인 계정 이메일로, 문자는 아래 번호로 발송됩니다. (긴급 알림은 이 설정과
+            무관하게 항상 푸시 우선으로 갑니다)
+          </span>
         </label>
 
         <label className="flex flex-col gap-1 text-sm">

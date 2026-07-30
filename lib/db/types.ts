@@ -46,6 +46,26 @@ export function serializeTags(tags: string[]): string {
   return JSON.stringify(tags);
 }
 
+const TIME_HHMM_PATTERN = /^([01]\d|2[0-3]):([0-5]\d)$/;
+
+export function isValidTimeString(value: string): boolean {
+  return TIME_HHMM_PATTERN.test(value);
+}
+
+/** Medication.reminderTimes도 tags와 같은 JSON 문자열 배열 패턴("HH:MM" 24시간제). */
+export function parseReminderTimes(raw: string): string[] {
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed.filter((v): v is string => typeof v === "string" && isValidTimeString(v)) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function serializeReminderTimes(times: string[]): string {
+  return JSON.stringify(times.filter(isValidTimeString));
+}
+
 export const DEFAULT_WIDGET_ORDER = ["mood", "medication", "family"] as const;
 export type WidgetId = (typeof DEFAULT_WIDGET_ORDER)[number];
 

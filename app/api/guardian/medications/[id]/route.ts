@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { authErrorResponse, requireGuardianAccess } from "@/lib/auth/permissions";
+import { serializeReminderTimes } from "@/lib/db/types";
 
 interface MedicationPatch {
   name?: string;
@@ -9,6 +10,7 @@ interface MedicationPatch {
   startDate?: string;
   endDate?: string | null;
   notes?: string | null;
+  reminderTimes?: string[];
 }
 
 /** PATCH /api/guardian/medications/:id - 약 정보 수정 (보호자만) */
@@ -29,6 +31,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         ...(body.startDate !== undefined && { startDate: new Date(body.startDate) }),
         ...(body.endDate !== undefined && { endDate: body.endDate ? new Date(body.endDate) : null }),
         ...(body.notes !== undefined && { notes: body.notes?.trim() || null }),
+        ...(body.reminderTimes !== undefined && { reminderTimes: serializeReminderTimes(body.reminderTimes) }),
       },
     });
     return Response.json({ medication });

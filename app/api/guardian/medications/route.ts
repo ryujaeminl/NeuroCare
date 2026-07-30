@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { authErrorResponse, requireGuardianAccess, requirePatientAccess } from "@/lib/auth/permissions";
+import { serializeReminderTimes } from "@/lib/db/types";
 
 interface MedicationInput {
   patientId?: string;
@@ -10,6 +11,8 @@ interface MedicationInput {
   startDate?: string;
   endDate?: string | null;
   notes?: string | null;
+  /** "HH:MM" 24시간제 - 이 시각마다 medicationReminderOptIn 켠 보호자에게 알림이 간다. */
+  reminderTimes?: string[];
 }
 
 function validate(body: MedicationInput) {
@@ -51,6 +54,7 @@ export async function POST(request: NextRequest) {
         startDate: new Date(body.startDate!),
         endDate: body.endDate ? new Date(body.endDate) : null,
         notes: body.notes?.trim() || null,
+        reminderTimes: serializeReminderTimes(body.reminderTimes ?? []),
         addedBy: session.user.id,
       },
     });

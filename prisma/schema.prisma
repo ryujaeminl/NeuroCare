@@ -68,12 +68,12 @@ model ConversationSession {
 }
 
 model Turn {
-  id        String   @id @default(cuid())
-  sessionId String
+  id         String   @id @default(cuid())
+  sessionId  String
   /// "user"(환자 발화) | "assistant"(AI 응답)
-  role      String
-  text      String
-  createdAt DateTime @default(now())
+  role       String
+  text       String
+  createdAt  DateTime @default(now())
   /// Pinecone에 upsert된 벡터 ID. Pinecone 미설정 시 null로 남는다.
   pineconeId String?
 
@@ -84,36 +84,58 @@ model Turn {
 
 /// 세션당 1개. 임상 진단이 아니라 "대화에서 드러난 정서적 톤" 참고용이다.
 model MoodAnalysis {
-  id        String   @id @default(cuid())
-  sessionId String   @unique
+  id             String   @id @default(cuid())
+  sessionId      String   @unique
   /// "positive" | "neutral" | "anxious" | "confused" | "sad"
-  mood      String
-  confidence Float
-  summary   String
+  mood           String
+  confidence     Float
+  summary        String
   /// 근거가 된 대화 구절 목록 - JSON 문자열 배열
   notableMoments String
-  createdAt DateTime @default(now())
+  createdAt      DateTime @default(now())
 
   session ConversationSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 }
 
-/// 보호자가 등록한 복용약. 실제 복약 알림 로직은 이번 범위 밖이고 데이터만 갖춘다.
+/// 보호자가 등록한 복용약.
 model Medication {
-  id        String    @id @default(cuid())
-  patientId String
-  name      String
-  dosage    String
-  frequency String
-  startDate DateTime
-  endDate   DateTime?
-  notes     String?
+  id            String    @id @default(cuid())
+  patientId     String
+  name          String
+  dosage        String
+  frequency     String
+  startDate     DateTime
+  endDate       DateTime?
+  notes         String?
+  /// 실제 알림 발송 시각 - JSON 문자열 배열("HH:MM", 예: ["08:00","20:00"]).
+  /// lib/db/types.ts의 parse/serializeReminderTimes 참고. GuardianPreference의
+  /// medicationReminderOptIn이 켜진 보호자에게만 이 시각에 발송된다.
+  reminderTimes String    @default("[]")
   /// 등록한 보호자 User ID - 감사/분쟁 방지 목적
-  addedBy   String
-  createdAt DateTime  @default(now())
+  addedBy       String
+  createdAt     DateTime  @default(now())
 
-  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient      User                    @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  reminderLogs MedicationReminderLog[]
 
   @@index([patientId])
+}
+
+/// 복약 알림을 어느 시각 슬롯까지 이미 보냈는지 기록해 중복 발송을 막는다
+/// (medicationId, reminderTime, dateKey) 조합이 유니크 - 같은 크론 슬롯이 두 번
+/// 걸려도 create()가 실패해서 자연스럽게 한 번만 보내진다.
+model MedicationReminderLog {
+  id           String   @id @default(cuid())
+  medicationId String
+  /// Medication.reminderTimes 중 어느 시각이었는지 ("HH:MM")
+  reminderTime String
+  /// "YYYY-MM-DD"(KST 기준) - 날짜별로 같은 시각 슬롯 재발송을 막는 키
+  dateKey      String
+  sentAt       DateTime @default(now())
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@unique([medicationId, reminderTime, dateKey])
 }
 
 /// 가족 구성원. 이름/관계는 환자용 AI 대화 프롬프트에 그대로 주입되므로 정확성이 중요하다.
@@ -126,7 +148,7 @@ model FamilyMember {
   addedBy   String
   createdAt DateTime @default(now())
 
-  patient User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  patient  User     @relation(fields: [patientId], references: [id], onDelete: Cascade)
   memories Memory[]
   photos   Photo[]
 
@@ -176,35 +198,35 @@ model Photo {
 
 /// 보호자 계정 단위 설정. 같은 환자를 보는 보호자끼리도 완전히 독립적으로 동작한다.
 model GuardianPreference {
-  id      String @id @default(cuid())
+  id         String @id @default(cuid())
   guardianId String @unique
 
-  moodAlertEnabled Boolean @default(true)
+  moodAlertEnabled        Boolean  @default(true)
   /// "sensitive" | "moderate" | "low"
-  moodAlertThreshold String @default("moderate")
-  medicationReminderOptIn Boolean @default(false)
+  moodAlertThreshold      String   @default("moderate")
+  medicationReminderOptIn Boolean  @default(false)
   /// 로그인 시 기본으로 보여줄 환자 (다중 환자 관리 시). FK를 걸지 않는다 - 링크 해제되어도
   /// 설정 자체는 남아있다가 다음 로그인 때 자연스럽게 무시되면 된다.
-  defaultPatientId String?
+  defaultPatientId        String?
   /// 대시보드 위젯 순서/노출 여부 - JSON 문자열 (예: {"order": ["mood","medication"]})
-  dashboardLayout String?
+  dashboardLayout         String?
   /// "push" | "email" | "sms" | "none"
-  notificationChannel String @default("push")
+  notificationChannel     String   @default("push")
   /// 긴급 알림 SMS/전화 fallback(Twilio)에 쓰는 번호. 없으면 그 보호자는 fallback 대상에서 빠진다.
-  phone String?
-  updatedAt DateTime @updatedAt
+  phone                   String?
+  updatedAt               DateTime @updatedAt
 
   guardian User @relation(fields: [guardianId], references: [id], onDelete: Cascade)
 }
 
 /// Web Push 구독 정보. 보호자 1명이 여러 기기에서 구독할 수 있다.
 model PushSubscription {
-  id        String   @id @default(cuid())
+  id         String   @id @default(cuid())
   guardianId String
-  endpoint  String   @unique
-  p256dh    String
-  auth      String
-  createdAt DateTime @default(now())
+  endpoint   String   @unique
+  p256dh     String
+  auth       String
+  createdAt  DateTime @default(now())
 
   guardian User @relation(fields: [guardianId], references: [id], onDelete: Cascade)
 
@@ -213,16 +235,16 @@ model PushSubscription {
 
 /// 긴급 상황 이벤트. 일반 기분 알림과 달리 GuardianPreference 설정과 무관하게 전원에게 발송된다.
 model EmergencyEvent {
-  id        String   @id @default(cuid())
-  patientId String
+  id             String    @id @default(cuid())
+  patientId      String
   /// "voice_distress" | "manual_button" | "session_timeout" | "mood_critical"
-  triggerType String
-  detail    String?
+  triggerType    String
+  detail         String?
   /// "open" | "acknowledged" | "resolved"
-  status    String   @default("open")
+  status         String    @default("open")
   acknowledgedBy String?
   acknowledgedAt DateTime?
-  createdAt DateTime @default(now())
+  createdAt      DateTime  @default(now())
 
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
