@@ -5,9 +5,10 @@ import { searchMemories } from "@/lib/memory/pineconeClient";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
 // Upstage API도, 이 앱의 실사용자도 한국이라 태평양을 두 번(요청+응답) 건너는 왕복이
-// 그대로 지연으로 쌓인다. preferredRegion export는 Edge 런타임에서만 적용되는데
-// 이 라우트는 Prisma/next-auth(Node 전용) 의존성이 있어 Edge로 옮길 수 없다 -
-// 리전 고정은 Vercel 대시보드의 프로젝트 Function Region 설정에서 직접 해야 한다.
+// 그대로 지연으로 쌓인다. Route Segment Config의 preferredRegion export는 Edge
+// 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge 불가), 실제로는
+// 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도 적용됐다 -
+// 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
 const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
 const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
 

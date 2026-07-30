@@ -6,6 +6,19 @@ import type { MicVAD } from "@ricky0123/vad-web";
 /** vad-web이 onSpeechEnd로 넘겨주는 오디오의 고정 샘플레이트 */
 export const VAD_SAMPLE_RATE = 16000;
 
+// 발화가 "시작"되는 순간(사용자가 아직 말하는 중) GPU 백엔드로 가벼운 ping을 미리
+// 보내 TCP/TLS 연결을 데워둔다. 이러면 핸드셰이크 비용이 사용자가 말을 마치기 전에
+// 백그라운드에서 끝나 있어, 실제 STT/TTS 요청 때는 이미 열려있는 연결을 재사용한다
+// - "최대한 짧게" 요청에 따른 것으로, 매 발화마다 한 번뿐이라 서버 부하는 무시할 만하다.
+const DIRECT_BACKEND_URL = process.env.NEXT_PUBLIC_WHISPER_BACKEND_URL;
+function preconnectBackend() {
+  if (!DIRECT_BACKEND_URL) return;
+  void fetch(`${DIRECT_BACKEND_URL}/health`, {
+    headers: { "ngrok-skip-browser-warning": "true" },
+    keepalive: true,
+  }).catch(() => undefined);
+}
+
 export interface UseVADResult {
   /** VAD가 마이크를 듣고 있는지 여부 */
   listening: boolean;
@@ -72,7 +85,10 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           // 있고, 구간을 여러 개로 짧게 나눠 잡아도 텍스트가 이어붙는 구조(turnTextRef)라
           // 여기서 짧게 끊겨도 안전하다 - 줄인다.
           redemptionMs: 600,
-          onSpeechStart: () => setUserSpeaking(true),
+          onSpeechStart: () => {
+            setUserSpeaking(true);
+            preconnectBackend();
+          },
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
             onSpeechSegmentRef.current?.(audio);
