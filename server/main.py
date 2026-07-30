@@ -1,8 +1,10 @@
 import io
+import json
 import logging
 
 import edge_tts
-from fastapi import FastAPI, File, Form, HTTPException, UploadFile
+import numpy as np
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 from faster_whisper import WhisperModel
@@ -61,6 +63,28 @@ def _normalize(text: str) -> str:
     return "".join(text.split()).lower()
 
 
+def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) -> tuple[str, float]:
+    """공용 전사 로직. /transcribe(파일 업로드)와 /ws/transcribe(스트리밍)가 함께 쓴다.
+    (전사 텍스트, 오디오 길이초)를 돌려준다."""
+    segments, info = model.transcribe(
+        audio,
+        language="ko",
+        vad_filter=vad_filter,
+        vad_parameters=dict(min_silence_duration_ms=300),
+        initial_prompt=_DIALECT_PROMPT,
+    )
+    kept_text = []
+    for segment in segments:
+        # no_speech_prob이 높거나(사실상 무음/잡음) avg_logprob이 낮으면(모델 스스로도
+        # 확신 못 하는 억지 전사 - 잡음에서 흔함) 그 구간은 버린다.
+        if segment.no_speech_prob < 0.5 and segment.avg_logprob > -0.8:
+            kept_text.append(segment.text)
+    text = "".join(kept_text).strip()
+    if _normalize(text) in _HALLUCINATION_PHRASES:
+        text = ""
+    return text, info.duration
+
+
 @app.get("/health")
 def health() -> dict:
     return {"status": "ok"}
@@ -89,36 +113,92 @@ async def transcribe(
             return {"text": "", "language": "ko", "duration": 0.0, "speaker_similarity": similarity}
 
     try:
-        segments, info = model.transcribe(
-            io.BytesIO(audio_bytes),
-            language="ko",
-            # 클라이언트가 이미 VAD로 발화 구간만 잘라 보내지만, 마이크 주변 TV 소리 같은
-            # 잡음이 섞여 들어온 경우를 대비해 whisper 자체 VAD로 한 번 더 걸러낸다.
-            vad_filter=True,
-            vad_parameters=dict(min_silence_duration_ms=300),
-            initial_prompt=_DIALECT_PROMPT,
-        )
-
-        kept_text = []
-        for segment in segments:
-            # no_speech_prob이 높거나(사실상 무음/잡음) avg_logprob이 낮으면(모델 스스로도
-            # 확신 못 하는 억지 전사 - 잡음에서 흔함) 그 구간은 버린다.
-            if segment.no_speech_prob < 0.5 and segment.avg_logprob > -0.8:
-                kept_text.append(segment.text)
-        text = "".join(kept_text).strip()
-
-        if _normalize(text) in _HALLUCINATION_PHRASES:
-            text = ""
+        # 클라이언트가 이미 VAD로 발화 구간만 잘라 보내지만, 마이크 주변 TV 소리 같은
+        # 잡음이 섞여 들어온 경우를 대비해 whisper 자체 VAD로 한 번 더 걸러낸다.
+        text, duration = _run_transcription(io.BytesIO(audio_bytes), vad_filter=True)
     except Exception as exc:  # noqa: BLE001 - 클라이언트가 원인을 알 수 있게 그대로 전달
         logger.exception("transcription failed")
         raise HTTPException(status_code=500, detail=f"transcription failed: {exc}") from exc
 
     return {
         "text": text,
-        "language": info.language,
-        "duration": info.duration,
+        "language": "ko",
+        "duration": duration,
         "speaker_similarity": similarity,
     }
+
+
+# WebSocket 스트리밍 전사 프로토콜 (실험 단계 - 클라이언트 통합 전 서버 단독 테스트용):
+#   클라이언트 -> 서버
+#     binary frame: 16kHz mono 16-bit PCM little-endian 오디오 조각
+#     text frame {"type": "start"}: 새 발화 시작, 버퍼 비움
+#     text frame {"type": "end"}: 발화 종료, 지금까지 쌓인 오디오로 최종 전사 1회 후 버퍼 비움
+#   서버 -> 클라이언트
+#     {"type": "partial", "text": "..."}: 아직 말하는 중, 지금까지 들은 걸 다시 통째로 재전사한 결과
+#     {"type": "final", "text": "..."}: "end" 신호에 대한 확정 결과
+#     {"type": "error", "detail": "..."}
+_WS_SAMPLE_RATE = 16000
+# 새 오디오가 이만큼 쌓일 때마다 재전사한다 - 너무 짧으면 GPU에 과부하, 너무 길면 실시간성이 떨어진다.
+_WS_PARTIAL_INTERVAL_SAMPLES = int(_WS_SAMPLE_RATE * 1.0)
+
+
+@app.websocket("/ws/transcribe")
+async def websocket_transcribe(websocket: WebSocket) -> None:
+    await websocket.accept()
+    buffer = np.zeros(0, dtype=np.float32)
+    last_partial_at = 0
+
+    try:
+        while True:
+            message = await websocket.receive()
+            if message.get("type") == "websocket.disconnect":
+                break
+
+            if (text_data := message.get("text")) is not None:
+                try:
+                    payload = json.loads(text_data)
+                except ValueError:
+                    continue
+
+                if payload.get("type") == "start":
+                    buffer = np.zeros(0, dtype=np.float32)
+                    last_partial_at = 0
+                elif payload.get("type") == "end":
+                    if buffer.size > 0:
+                        try:
+                            text, _ = _run_transcription(buffer, vad_filter=False)
+                        except Exception as exc:  # noqa: BLE001
+                            logger.exception("streaming final transcription failed")
+                            await websocket.send_json({"type": "error", "detail": str(exc)})
+                        else:
+                            await websocket.send_json({"type": "final", "text": text})
+                    buffer = np.zeros(0, dtype=np.float32)
+                    last_partial_at = 0
+                continue
+
+            if (binary_data := message.get("bytes")) is None:
+                continue
+
+            chunk = np.frombuffer(binary_data, dtype=np.int16).astype(np.float32) / 32768.0
+            buffer = np.concatenate([buffer, chunk])
+
+            new_samples = buffer.size - last_partial_at
+            if new_samples < _WS_PARTIAL_INTERVAL_SAMPLES:
+                continue
+            last_partial_at = buffer.size
+
+            try:
+                # 아직 발화 중인 짧은/불완전한 버퍼라 whisper 자체 VAD가 꼬리를 잘라먹기
+                # 쉽다 - partial 구간에서는 끈다(최종 결과는 end에서 vad 없이 다시 돈다).
+                text, _ = _run_transcription(buffer, vad_filter=False)
+            except Exception as exc:  # noqa: BLE001
+                logger.exception("streaming partial transcription failed")
+                await websocket.send_json({"type": "error", "detail": str(exc)})
+                continue
+
+            await websocket.send_json({"type": "partial", "text": text})
+    except WebSocketDisconnect:
+        pass
 
 
 @app.post("/enroll")
