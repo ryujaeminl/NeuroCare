@@ -91,6 +91,12 @@ const MIN_SPEECH_DBFS = -50;
 /** 다른 내용 없이 호출어("복실아")만 부른 발화를 판별한다 - 근처 발음 오차(예: "복실이")도 허용. */
 const WAKE_WORD_ONLY_PATTERN = /^복실[아이][.!?~,]*$/;
 
+/** 대화를 끝내고 싶다는 뜻만 담긴 짧은 발화를 판별한다. 앱을 통째로 닫는 동작으로
+ * 이어지므로, 문장 일부에 이 단어가 섞인 경우(예: "어제 잘 잤어")까지 걸리지 않게
+ * 발화 전체가 정확히 일치할 때만 매칭한다(오탐 방지가 속도보다 중요한 케이스). */
+const END_CONVERSATION_PATTERN =
+  /^(대화종료|이제그만|그만할래|그만하자|끝낼래|끝내자|잘자|잘자요|안녕히주무세요|주무세요)[.!?~,]*$/;
+
 // 유니코드 한글 완성형 분해표(초성 19 / 중성 21 / 종성 28, 종성 0번=받침 없음).
 const HANGUL_INITIALS = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
 const HANGUL_MEDIALS = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
@@ -186,22 +192,6 @@ export function useConversationEngine(
   // 부자연스러운 끊김이 생겨 whisper 인식이 흐트러진다).
   const turnTextRef = useRef("");
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // 대화가 끝나고 이만큼 조용하면 앱을 닫아 백그라운드 호출어 감시로 돌아간다
-  // (네이티브 쉘의 Android.closeApp() JS 브릿지 - 웹 브라우저에서 열면 그냥 없음).
-  const APP_CLOSE_IDLE_MS = 20_000;
-  const appCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scheduleAppClose = useCallback(() => {
-    if (appCloseTimerRef.current) clearTimeout(appCloseTimerRef.current);
-    appCloseTimerRef.current = setTimeout(() => {
-      (window as unknown as { Android?: { closeApp?: () => void } }).Android?.closeApp?.();
-    }, APP_CLOSE_IDLE_MS);
-  }, []);
-  const cancelAppClose = useCallback(() => {
-    if (appCloseTimerRef.current) {
-      clearTimeout(appCloseTimerRef.current);
-      appCloseTimerRef.current = null;
-    }
-  }, []);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -258,6 +248,19 @@ export function useConversationEngine(
     },
     [audioQueue],
   );
+
+  // queueSentence는 합성 요청을 "발사하고 잊는" 방식이라(ttsChainRef에 체인만 걸어둠),
+  // 마지막 문장의 합성+enqueue가 아직 안 끝난 시점에 audioQueue.whenIdle()만 보면 "아직
+  // 아무것도 큐에 안 들어왔으니 idle"로 잘못 판단할 수 있다 - 실제로 이것 때문에 응답이
+  // 길어서 마지막 문장 합성이 오래 걸릴 때, 턴이 다 끝난 걸로 착각하고 phase가
+  // "listening"으로 풀려버려 barge-in 무장이 풀리고, 그 상태에서 무슨 소리(에코 등)든
+  // 새 턴으로 오인되면 다음 respondTo()의 audioQueue.stop()이 아직 재생 중이던 마지막
+  // 문장을 끊어버렸다("TTS가 길면 이야기가 끝나지도 않았는데 자동으로 종료" 실사용 보고).
+  // ttsChainRef를 먼저 기다려 모든 문장이 실제로 큐에 들어간 뒤에야 idle 여부를 본다.
+  const waitForSpeechToFinish = useCallback(async () => {
+    await ttsChainRef.current;
+    await Promise.all([audioQueue.whenIdle(), speechQueue.whenIdle()]);
+  }, [audioQueue]);
 
   const respondTo = useCallback(
     async (userText: string) => {
@@ -322,7 +325,7 @@ export function useConversationEngine(
         setLog((prev) => [{ id: Date.now(), role: "assistant", text: reply }, ...prev]);
         persistence.saveTurn("assistant", reply);
 
-        await audioQueue.whenIdle();
+        await waitForSpeechToFinish();
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {
           // 끼어들기 등으로 의도적으로 취소됨 - 별도 오류 표시 없음 (handleBargeIn이 처리함)
@@ -334,10 +337,9 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
-        scheduleAppClose();
       }
     },
-    [audioQueue, queueSentence, persistence, scheduleAppClose],
+    [audioQueue, queueSentence, persistence, waitForSpeechToFinish],
   );
 
   const finalizeTurn = useCallback(
@@ -346,9 +348,6 @@ export function useConversationEngine(
       waitingSinceRef.current = null;
       turnTextRef.current = "";
       setInterimText("");
-      // 사용자가 방금 실제로 뭔가 말했다는 뜻이니, 화면 잠금 예약은 이번 응답이 끝난
-      // 뒤로 다시 미룬다(대화가 계속되는 동안은 잠기면 안 된다).
-      cancelAppClose();
       const trimmed = text.trim();
       if (!trimmed) {
         setPhase("listening");
@@ -364,7 +363,28 @@ export function useConversationEngine(
         setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
         queueSentence("네, 말씀하세요.", new AbortController().signal);
         setPhase("listening");
-        scheduleAppClose();
+        return;
+      }
+
+      // "대화 종료"/"잘자"처럼 대화를 끝내겠다는 뜻만 담긴 짧은 발화 - 인사를 들려준 뒤
+      // 실제로 앱을 닫는다(네이티브 쉘의 Android.closeApp() 브릿지). 이전엔 마지막 응답
+      // 후 20초 무음이면 무조건 앱을 닫는 타이머가 있었는데, 그 타이머가 정확히 이 문제를
+      // 일으켰다("TTS가 길면 이야기가 끝나지도 않았는데 자동으로 종료") - 응답이 길어
+      // 재생이 20초에 걸치면 아직 말하는 중에도 닫혀버렸다. 그 타이머를 없애고, 사용자가
+      // 명시적으로 끝내고 싶다는 말을 했을 때만(+ 인사가 다 끝난 뒤에만) 닫도록 바꿨다.
+      if (END_CONVERSATION_PATTERN.test(trimmed.replace(/\s+/g, ""))) {
+        reportToServer(`대화 종료 발화로 판정: "${trimmed}" - 인사 후 앱 종료`);
+        setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
+        persistence.saveTurn("user", trimmed);
+        const farewell = "네, 안녕히 계세요.";
+        setLog((prev) => [{ id: Date.now(), role: "assistant", text: farewell }, ...prev]);
+        persistence.saveTurn("assistant", farewell);
+        setPhase("listening");
+        queueSentence(farewell, new AbortController().signal);
+        void waitForSpeechToFinish().then(() => {
+          reportToServer("대화 종료 인사 재생 완료 - 앱 종료 신호 전송");
+          (window as unknown as { Android?: { closeApp?: () => void } }).Android?.closeApp?.();
+        });
         return;
       }
 
@@ -380,7 +400,7 @@ export function useConversationEngine(
       persistence.saveTurn("user", trimmed);
       void respondTo(forLlm);
     },
-    [clearFinalizeTimer, respondTo, persistence, queueSentence, cancelAppClose, scheduleAppClose],
+    [clearFinalizeTimer, respondTo, persistence, queueSentence, waitForSpeechToFinish],
   );
 
   // vad-web이 같은 발화에 대해 onSpeechEnd를 수십ms 간격으로 두 번 쏘는 경우가 실사용에서
@@ -492,12 +512,11 @@ export function useConversationEngine(
     abortCurrentTurn();
     vad.stop();
     clearFinalizeTimer();
-    cancelAppClose();
     // vad.start/stop은 useVAD 내부에서 항상 같은 함수 참조로 고정돼 있어(빈 deps
     // useCallback), vad 객체 전체가 아니라 이 둘만 의존성으로 잡아 렌더마다 이 콜백이
     // 새로 만들어지는 것을 피한다(vad.userSpeaking 등은 렌더마다 자주 바뀐다).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [abortCurrentTurn, vad.stop, clearFinalizeTimer, cancelAppClose]);
+  }, [abortCurrentTurn, vad.stop, clearFinalizeTimer]);
 
   const handleAppForeground = useCallback(() => {
     reportToServer("앱 포그라운드 복귀 - 대화엔진 재개");
@@ -522,7 +541,6 @@ export function useConversationEngine(
       audioQueue.stop();
       speechQueue.stop();
       vad.stop();
-      cancelAppClose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
