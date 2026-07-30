@@ -1,13 +1,13 @@
 /** 완결된 문장으로 끝났다고 볼 때 적용할 짧은 무음 임계값 (ms).
  * 지금은 STT/TTS를 GPU 서버에 직접 호출(Vercel 프록시 생략)해서 왕복이 줄었고
  * VAD 자체의 무음 판정(redemptionMs, useVAD.ts)도 짧아졌으니, 이 값이 전체 응답
- * 지연에서 차지하는 비중이 이전보다 커졌다 - "응답까지 2초 이내" 목표에 맞춰 하향. */
-export const COMPLETE_SILENCE_MS = 300;
+ * 지연에서 차지하는 비중이 이전보다 커졌다 - "최대한 짧게" 요청에 맞춰 더 내림. */
+export const COMPLETE_SILENCE_MS = 200;
 
 /** 미완결(머뭇거림)로 보일 때 적용할 기본 무음 임계값 (ms) - useSpeechCalibration이 개인화한다.
  * VAD 자체가 이미 무음을 redemptionMs만큼 기다린 뒤에야 이 단계로 넘어오므로, 여기서
- * 또 2초 가까이 기다리면 두 대기가 겹쳐 체감 지연이 커진다 - "2초 이내" 목표에 맞춰 하향. */
-export const DEFAULT_INCOMPLETE_SILENCE_MS = 900;
+ * 또 오래 기다리면 두 대기가 겹쳐 체감 지연이 커진다 - "최대한 짧게" 요청에 맞춰 더 내림. */
+export const DEFAULT_INCOMPLETE_SILENCE_MS = 600;
 
 /** 조사 - 문장이 아직 끝나지 않고 이어질 가능성이 높은 어미 */
 const INCOMPLETE_SUFFIXES = [

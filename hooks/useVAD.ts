@@ -83,8 +83,10 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           // 로그로 확인). 문장이 진짜 끝났는지 더 세밀하게 보는 로직(turnDetector의
           // isUtteranceComplete + 미완결이면 더 기다리는 하이브리드 대기)이 이 뒤에 이미
           // 있고, 구간을 여러 개로 짧게 나눠 잡아도 텍스트가 이어붙는 구조(turnTextRef)라
-          // 여기서 짧게 끊겨도 안전하다 - 줄인다.
-          redemptionMs: 600,
+          // 여기서 짧게 끊겨도 안전하다 - 줄인다("최대한 짧게" 요청에 따라 600 -> 400으로
+          // 더 내림. 이 아래로는 사람이 숨 고르는 정도의 자연스러운 틈에도 걸릴 위험이
+          // 커진다 - 실사용에서 말 중간에 자꾸 끊긴다면 이 값을 다시 올릴 것).
+          redemptionMs: 400,
           onSpeechStart: () => {
             setUserSpeaking(true);
             preconnectBackend();
