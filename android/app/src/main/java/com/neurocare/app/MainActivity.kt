@@ -1,9 +1,7 @@
 package com.neurocare.app
 
 import android.Manifest
-import android.app.admin.DevicePolicyManager
 import android.content.BroadcastReceiver
-import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -61,46 +59,40 @@ class MainActivity : AppCompatActivity() {
      * 그래서 웨이크워드 서비스가 영영 시작되지 않아 "복실아"를 불러도 반응이 없었다.
      * 화면 꺼짐은 실제 물리 신호(ACTION_SCREEN_OFF)로 직접 감지해 보완한다.
      */
-    private val screenOffReceiver = object : BroadcastReceiver() {
+    /**
+     * 화면 꺼짐(ACTION_SCREEN_OFF)은 onPause()가 아예 안 불려서(위 주석 참고) 거기서
+     * 보내는 정지 신호도 안 나간다 - 여기서 직접 웹 대화엔진 정지 신호를 보낸다.
+     * 반대로 화면이 다시 켜질 때(ACTION_SCREEN_ON)도 액티비티가 애초에 멈춘 적이
+     * 없으므로 onResume()이 다시 불리지 않는다 - 대칭으로 여기서 재개 신호를 보내지
+     * 않으면 화면만 껐다 켰을 뿐인데 마이크가 영영 안 켜지는 문제가 생긴다.
+     */
+    private val screenPowerReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            if (intent?.action == Intent.ACTION_SCREEN_OFF) {
-                reportToServer("ACTION_SCREEN_OFF: 웨이크워드 서비스 시작(onPause 보완)")
-                startWakeWordService()
+            when (intent?.action) {
+                Intent.ACTION_SCREEN_OFF -> {
+                    reportToServer("ACTION_SCREEN_OFF: 웹 대화엔진 정지 + 웨이크워드 서비스 시작(onPause 보완)")
+                    webView.evaluateJavascript("window.__neurocarePause && window.__neurocarePause()", null)
+                    startWakeWordService()
+                }
+                Intent.ACTION_SCREEN_ON -> {
+                    reportToServer("ACTION_SCREEN_ON: 웹 대화엔진 재개 + 웨이크워드 서비스 종료(onResume 보완)")
+                    stopWakeWordService()
+                    webView.evaluateJavascript("window.__neurocareResume && window.__neurocareResume()", null)
+                }
             }
         }
     }
 
     /**
-     * 웹앱(JS)이 "대화가 끝나고 조용해졌다"고 판단하면 화면을 잠가 백그라운드 호출어
-     * 감시로 돌아가기 위한 다리. 일반 앱은 화면을 직접 끌 방법이 없어 기기 관리자
-     * (Device Admin) API가 필요하다 - ensureDeviceAdmin()에서 사용자 동의를 받는다.
+     * 웹앱(JS)이 "대화가 끝나고 조용해졌다"고 판단하면 앱을 완전히 닫아 백그라운드 호출어
+     * 감시로 돌아가기 위한 다리. finish()만 부르면 onPause()가 정상적으로 뒤이어 호출되어
+     * (웹 대화엔진 정지 신호 전송 + 웨이크워드 서비스 시작) 별도 처리가 필요 없다.
      */
     private inner class WebAppBridge {
         @JavascriptInterface
-        fun lockScreen() {
-            val dpm = getSystemService(DevicePolicyManager::class.java)
-            val admin = ComponentName(this@MainActivity, LockScreenAdminReceiver::class.java)
-            if (dpm.isAdminActive(admin)) {
-                runOnUiThread { dpm.lockNow() }
-            } else {
-                reportToServer("lockScreen 호출됐지만 기기 관리자 권한이 없음")
-            }
+        fun closeApp() {
+            runOnUiThread { finish() }
         }
-    }
-
-    private fun ensureDeviceAdmin() {
-        val dpm = getSystemService(DevicePolicyManager::class.java)
-        val admin = ComponentName(this, LockScreenAdminReceiver::class.java)
-        if (dpm.isAdminActive(admin)) return
-        startActivity(
-            Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
-                putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, admin)
-                putExtra(
-                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                    "대화가 끝나고 조용해지면 화면을 잠가 다음 호출을 기다리기 위해 필요합니다.",
-                )
-            },
-        )
     }
 
     /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */
@@ -148,13 +140,16 @@ class MainActivity : AppCompatActivity() {
             )
         }
 
-        // 대화 종료 후 화면 잠금(lockScreen JS 브릿지)에 필요하다.
-        ensureDeviceAdmin()
-
         // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
 
-        registerReceiver(screenOffReceiver, IntentFilter(Intent.ACTION_SCREEN_OFF))
+        registerReceiver(
+            screenPowerReceiver,
+            IntentFilter().apply {
+                addAction(Intent.ACTION_SCREEN_OFF)
+                addAction(Intent.ACTION_SCREEN_ON)
+            },
+        )
 
         webView = WebView(this)
         setContentView(webView)
@@ -350,6 +345,9 @@ class MainActivity : AppCompatActivity() {
         // 화면에 떠 있는 동안은 서비스 자체를 완전히 종료해 충돌 여지를 없앤다.
         reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
         stopWakeWordService()
+        webView.onResume()
+        // JS 타이머를 먼저 풀어준 뒤에 재개 신호를 보내야 콜백이 확실히 실행된다.
+        webView.evaluateJavascript("window.__neurocareResume && window.__neurocareResume()", null)
 
         // 전체화면 알림은 잠금화면에서 사용자가 직접 탭하지 않고 자동으로 열리는 경우가
         // 대부분인데, setAutoCancel()은 탭했을 때만 지워져서 앱이 열려도 상단 알림바에
@@ -359,14 +357,22 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-        reportToServer("MainActivity.onPause: 웨이크워드 서비스 시작")
+        reportToServer("MainActivity.onPause: 웹 대화엔진 정지 + 웨이크워드 서비스 시작")
+        // 근본 원인: 액티비티가 onPause되어도 안드로이드가 WebView의 JS(마이크/VAD/TTS
+        // 재생 큐)를 자동으로 멈춰주지 않는다. 그대로 두면 네이티브 웨이크워드 감시와 웹
+        // 대화엔진이 동시에 마이크를 잡고 각자 다른 응답을 만들어 음성이 겹쳐 재생된다
+        // (실사용 보고: "목소리가 2중으로 중첩되서 다른내용이랑 쓰여진내용두개가 동시에 출력").
+        // JS 타이머가 멎기 전에 먼저 정지 신호를 보내 vad.stop()/오디오 큐 비우기가
+        // 확실히 실행되게 한다.
+        webView.evaluateJavascript("window.__neurocarePause && window.__neurocarePause()", null)
+        webView.onPause()
         // 화면을 벗어나면 다시 백그라운드에서 이름 호출을 감시한다.
         startWakeWordService()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        unregisterReceiver(screenOffReceiver)
+        unregisterReceiver(screenPowerReceiver)
     }
 
 }

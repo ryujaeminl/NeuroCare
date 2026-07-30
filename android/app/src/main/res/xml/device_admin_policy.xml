@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- lockNow()만 쓸 목적이라 policy 요구사항은 비워둔다(추가 제약 없음). -->
-<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
-    <uses-policies>
-        <force-lock />
-    </uses-policies>
-</device-admin>

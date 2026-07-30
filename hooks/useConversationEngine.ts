@@ -161,20 +161,20 @@ export function useConversationEngine(
   // 부자연스러운 끊김이 생겨 whisper 인식이 흐트러진다).
   const turnTextRef = useRef("");
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  // 대화가 끝나고 이만큼 조용하면 화면을 잠가 백그라운드 호출어 감시로 돌아간다
-  // (네이티브 쉘의 Android.lockScreen() JS 브릿지 - 웹 브라우저에서 열면 그냥 없음).
-  const LOCK_SCREEN_IDLE_MS = 20_000;
-  const lockScreenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scheduleLockScreen = useCallback(() => {
-    if (lockScreenTimerRef.current) clearTimeout(lockScreenTimerRef.current);
-    lockScreenTimerRef.current = setTimeout(() => {
-      (window as unknown as { Android?: { lockScreen?: () => void } }).Android?.lockScreen?.();
-    }, LOCK_SCREEN_IDLE_MS);
+  // 대화가 끝나고 이만큼 조용하면 앱을 닫아 백그라운드 호출어 감시로 돌아간다
+  // (네이티브 쉘의 Android.closeApp() JS 브릿지 - 웹 브라우저에서 열면 그냥 없음).
+  const APP_CLOSE_IDLE_MS = 20_000;
+  const appCloseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleAppClose = useCallback(() => {
+    if (appCloseTimerRef.current) clearTimeout(appCloseTimerRef.current);
+    appCloseTimerRef.current = setTimeout(() => {
+      (window as unknown as { Android?: { closeApp?: () => void } }).Android?.closeApp?.();
+    }, APP_CLOSE_IDLE_MS);
   }, []);
-  const cancelLockScreen = useCallback(() => {
-    if (lockScreenTimerRef.current) {
-      clearTimeout(lockScreenTimerRef.current);
-      lockScreenTimerRef.current = null;
+  const cancelAppClose = useCallback(() => {
+    if (appCloseTimerRef.current) {
+      clearTimeout(appCloseTimerRef.current);
+      appCloseTimerRef.current = null;
     }
   }, []);
   const waitingSinceRef = useRef<number | null>(null);
@@ -309,10 +309,10 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
-        scheduleLockScreen();
+        scheduleAppClose();
       }
     },
-    [audioQueue, queueSentence, persistence, scheduleLockScreen],
+    [audioQueue, queueSentence, persistence, scheduleAppClose],
   );
 
   const finalizeTurn = useCallback(
@@ -323,7 +323,7 @@ export function useConversationEngine(
       setInterimText("");
       // 사용자가 방금 실제로 뭔가 말했다는 뜻이니, 화면 잠금 예약은 이번 응답이 끝난
       // 뒤로 다시 미룬다(대화가 계속되는 동안은 잠기면 안 된다).
-      cancelLockScreen();
+      cancelAppClose();
       const trimmed = text.trim();
       if (!trimmed) {
         setPhase("listening");
@@ -339,7 +339,7 @@ export function useConversationEngine(
         setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
         queueSentence("네, 말씀하세요.", new AbortController().signal);
         setPhase("listening");
-        scheduleLockScreen();
+        scheduleAppClose();
         return;
       }
 
@@ -355,7 +355,7 @@ export function useConversationEngine(
       persistence.saveTurn("user", trimmed);
       void respondTo(forLlm);
     },
-    [clearFinalizeTimer, respondTo, persistence, queueSentence, cancelLockScreen, scheduleLockScreen],
+    [clearFinalizeTimer, respondTo, persistence, queueSentence, cancelAppClose, scheduleAppClose],
   );
 
   // vad-web이 같은 발화에 대해 onSpeechEnd를 수십ms 간격으로 두 번 쏘는 경우가 실사용에서
@@ -425,11 +425,11 @@ export function useConversationEngine(
 
   const vad = useVAD(handleSpeechSegment);
 
-  // 진짜 끼어들기: AI가 생각 중이거나 말하는 도중 사용자가 다시 말하면
-  // 즉시 오디오/요청을 멈추고 그 발화를 새 턴의 시작으로 삼는다.
-  const handleBargeIn = useCallback(() => {
-    // 응답이 오가던 중이었다면, 실제로 들려준 부분은 대화 기록에 남기고 못다 한 나머지는
-    // 다음 LLM 호출 힌트로 넘긴다 - 응답을 통째로 버리지 않고 끊긴 지점부터 이어가기 위함.
+  // 진행 중인 턴을 즉시 멈춘다. 실제로 들려준 부분은 대화 기록에 남기고 못다 한 나머지는
+  // 다음 LLM 호출 힌트로 넘긴다 - 응답을 통째로 버리지 않고 끊긴 지점부터 이어가기 위함.
+  // barge-in(끼어들기)과 앱 백그라운드 전환 둘 다 "지금 하던 턴을 깨끗이 접는다"는 점에서
+  // 동일해 하나로 공유한다.
+  const abortCurrentTurn = useCallback(() => {
     if (phaseRef.current === "thinking" || phaseRef.current === "speaking") {
       const spoken = spokenTextRef.current.trim();
       const fullSoFar = assistantDraftRef.current.trim();
@@ -456,8 +456,41 @@ export function useConversationEngine(
   useBargeIn({
     userSpeaking: vad.userSpeaking,
     assistantBusy: phase === "thinking" || phase === "speaking",
-    onBargeIn: handleBargeIn,
+    onBargeIn: abortCurrentTurn,
   });
+
+  // 안드로이드 쉘이 백그라운드로 갈 때(onPause) 부르는 신호. 액티비티가 멈춰도
+  // WebView의 JS(이 VAD/오디오 큐)는 안드로이드가 자동으로 멈춰주지 않는다 - 그대로
+  // 두면 네이티브 웨이크워드 감시와 이 웹 대화엔진이 동시에 마이크를 잡고 각자 다른
+  // 응답을 만들어 음성이 겹쳐 재생되는 문제가 실사용에서 확인됐다("목소리가 2중으로
+  // 중첩되서 다른내용이랑 쓰여진내용두개가 동시에 출력"). 마이크를 완전히 놓아준다.
+  const handleAppBackground = useCallback(() => {
+    reportToServer("앱 백그라운드 전환 - 대화엔진 정지");
+    abortCurrentTurn();
+    vad.stop();
+    clearFinalizeTimer();
+    cancelAppClose();
+    // vad.start/stop은 useVAD 내부에서 항상 같은 함수 참조로 고정돼 있어(빈 deps
+    // useCallback), vad 객체 전체가 아니라 이 둘만 의존성으로 잡아 렌더마다 이 콜백이
+    // 새로 만들어지는 것을 피한다(vad.userSpeaking 등은 렌더마다 자주 바뀐다).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [abortCurrentTurn, vad.stop, clearFinalizeTimer, cancelAppClose]);
+
+  const handleAppForeground = useCallback(() => {
+    reportToServer("앱 포그라운드 복귀 - 대화엔진 재개");
+    void vad.start();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vad.start]);
+
+  useEffect(() => {
+    const win = window as unknown as Record<string, (() => void) | undefined>;
+    win.__neurocarePause = handleAppBackground;
+    win.__neurocareResume = handleAppForeground;
+    return () => {
+      win.__neurocarePause = undefined;
+      win.__neurocareResume = undefined;
+    };
+  }, [handleAppBackground, handleAppForeground]);
 
   useEffect(() => {
     vad.start();
@@ -466,7 +499,7 @@ export function useConversationEngine(
       audioQueue.stop();
       speechQueue.stop();
       vad.stop();
-      cancelLockScreen();
+      cancelAppClose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
