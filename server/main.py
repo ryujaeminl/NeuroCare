@@ -77,10 +77,13 @@ def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) 
         vad_filter=vad_filter,
         vad_parameters=dict(min_silence_duration_ms=300),
         initial_prompt=_DIALECT_PROMPT,
-        # 기본 beam_size=5는 후보 5갈래를 각각 탐색해 정확도 대비 디코딩 시간이 크게
-        # 늘어난다. VAD로 이미 짧게 잘린 발화 + initial_prompt 힌트가 있어 greedy(1)로도
-        # 충분히 정확하면서 훨씬 빠르다 - 속도 우선 요청에 따라 낮춘다.
-        beam_size=1,
+        # 기본값 5(후보 5갈래 탐색)는 정확도 대비 디코딩 시간이 크게 늘어나 1(greedy)로
+        # 낮췄었는데, LLM 쪽 reasoning_effort 오설정을 고치면서(app/api/chat/route.ts)
+        # 그쪽 지연이 크게 줄어 여유가 생겼다 - "속도는 유지하면서 정확도도 올려달라"는
+        # 요청에 맞춰 greedy보다 후보를 더 보는 3으로 절충한다. A100에서는 이 정도
+        # 오디오 길이(짧은 발화 1개)에 beam_size 1↔3 차이가 체감 지연에는 거의 안
+        # 보이면서 오인식은 줄어드는 게 일반적이다.
+        beam_size=3,
     )
     kept_text = []
     for segment in segments:
