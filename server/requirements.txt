@@ -5,6 +5,8 @@ python-multipart==0.0.20
 av==13.1.0
 requests==2.32.3
 edge-tts==7.2.8
+# /ws/transcribe 스트리밍 엔드포인트의 독립 테스트 스크립트(test_streaming.py)용.
+websockets==14.1
 
 # --- 화자 인식(resemblyzer) 관련 ---
 # resemblyzer는 webrtcvad에 의존하는데, webrtcvad는 소스 배포만 있어서 Windows에서
