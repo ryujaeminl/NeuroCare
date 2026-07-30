@@ -115,6 +115,10 @@ export async function POST(request: NextRequest) {
       stream: true,
       temperature: 0.7,
       max_tokens: 200,
+      // K-EXAONE은 enable_thinking이 기본 true라 응답 전에 긴 reasoning을 먼저 생성한다 -
+      // max_tokens(200)가 reasoning만으로 다 소진돼 실제 답변 내용 없이 빈 응답만 오는
+      // 문제가 실사용에서 확인됐다(solar-pro3의 reasoning_effort 이슈와 같은 패턴).
+      chat_template_kwargs: { enable_thinking: false },
     }),
   });
 
