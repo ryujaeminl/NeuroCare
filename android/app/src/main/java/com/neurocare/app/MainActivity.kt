@@ -1,7 +1,9 @@
 package com.neurocare.app
 
 import android.Manifest
+import android.app.admin.DevicePolicyManager
 import android.content.BroadcastReceiver
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -11,6 +13,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.WindowManager
+import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
 import android.util.Log
 import android.webkit.ConsoleMessage
@@ -67,6 +70,39 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * 웹앱(JS)이 "대화가 끝나고 조용해졌다"고 판단하면 화면을 잠가 백그라운드 호출어
+     * 감시로 돌아가기 위한 다리. 일반 앱은 화면을 직접 끌 방법이 없어 기기 관리자
+     * (Device Admin) API가 필요하다 - ensureDeviceAdmin()에서 사용자 동의를 받는다.
+     */
+    private inner class WebAppBridge {
+        @JavascriptInterface
+        fun lockScreen() {
+            val dpm = getSystemService(DevicePolicyManager::class.java)
+            val admin = ComponentName(this@MainActivity, LockScreenAdminReceiver::class.java)
+            if (dpm.isAdminActive(admin)) {
+                runOnUiThread { dpm.lockNow() }
+            } else {
+                reportToServer("lockScreen 호출됐지만 기기 관리자 권한이 없음")
+            }
+        }
+    }
+
+    private fun ensureDeviceAdmin() {
+        val dpm = getSystemService(DevicePolicyManager::class.java)
+        val admin = ComponentName(this, LockScreenAdminReceiver::class.java)
+        if (dpm.isAdminActive(admin)) return
+        startActivity(
+            Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN).apply {
+                putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, admin)
+                putExtra(
+                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
+                    "대화가 끝나고 조용해지면 화면을 잠가 다음 호출을 기다리기 위해 필요합니다.",
+                )
+            },
+        )
+    }
+
     /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */
     private var pendingMicRequest: PermissionRequest? = null
 
@@ -111,6 +147,9 @@ class MainActivity : AppCompatActivity() {
                 Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
             )
         }
+
+        // 대화 종료 후 화면 잠금(lockScreen JS 브릿지)에 필요하다.
+        ensureDeviceAdmin()
 
         // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
@@ -161,6 +200,7 @@ class MainActivity : AppCompatActivity() {
             cacheMode = WebSettings.LOAD_NO_CACHE
         }
         webView.clearCache(true)
+        webView.addJavascriptInterface(WebAppBridge(), "Android")
 
         // 자체서명 인증서 신뢰는 res/xml/network_security_config.xml에서 처리한다.
         // onReceivedSslError로 우회하면 메인 프레임만 통과하고 JS 청크 같은 하위 리소스는

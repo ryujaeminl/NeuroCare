@@ -64,6 +64,20 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <!-- 대화 종료 후 화면 잠금(lockNow())용 기기 관리자. 시스템이 이 리시버를
+             BIND_DEVICE_ADMIN 권한으로만 호출하도록 강제해야 하므로 android:permission이 필수다. -->
+        <receiver
+            android:name=".LockScreenAdminReceiver"
+            android:exported="true"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin_policy" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

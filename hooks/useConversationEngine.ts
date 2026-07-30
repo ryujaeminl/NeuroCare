@@ -161,6 +161,22 @@ export function useConversationEngine(
   // 부자연스러운 끊김이 생겨 whisper 인식이 흐트러진다).
   const turnTextRef = useRef("");
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // 대화가 끝나고 이만큼 조용하면 화면을 잠가 백그라운드 호출어 감시로 돌아간다
+  // (네이티브 쉘의 Android.lockScreen() JS 브릿지 - 웹 브라우저에서 열면 그냥 없음).
+  const LOCK_SCREEN_IDLE_MS = 20_000;
+  const lockScreenTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleLockScreen = useCallback(() => {
+    if (lockScreenTimerRef.current) clearTimeout(lockScreenTimerRef.current);
+    lockScreenTimerRef.current = setTimeout(() => {
+      (window as unknown as { Android?: { lockScreen?: () => void } }).Android?.lockScreen?.();
+    }, LOCK_SCREEN_IDLE_MS);
+  }, []);
+  const cancelLockScreen = useCallback(() => {
+    if (lockScreenTimerRef.current) {
+      clearTimeout(lockScreenTimerRef.current);
+      lockScreenTimerRef.current = null;
+    }
+  }, []);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -293,9 +309,10 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
+        scheduleLockScreen();
       }
     },
-    [audioQueue, queueSentence, persistence],
+    [audioQueue, queueSentence, persistence, scheduleLockScreen],
   );
 
   const finalizeTurn = useCallback(
@@ -304,6 +321,9 @@ export function useConversationEngine(
       waitingSinceRef.current = null;
       turnTextRef.current = "";
       setInterimText("");
+      // 사용자가 방금 실제로 뭔가 말했다는 뜻이니, 화면 잠금 예약은 이번 응답이 끝난
+      // 뒤로 다시 미룬다(대화가 계속되는 동안은 잠기면 안 된다).
+      cancelLockScreen();
       const trimmed = text.trim();
       if (!trimmed) {
         setPhase("listening");
@@ -319,6 +339,7 @@ export function useConversationEngine(
         setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
         queueSentence("네, 말씀하세요.", new AbortController().signal);
         setPhase("listening");
+        scheduleLockScreen();
         return;
       }
 
@@ -334,7 +355,7 @@ export function useConversationEngine(
       persistence.saveTurn("user", trimmed);
       void respondTo(forLlm);
     },
-    [clearFinalizeTimer, respondTo, persistence, queueSentence],
+    [clearFinalizeTimer, respondTo, persistence, queueSentence, cancelLockScreen, scheduleLockScreen],
   );
 
   // vad-web이 같은 발화에 대해 onSpeechEnd를 수십ms 간격으로 두 번 쏘는 경우가 실사용에서
@@ -445,6 +466,7 @@ export function useConversationEngine(
       audioQueue.stop();
       speechQueue.stop();
       vad.stop();
+      cancelLockScreen();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
