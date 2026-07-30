@@ -29,8 +29,10 @@ app.add_middleware(
 # 거의 안 든다(VRAM도 80GB라 넉넉함) - 정확도 요구사항 때문에 큰 모델을 그대로 쓴다.
 model = WhisperModel("large-v3", device="cuda", compute_type="float16")
 
-# 차분하고 안정적인 톤의 한국어 여성 뉴스캐스터 보이스. 감정 기복이 큰 보이스는 피한다.
-DEFAULT_TTS_VOICE = "ko-KR-SunHiNeural"
+# 마이크로소프트의 최신 세대 "멀티링구얼" 계열 음성 - 기존 단일 언어 Neural 세대보다
+# 억양이 더 자연스럽다. 이 서버에서 지원되는 한국어 음성 중 여성은 SunHi 하나뿐이라,
+# 더 자연스러운 쪽을 택하면서 성별이 남성으로 바뀌었다(사용자 확인 후 결정).
+DEFAULT_TTS_VOICE = "ko-KR-HyunsuMultilingualNeural"
 
 
 class TTSRequest(BaseModel):
