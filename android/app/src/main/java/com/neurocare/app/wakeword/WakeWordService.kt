@@ -93,13 +93,6 @@ class WakeWordService : Service() {
     @Volatile
     private var checkingWakeWord = false
 
-    /** 성문 등록 전인지. 등록 전에는 목소리를 가리지 않고 누구 말이든 호출어를 받는다. */
-    @Volatile
-    private var enrolled = false
-
-    /** 등록에 쓸 오디오. "복실아"라고 불린 구간만 모아서 그 사람 목소리임을 보장한다. */
-    private val enrollBuffer = mutableListOf<FloatArray>()
-
     override fun onCreate() {
         super.onCreate()
         reportToServer("onCreate 시작")
@@ -111,9 +104,6 @@ class WakeWordService : Service() {
             .apply { setReferenceCounted(false); acquire() }
 
         whisperClient = WhisperClient(BuildConfig.BACKEND_HTTP_BASE)
-        thread(name = "neurocare-enroll-status") {
-            enrolled = whisperClient.isEnrolled(BuildConfig.SPEAKER_ID)
-        }
 
         ackTts = TextToSpeech(this) { status ->
             if (status == TextToSpeech.SUCCESS) ackTts?.language = Locale.KOREAN
@@ -213,7 +203,7 @@ class WakeWordService : Service() {
                 // 확인됐다(dBFS 정상인데도 계속 ""). 호출어는 이미 자모 편집거리로 충분히
                 // 걸러지므로 이중으로 화자까지 확인할 필요가 없다.
                 val text = whisperClient.transcribe(boosted)
-                reportToServer("전사 결과: \"$text\" (enrolled=$enrolled)")
+                reportToServer("전사 결과: \"$text\"")
                 val targetJamo = decomposeHangul(normalize(BuildConfig.WAKE_WORD_LABEL))
                 if (targetJamo.isEmpty()) return@thread
                 val dist = approxEditDistance(decomposeHangul(normalize(text)), targetJamo)
@@ -223,7 +213,6 @@ class WakeWordService : Service() {
                 Log.d(TAG, "호출어 감지: \"$text\"")
                 ackUtteranceDone = false
                 ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, ackTtsParams, "wake-ack")
-                if (!enrolled) rememberVoice(boosted)
                 launchMainActivity()
             } finally {
                 checkingWakeWord = false
@@ -241,28 +230,6 @@ class WakeWordService : Service() {
         if (peak <= 0f) return samples
         val gain = (0.9f / peak).coerceAtMost(20f)
         return FloatArray(samples.size) { i -> (samples[i] * gain).coerceIn(-1f, 1f) }
-    }
-
-    /**
-     * 처음 "복실아"라고 부른 사람의 목소리를 성문으로 저장한다.
-     * 호출어 한 번(약 1초)은 성문을 만들기에 짧아서, 호출어로 확인된 구간만 모아
-     * 백엔드가 요구하는 길이에 도달하면 등록한다. 그동안에도 앱은 정상적으로 열린다.
-     */
-    private fun rememberVoice(segment: FloatArray) {
-        synchronized(enrollBuffer) {
-            enrollBuffer += segment
-            val merged = FloatArray(enrollBuffer.sumOf { it.size })
-            var offset = 0
-            for (chunk in enrollBuffer) {
-                chunk.copyInto(merged, offset)
-                offset += chunk.size
-            }
-            if (whisperClient.enroll(BuildConfig.SPEAKER_ID, merged)) {
-                enrolled = true
-                enrollBuffer.clear()
-                Log.i(TAG, "목소리 등록 완료 - 이제 이 목소리만 반응한다")
-            }
-        }
     }
 
     /**
@@ -487,7 +454,9 @@ class WakeWordService : Service() {
         private const val CHANNEL_ID = "wakeword_channel"
         private const val NOTIFICATION_ID = 1
         private const val WAKE_ALERT_CHANNEL_ID = "wakeword_alert_channel"
-        private const val WAKE_NOTIFICATION_ID = 2
+
+        /** MainActivity가 열릴 때(자동 실행 포함) 이 알림을 지우기 위해 모듈 내에 공개한다. */
+        internal const val WAKE_NOTIFICATION_ID = 2
 
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         // 실기기 측정치(-55.5dBFS로 부른 "복실아"가 걸러짐) 기준으로 여유를 두고 낮췄다.

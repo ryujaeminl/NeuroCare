@@ -26,6 +26,7 @@ import android.webkit.WebView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.neurocare.app.emergency.EmergencyNotifier
 import com.neurocare.app.wakeword.WakeWordService
@@ -309,6 +310,11 @@ class MainActivity : AppCompatActivity() {
         // 화면에 떠 있는 동안은 서비스 자체를 완전히 종료해 충돌 여지를 없앤다.
         reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
         stopWakeWordService()
+
+        // 전체화면 알림은 잠금화면에서 사용자가 직접 탭하지 않고 자동으로 열리는 경우가
+        // 대부분인데, setAutoCancel()은 탭했을 때만 지워져서 앱이 열려도 상단 알림바에
+        // 계속 남아있는 문제가 있었다 - 앱이 실제로 뜬 시점에 확실히 지운다.
+        NotificationManagerCompat.from(this).cancel(WakeWordService.WAKE_NOTIFICATION_ID)
     }
 
     override fun onPause() {

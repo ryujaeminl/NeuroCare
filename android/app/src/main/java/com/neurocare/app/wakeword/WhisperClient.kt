@@ -48,43 +48,6 @@ class WhisperClient(private val baseUrl: String) {
         }
     }
 
-    /** 성문 등록. 성공하면 true. 오디오가 짧으면 백엔드가 400을 주고 false가 된다. */
-    fun enroll(
-        speakerId: String,
-        samples: FloatArray,
-        sampleRate: Int = AudioCapture.SAMPLE_RATE,
-    ): Boolean {
-        return try {
-            val body = MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("speaker_id", speakerId)
-                .addFormDataPart(
-                    "file",
-                    "enroll.wav",
-                    encodeWav(samples, sampleRate).toRequestBody("audio/wav".toMediaType()),
-                )
-                .build()
-            val request = Request.Builder().url("$baseUrl/enroll").post(body).build()
-            client.newCall(request).execute().use { it.isSuccessful }
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    /** 이 기기에 이미 등록된 성문이 있는지. 서비스 재시작 시 상태를 되찾는 데 쓴다. */
-    fun isEnrolled(speakerId: String): Boolean {
-        return try {
-            val request = Request.Builder().url("$baseUrl/enroll/$speakerId").get().build()
-            client.newCall(request).execute().use { response ->
-                val bodyString = response.body?.string()
-                if (!response.isSuccessful || bodyString == null) return false
-                JSONObject(bodyString).optBoolean("enrolled", false)
-            }
-        } catch (e: Exception) {
-            false
-        }
-    }
-
     private fun encodeWav(samples: FloatArray, sampleRate: Int): ByteArray {
         val dataSize = samples.size * 2
         val header = ByteBuffer.allocate(44).order(ByteOrder.LITTLE_ENDIAN)

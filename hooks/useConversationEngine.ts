@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useVAD, VAD_SAMPLE_RATE, type UseVADResult } from "@/hooks/useVAD";
+import { useVAD, VAD_SAMPLE_RATE } from "@/hooks/useVAD";
 import { useSpeechCalibration } from "@/hooks/useSpeechCalibration";
 import { useAudioQueue } from "@/hooks/useAudioQueue";
 import { useBargeIn } from "@/hooks/useBargeIn";
@@ -66,6 +66,62 @@ const MIN_SPEECH_DBFS = -50;
 /** 다른 내용 없이 호출어("복실아")만 부른 발화를 판별한다 - 근처 발음 오차(예: "복실이")도 허용. */
 const WAKE_WORD_ONLY_PATTERN = /^복실[아이][.!?~,]*$/;
 
+// 유니코드 한글 완성형 분해표(초성 19 / 중성 21 / 종성 28, 종성 0번=받침 없음).
+const HANGUL_INITIALS = "ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ";
+const HANGUL_MEDIALS = "ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ";
+const HANGUL_FINALS = " ㄱㄲㄳㄴㄵㄶㄷㄹㄺㄻㄼㄽㄾㄿㅀㅁㅂㅄㅅㅆㅇㅈㅊㅋㅌㅍㅎ";
+
+/** 완성형 한글 음절을 초성/중성/종성 자모로 풀어헤친다 - 글자는 달라도 소리가 비슷하면
+ * 편집거리가 작게 나온다(android WakeWordService.kt의 decomposeHangul과 동일 알고리즘). */
+function decomposeHangul(text: string): string {
+  let out = "";
+  for (const ch of text) {
+    const code = ch.codePointAt(0)! - 0xac00;
+    if (code < 0 || code > 11171) {
+      out += ch;
+      continue;
+    }
+    const initial = Math.floor(code / (21 * 28));
+    const medial = Math.floor(code / 28) % 21;
+    const final = code % 28;
+    out += HANGUL_INITIALS[initial] + HANGUL_MEDIALS[medial];
+    if (final !== 0) out += HANGUL_FINALS[final];
+  }
+  return out;
+}
+
+function editDistance(a: string, b: string): number {
+  const dp: number[][] = Array.from({ length: a.length + 1 }, () => new Array<number>(b.length + 1).fill(0));
+  for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+  for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+  for (let i = 1; i <= a.length; i++) {
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+    }
+  }
+  return dp[a.length][b.length];
+}
+
+const WAKE_WORD_JAMO = decomposeHangul("복실아");
+
+/**
+ * "복실아, 내일 밥 뭐 먹지?"처럼 호출어 뒤에 진짜 용건이 붙은 발화에서 호출어 부분만
+ * 뗀다. STT가 "복실아"를 "옥실아"/"혹시라" 등으로 살짝 다르게 알아듣는 경우가 흔해서
+ * 정확한 문자열 대신 자모 편집거리로 판단한다. 앞 단어가 호출어와 충분히 비슷하고
+ * 뒤에 실제 내용이 남아있을 때만 그 앞 단어를 제거한 나머지를 돌려준다 - 그래야 이
+ * 단어가 LLM 대화 기록에 남아 사용자 이름처럼 오인되는 문제를 막으면서도 실제 질문은
+ * 그대로 응답할 수 있다.
+ */
+function stripWakeWordPrefix(text: string): string {
+  const match = text.match(/^(\S+?)[,.!?~\s]+([\s\S]+)$/);
+  if (!match) return text;
+  const [, firstWord, rest] = match;
+  if (!rest.trim()) return text;
+  const dist = editDistance(decomposeHangul(firstWord), WAKE_WORD_JAMO);
+  return dist <= 2 ? rest.trim() : text;
+}
+
 /** LLM에 보내는 대화 기록(턴 수, user+assistant 합산)의 최대 길이. 웨이크워드로 하루 종일
  * 같은 웹뷰가 재사용되며 대화 기록이 무제한으로 쌓이면, 오래된(테스트 중 나온 이상한 STT
  * 결과 등도 포함된) 맥락이 쌓여 최근 대화와 무관한 엉뚱한 응답을 유도하는 문제가 있었다.
@@ -104,10 +160,6 @@ export function useConversationEngine(
   // 조각별로 각각 전사한 뒤 텍스트만 이어붙인다 (오디오를 이어붙이면 이음매에서
   // 부자연스러운 끊김이 생겨 whisper 인식이 흐트러진다).
   const turnTextRef = useRef("");
-  // respondTo가 vad를 참조해야 하는데 vad(useVAD 호출)는 respondTo가 정의된 뒤에야
-  // 만들 수 있다(handleSpeechSegment -> finalizeTurn -> respondTo 의존 순서 때문) -
-  // ref로 우회해 순환 선언 문제를 피한다.
-  const vadRef = useRef<UseVADResult | null>(null);
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
@@ -177,11 +229,12 @@ export function useConversationEngine(
       audioQueue.stop();
       speechQueue.stop();
 
-      // AI가 말하는 동안 마이크가 그 소리를 다시 주워듣고 엉뚱한 새 턴으로 이어지는
-      // 경우가 있었다(에코) - 트랙만 잠깐 끄고(스트림 자체는 유지) AI가 말하는 동안은
-      // 새 입력을 안 받는다. vad-web 기본 pause처럼 마이크를 통째로 stop()했다가 다시
-      // getUserMedia()하는 방식이 아니라서, 매 턴 반복해도 안정적이다.
-      void vadRef.current?.pause();
+      // ponytail 교훈: AI가 말하는 동안 마이크 트랙을 꺼서 에코를 막으려 했었는데,
+      // 그러면 barge-in(끼어들기) 판정이 보는 vad.userSpeaking이 이 구간 내내 false로
+      // 고정돼 사용자가 말을 걸어도 끼어들기 자체가 감지되지 않는 부작용이 있었다
+      // (실사용 보고: "아니 그게 아니라"라고 정정해도 AI가 하던 말을 계속함).
+      // 에코는 이미 브라우저 echoCancellation으로 처리되고, "복실아" 자기소개 혼선의
+      // 진짜 원인은 대화 기록 오염 쪽이었다(별도로 수정) - 마이크는 항상 켜둔다.
 
       abortControllerRef.current?.abort();
       const controller = new AbortController();
@@ -240,7 +293,6 @@ export function useConversationEngine(
         setAssistantDraft("");
         // 이미 barge-in 등으로 다음 턴이 시작되어 phase가 바뀌었다면 덮어쓰지 않는다.
         setPhase((prev) => (prev === "thinking" || prev === "speaking" ? "listening" : prev));
-        void vadRef.current?.resume();
       }
     },
     [audioQueue, queueSentence, persistence],
@@ -270,10 +322,17 @@ export function useConversationEngine(
         return;
       }
 
+      // "복실아, 내일 밥 뭐 먹지?"처럼 호출어 뒤에 실제 용건이 붙은 경우 - 호출어 부분만
+      // 떼고 나머지만 LLM에 보낸다(화면/기록에는 원문 그대로 남겨 보호자가 맥락을 알 수 있게 함).
+      const forLlm = stripWakeWordPrefix(trimmed);
+      if (forLlm !== trimmed) {
+        reportToServer(`호출어 접두어 제거: "${trimmed}" -> "${forLlm}"`);
+      }
+
       reportToServer(`일반 발화로 판정: "${trimmed}" - LLM 호출`);
       setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
       persistence.saveTurn("user", trimmed);
-      void respondTo(trimmed);
+      void respondTo(forLlm);
     },
     [clearFinalizeTimer, respondTo, persistence, queueSentence],
   );
@@ -344,9 +403,6 @@ export function useConversationEngine(
   );
 
   const vad = useVAD(handleSpeechSegment);
-  useEffect(() => {
-    vadRef.current = vad;
-  }, [vad]);
 
   // 진짜 끼어들기: AI가 생각 중이거나 말하는 도중 사용자가 다시 말하면
   // 즉시 오디오/요청을 멈추고 그 발화를 새 턴의 시작으로 삼는다.

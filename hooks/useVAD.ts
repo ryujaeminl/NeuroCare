@@ -14,10 +14,6 @@ export interface UseVADResult {
   error: string | null;
   start: () => Promise<void>;
   stop: () => Promise<void>;
-  /** 모델을 다시 불러오지 않고 마이크 감시만 잠시 멈춘다 (AI 발화 중 자기 음성 픽업 방지용) */
-  pause: () => Promise<void>;
-  /** pause 이후 다시 감시를 재개한다 */
-  resume: () => Promise<void>;
 }
 
 /**
@@ -68,21 +64,6 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           // 실사용 피드백: "복실아"처럼 짧게 부르는 말이 700ms 미만이라 misfire로 통째로
           // 무시돼 앱 안에서 호출어를 불러도 아무 반응이 없었다 - 400ms로 완화.
           minSpeechMs: 400,
-          // vad-web 기본 pause/resume은 트랙을 stop()했다가 새로 getUserMedia()를 부른다 -
-          // Android WebView에서 마이크 재획득이 원래 불안정해(이 프로젝트에서 여러 번 겪은
-          // NotReadableError) 매 대화 턴마다 이걸 하면 중간에 실패해 대화가 끊길 수 있다.
-          // 트랙을 끄고 켜기만 하는 가벼운 방식으로 바꿔, 스트림 자체는 살아있게 유지한다.
-          pauseStream: async (stream) => {
-            stream.getTracks().forEach((track) => {
-              track.enabled = false;
-            });
-          },
-          resumeStream: async (stream) => {
-            stream.getTracks().forEach((track) => {
-              track.enabled = true;
-            });
-            return stream;
-          },
           onSpeechStart: () => setUserSpeaking(true),
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
@@ -133,18 +114,5 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
     }
   }, []);
 
-  const pause = useCallback(async () => {
-    if (!vadRef.current) return;
-    await vadRef.current.pause();
-    setListening(false);
-    setUserSpeaking(false);
-  }, []);
-
-  const resume = useCallback(async () => {
-    if (!vadRef.current) return;
-    vadRef.current.start();
-    setListening(true);
-  }, []);
-
-  return { listening, userSpeaking, error, start, stop, pause, resume };
+  return { listening, userSpeaking, error, start, stop };
 }
