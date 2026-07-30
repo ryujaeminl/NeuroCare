@@ -139,7 +139,13 @@ export async function POST(request: NextRequest) {
       // 정제되지 않은 채 그대로 응답으로 나온 사례가 실사용에서 확인됐다(예:
       // "사용자 메시지는 '혹시라고 해'인데... 다음 문장은" 처럼 중간에 끊긴 서술체 출력).
       // 페르소나/프롬프트 문제가 아니라 reasoning 출력 자체였다 - 최소로 고정한다.
-      reasoning_effort: "minimal",
+      // ("minimal"은 solar-pro2 전용 값이고 solar-pro3에는 없는 값이라 - Upstage
+      // 공식 문서 확인 - 인식 못 된 값은 기본값 "medium"(추론 켜짐, 컨텍스트의 30%까지
+      // 추론 토큰 소모)으로 조용히 대체됐을 가능성이 높다. 지금까지 매 요청이 실제로는
+      // "최소"가 아니라 "중간" 추론 비용을 그대로 물고 있었던 셈 - 응답 속도에 영향이
+      // 컸을 것. solar-pro3가 실제로 지원하는 값(high/medium/low) 중 추론을 완전히
+      // 끄는 "low"로 교체.
+      reasoning_effort: "low",
     }),
   });
 
