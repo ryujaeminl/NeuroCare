@@ -113,6 +113,11 @@ export async function POST(request: NextRequest) {
       stream: true,
       temperature: 0.7,
       max_tokens: 200,
+      // solar-pro3는 reasoning 모델이라 이걸 명시하지 않으면 가끔 "생각 과정"이
+      // 정제되지 않은 채 그대로 응답으로 나온 사례가 실사용에서 확인됐다(예:
+      // "사용자 메시지는 '혹시라고 해'인데... 다음 문장은" 처럼 중간에 끊긴 서술체 출력).
+      // 페르소나/프롬프트 문제가 아니라 reasoning 출력 자체였다 - 최소로 고정한다.
+      reasoning_effort: "minimal",
     }),
   });
 

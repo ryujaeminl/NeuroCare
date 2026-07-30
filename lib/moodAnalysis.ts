@@ -111,6 +111,9 @@ export async function analyzeMood(turns: AnalyzableTurn[], patientName: string):
       response_format: { type: "json_object" },
       temperature: 0.2,
       max_tokens: 600,
+      // solar-pro3는 reasoning 모델이라 명시하지 않으면 "생각 과정"이 JSON 앞뒤에
+      // 섞여 나와 파싱이 깨질 수 있다 - app/api/chat/route.ts와 동일하게 최소로 고정.
+      reasoning_effort: "minimal",
     }),
   });
 
