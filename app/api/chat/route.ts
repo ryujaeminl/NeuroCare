@@ -3,10 +3,8 @@ import { auth } from "@/lib/auth/authOptions";
 import { buildFamilyRoster } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 
-// LG AI Research의 K-EXAONE을 Friendli.ai 전용 엔드포인트로 호출한다. OpenAI 호환
-// 형식(SSE, delta.content)이라 아래 스트리밍 파싱 로직은 그대로 재사용한다.
-const FRIENDLI_API_KEY = process.env.FRIENDLI_API_KEY;
-const FRIENDLI_ENDPOINT_ID = process.env.FRIENDLI_ENDPOINT_ID || "depmkuykpfon9lg";
+const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
+const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
 
 const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 대화하며 기억 회상을 돕는 따뜻한 이웃입니다.
 
@@ -91,8 +89,8 @@ ${recalled}`;
 }
 
 export async function POST(request: NextRequest) {
-  if (!FRIENDLI_API_KEY) {
-    return new Response("FRIENDLI_API_KEY가 설정되지 않았습니다.", { status: 500 });
+  if (!UPSTAGE_API_KEY) {
+    return new Response("UPSTAGE_API_KEY가 설정되지 않았습니다.", { status: 500 });
   }
 
   const { messages } = (await request.json()) as { messages: ChatMessage[] };
@@ -103,28 +101,29 @@ export async function POST(request: NextRequest) {
   const latestUserText = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
   const systemPrompt = await buildSystemPrompt(patientId, latestUserText);
 
-  const upstream = await fetch("https://api.friendli.ai/dedicated/v1/chat/completions", {
+  const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${FRIENDLI_API_KEY}`,
+      Authorization: `Bearer ${UPSTAGE_API_KEY}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: FRIENDLI_ENDPOINT_ID,
+      model: UPSTAGE_MODEL,
       messages: [{ role: "system", content: systemPrompt }, ...messages],
       stream: true,
       temperature: 0.7,
       max_tokens: 200,
-      // K-EXAONE은 enable_thinking이 기본 true라 응답 전에 긴 reasoning을 먼저 생성한다 -
-      // max_tokens(200)가 reasoning만으로 다 소진돼 실제 답변 내용 없이 빈 응답만 오는
-      // 문제가 실사용에서 확인됐다(solar-pro3의 reasoning_effort 이슈와 같은 패턴).
-      chat_template_kwargs: { enable_thinking: false },
+      // solar-pro3는 reasoning 모델이라 이걸 명시하지 않으면 가끔 "생각 과정"이
+      // 정제되지 않은 채 그대로 응답으로 나온 사례가 실사용에서 확인됐다(예:
+      // "사용자 메시지는 '혹시라고 해'인데... 다음 문장은" 처럼 중간에 끊긴 서술체 출력).
+      // 페르소나/프롬프트 문제가 아니라 reasoning 출력 자체였다 - 최소로 고정한다.
+      reasoning_effort: "minimal",
     }),
   });
 
   if (!upstream.ok || !upstream.body) {
     const detail = await upstream.text().catch(() => "");
-    return new Response(`Friendli 요청 실패 (${upstream.status}): ${detail}`, { status: 502 });
+    return new Response(`Upstage 요청 실패 (${upstream.status}): ${detail}`, { status: 502 });
   }
 
   const decoder = new TextDecoder();
