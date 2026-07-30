@@ -1,0 +1,16 @@
+[Unit]
+Description=NeuroCare STT/TTS backend (faster-whisper + speaker + edge-tts)
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+# 이전 컨테이너가 남아있으면 이름 충돌이 나므로 시작 전에 조용히 정리한다.
+ExecStartPre=-/usr/bin/docker rm -f neurocare-stt
+ExecStart=/usr/bin/docker run --rm --name neurocare-stt --gpus all -p 8000:8000 neurocare-stt-image
+ExecStop=/usr/bin/docker stop -t 10 neurocare-stt
+
+[Install]
+WantedBy=multi-user.target

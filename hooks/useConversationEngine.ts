@@ -402,7 +402,31 @@ export function useConversationEngine(
     [calibration, finalizeTurn],
   );
 
-  const vad = useVAD(handleSpeechSegment);
+  // 말하는 도중에도 화면에 실시간으로 자막이 갱신되도록, 아직 발화가 안 끝났어도
+  // 그때까지 녹음된 오디오를 주기적으로 미리 전사해 interimText에 반영한다. 최종
+  // 확정 텍스트는 여전히 onSpeechEnd(handleSpeechSegment)가 담당하므로, 여기서 나온
+  // 결과가 턴 종료 판정이나 대화 기록에 영향을 주지는 않는다 - 순수 미리보기용이다.
+  const partialRequestInFlightRef = useRef(false);
+  const handlePartialAudio = useCallback((blob: Blob) => {
+    if (partialRequestInFlightRef.current) return;
+    partialRequestInFlightRef.current = true;
+    const form = new FormData();
+    form.append("file", blob, "partial.webm");
+    fetch("/api/stt", { method: "POST", body: form })
+      .then((res) => res.json())
+      .then((data: { text?: string }) => {
+        const partialText = (data.text ?? "").trim();
+        if (partialText) {
+          setInterimText(turnTextRef.current ? `${turnTextRef.current} ${partialText}` : partialText);
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        partialRequestInFlightRef.current = false;
+      });
+  }, []);
+
+  const vad = useVAD(handleSpeechSegment, handlePartialAudio);
 
   // 진짜 끼어들기: AI가 생각 중이거나 말하는 도중 사용자가 다시 말하면
   // 즉시 오디오/요청을 멈추고 그 발화를 새 턴의 시작으로 삼는다.
