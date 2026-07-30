@@ -155,6 +155,7 @@ export async function POST(request: NextRequest) {
     async start(controller) {
       const reader = upstream.body!.getReader();
       let buffer = "";
+      let loggedModel = false;
       try {
         while (true) {
           const { done, value } = await reader.read();
@@ -170,6 +171,13 @@ export async function POST(request: NextRequest) {
             if (data === "[DONE]") continue;
             try {
               const json = JSON.parse(data);
+              // ponytail: 진단용. Vercel env var가 "Sensitive"라 CLI로 값을 못 읽어서,
+              // 실제로 어떤 모델이 응답했는지 Upstage 응답 자체로 한 번만 확인하려고
+              // 남긴다. 확인되면 지운다.
+              if (!loggedModel && typeof json.model === "string") {
+                loggedModel = true;
+                console.error(`[chat] resolved model = ${json.model}`);
+              }
               const delta: string | undefined = json.choices?.[0]?.delta?.content;
               if (delta) controller.enqueue(encoder.encode(delta));
             } catch {
