@@ -1,8 +1,9 @@
 /** 완결된 문장으로 끝났다고 볼 때 적용할 짧은 무음 임계값 (ms) */
 export const COMPLETE_SILENCE_MS = 500;
 
-/** 미완결(머뭇거림)로 보일 때 적용할 기본 무음 임계값 (ms) - useSpeechCalibration이 개인화한다 */
-export const DEFAULT_INCOMPLETE_SILENCE_MS = 2500;
+/** 미완결(머뭇거림)로 보일 때 적용할 기본 무음 임계값 (ms) - useSpeechCalibration이 개인화한다.
+ * 실사용 피드백: 응답이 너무 느리다고 느껴져 3.5초 상한을 2초로 줄인 것과 맞춰 하향. */
+export const DEFAULT_INCOMPLETE_SILENCE_MS = 1600;
 
 /** 조사 - 문장이 아직 끝나지 않고 이어질 가능성이 높은 어미 */
 const INCOMPLETE_SUFFIXES = [
