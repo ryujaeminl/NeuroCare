@@ -61,15 +61,24 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           positiveSpeechThreshold: 0.8,
           negativeSpeechThreshold: 0.65,
           // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 둔다.
-          // 실사용 피드백: "복실아"처럼 짧게 부르는 말이 700ms 미만이라 misfire로 통째로
-          // 무시돼 앱 안에서 호출어를 불러도 아무 반응이 없었다 - 400ms로 완화.
-          minSpeechMs: 400,
+          // 실사용 피드백: "야", "복실아"처럼 아주 짧게 부르는 말은 400ms도 넘겨서
+          // misfire로 무시되는 경우가 있었다 - 250ms로 더 완화.
+          minSpeechMs: 250,
           onSpeechStart: () => setUserSpeaking(true),
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
             onSpeechSegmentRef.current?.(audio);
           },
-          onVADMisfire: () => setUserSpeaking(false),
+          onVADMisfire: () => {
+            setUserSpeaking(false);
+            // ponytail: 진단용. "복실아"/"야" 같은 아주 짧은 호출이 misfire로 무시되는지
+            // 확인하려고 남긴다. 원인이 잡히면 지운다.
+            void fetch("/api/client-log", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: "[대화엔진] VAD misfire (너무 짧은 발화로 무시됨)" }),
+            }).catch(() => undefined);
+          },
         });
         vadRef.current = vad;
         vad.start();
