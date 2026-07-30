@@ -4,7 +4,7 @@ import { buildFamilyRoster } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 
 const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
-const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-mini";
+const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
 
 const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
 설문이 아니라 실제 사람 사이의 대화입니다 - 상대가 방금 한 말/질문의 내용과 의도를
