@@ -58,10 +58,16 @@ interface ChatMessage {
 async function buildSystemPrompt(patientId: string | null, latestUserText: string) {
   if (!patientId) return SYSTEM_PROMPT;
 
-  const [roster, memories] = await Promise.all([
+  const [roster, rawMemories] = await Promise.all([
     buildFamilyRoster(patientId),
     latestUserText ? searchMemories(patientId, latestUserText, 3) : Promise.resolve([]),
   ]);
+
+  // AI 자신의 과거 응답(role: assistant)은 "기억"이 아니라 그냥 대화 로그다 - 이걸
+  // 참고자료로 다시 넣으면 예전(페르소나 개선 전)의 어색한 응답 패턴이 비슷한 질문에
+  // 계속 재소환되어 반복되는 문제가 실사용에서 확인됐다. 환자가 실제로 한 말과
+  // 보호자가 등록한 기억만 회상 자료로 쓴다.
+  const memories = rawMemories.filter((memory) => memory.role !== "assistant");
 
   let prompt = SYSTEM_PROMPT;
 
