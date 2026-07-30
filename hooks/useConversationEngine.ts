@@ -57,6 +57,31 @@ function reportToServer(message: string) {
   }).catch(() => undefined);
 }
 
+// GPU STT/TTS 서버를 브라우저에서 직접 호출하기 위한 주소. 네이티브 쉘의 WakeWordService는
+// 이미 이 서버를 직접 호출한다("네이티브 HTTP 호출이라 CORS와 무관하다") - 웹만 지금까지
+// Vercel(/api/stt, /api/tts)을 한 번 더 거쳤는데, 왕복이 그만큼 늘어난다. 직접 호출로
+// 그 홉을 없애고, 실패할 때만(네트워크/CORS 등) 기존 Vercel 경유 경로로 폴백한다.
+const DIRECT_BACKEND_URL = process.env.NEXT_PUBLIC_WHISPER_BACKEND_URL;
+
+async function transcribeSegment(form: FormData): Promise<{ text?: string; error?: string }> {
+  if (DIRECT_BACKEND_URL) {
+    try {
+      const direct = await fetch(`${DIRECT_BACKEND_URL}/transcribe`, {
+        method: "POST",
+        headers: { "ngrok-skip-browser-warning": "true" },
+        body: form,
+      });
+      if (direct.ok) return direct.json();
+    } catch {
+      // 직접 호출 실패 - 아래 Vercel 경유 폴백으로 이어간다.
+    }
+  }
+  const response = await fetch("/api/stt", { method: "POST", body: form });
+  const data = await response.json();
+  if (!response.ok) throw new Error(data.error ?? "전사에 실패했습니다.");
+  return data;
+}
+
 /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. 너무 낮추면(더 음수로) 잡음에
  * 관대해지고, 너무 높이면 작게 말하는 환자의 목소리까지 걸러낼 수 있으니 실사용 보면서 조정.
  * 실사용 피드백: 평소 대화하듯 자연스러운 톤으로 말하면 -40 기준에 걸러져 인식이 안 됐다 -
@@ -383,9 +408,7 @@ export function useConversationEngine(
         const form = new FormData();
         form.append("file", wav, "segment.wav");
 
-        const response = await fetch("/api/stt", { method: "POST", body: form });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error ?? "전사에 실패했습니다.");
+        const data = await transcribeSegment(form);
 
         reportToServer(`전사 결과: "${data.text ?? ""}"`);
         const segmentText: string = (data.text ?? "").trim();

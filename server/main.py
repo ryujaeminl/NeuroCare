@@ -17,9 +17,12 @@ logger = logging.getLogger("neurocare-stt")
 
 app = FastAPI(title="Neurocare STT Backend")
 
+# 웹앱(브라우저)이 Vercel을 거치지 않고 이 서버를 직접 호출할 수 있어야 STT/TTS 왕복이
+# 한 홉 줄어든다(Vercel<->GPU 프록시 왕복 제거) - 네이티브 쉘은 이미 직접 호출 중이라
+# CORS 제약이 없었지만, 브라우저는 이 허용 목록에 없으면 막힌다.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "https://neuro-care-sand.vercel.app"],
     allow_methods=["POST"],
     allow_headers=["*"],
 )
@@ -74,6 +77,10 @@ def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) 
         vad_filter=vad_filter,
         vad_parameters=dict(min_silence_duration_ms=300),
         initial_prompt=_DIALECT_PROMPT,
+        # 기본 beam_size=5는 후보 5갈래를 각각 탐색해 정확도 대비 디코딩 시간이 크게
+        # 늘어난다. VAD로 이미 짧게 잘린 발화 + initial_prompt 힌트가 있어 greedy(1)로도
+        # 충분히 정확하면서 훨씬 빠르다 - 속도 우선 요청에 따라 낮춘다.
+        beam_size=1,
     )
     kept_text = []
     for segment in segments:
