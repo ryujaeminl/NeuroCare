@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { transcribeAudio } from "@/lib/whisperClient";
 
+// 브라우저의 GPU 직접 호출(hooks/useConversationEngine.ts)이 실패했을 때만 타는 폴백
+// 경로라 평소엔 거의 안 쓰이지만, 탈 때도 서울 리전이어야 왕복이 안 늘어난다.
+export const preferredRegion = "icn1";
+
 // 화자 인증(성문)은 등록 음성이 짧고 음소가 단조로워 본인 목소리까지 종종 거부하는
 // 문제가 반복돼(server/speaker.py 주석 참고) 걷어냈다 - 전사는 항상 그대로 진행한다.
 export async function POST(request: NextRequest) {

@@ -3,6 +3,11 @@ import { auth } from "@/lib/auth/authOptions";
 import { buildFamilyRoster } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 
+// 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
+// Upstage API도, 이 앱의 실사용자도 한국이라 태평양을 두 번(요청+응답) 건너는 왕복이
+// 그대로 지연으로 쌓인다. "응답까지 2초 이내" 목표라 서울 리전으로 고정한다.
+export const preferredRegion = "icn1";
+
 const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
 const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
 

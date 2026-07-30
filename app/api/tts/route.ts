@@ -3,6 +3,10 @@ import { isClovaVoiceConfigured, synthesizeWithClova } from "@/lib/tts/clovaVoic
 
 const BACKEND_URL = process.env.WHISPER_BACKEND_URL ?? "http://127.0.0.1:8000";
 
+// 브라우저의 GPU 직접 호출(lib/tts/ttsClient.ts)이 실패했을 때만 타는 폴백 경로라
+// 평소엔 거의 안 쓰이지만, 탈 때도 서울 리전이어야 왕복이 안 늘어난다.
+export const preferredRegion = "icn1";
+
 /**
  * edge-tts를 기본으로 쓴다(속도 우선). 실측상 edge-tts(~0.55초, 스트리밍)가
  * CLOVA(~2.2초, 비스트리밍)보다 훨씬 빠르다 - 응답 속도를 최대한 줄이기로 한

@@ -3,8 +3,8 @@
 import { useCallback, useRef } from "react";
 import { COMPLETE_SILENCE_MS, DEFAULT_INCOMPLETE_SILENCE_MS } from "@/lib/turnDetector";
 
-const MIN_INCOMPLETE_MS = 1200;
-const MAX_INCOMPLETE_MS = 2000;
+const MIN_INCOMPLETE_MS = 600;
+const MAX_INCOMPLETE_MS = 1200;
 const HISTORY_SIZE = 8;
 
 export interface UseSpeechCalibrationResult {
