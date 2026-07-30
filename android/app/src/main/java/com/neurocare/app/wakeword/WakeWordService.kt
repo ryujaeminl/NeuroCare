@@ -105,13 +105,26 @@ class WakeWordService : Service() {
 
         whisperClient = WhisperClient(BuildConfig.BACKEND_HTTP_BASE)
 
+        // ponytail: 진단용. 잠금화면/백그라운드에서 호출어로 앱이 뜨는데 "네, 부르셨어요"가
+        // 안 들린다는 실사용 보고가 있어(화면 켜진 상태에서 부르는 경우와 다름), TTS
+        // 엔진 초기화 자체가 이 시나리오에서 실패/지연되는지 원격에서 확인하려고 남긴다.
+        // 원인이 잡히면 이 report 호출들만 지운다.
         ackTts = TextToSpeech(this) { status ->
+            reportToServer("ackTts 초기화 콜백: status=$status (SUCCESS=${TextToSpeech.SUCCESS})")
             if (status == TextToSpeech.SUCCESS) ackTts?.language = Locale.KOREAN
         }
         ackTts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            override fun onStart(utteranceId: String?) {}
-            override fun onDone(utteranceId: String?) = onAckUtteranceFinished(utteranceId)
-            override fun onError(utteranceId: String?) = onAckUtteranceFinished(utteranceId)
+            override fun onStart(utteranceId: String?) {
+                reportToServer("ackTts onStart: $utteranceId")
+            }
+            override fun onDone(utteranceId: String?) {
+                reportToServer("ackTts onDone: $utteranceId")
+                onAckUtteranceFinished(utteranceId)
+            }
+            override fun onError(utteranceId: String?) {
+                reportToServer("ackTts onError: $utteranceId")
+                onAckUtteranceFinished(utteranceId)
+            }
         })
 
         if (!hasMicPermission()) {
@@ -212,7 +225,18 @@ class WakeWordService : Service() {
 
                 Log.d(TAG, "호출어 감지: \"$text\"")
                 ackUtteranceDone = false
-                ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, ackTtsParams, "wake-ack")
+                // ponytail: 진단용. speak()는 실패해도 예외 없이 ERROR(-1)만 조용히
+                // 돌려준다 - 잠금화면/백그라운드에서 안 들린다는 보고의 원인이 (a) TTS
+                // 자체가 아직 준비 안 됐거나 (b) STREAM_MUSIC 볼륨이 낮은 것인지 구분하려고
+                // 결과값과 그 시점 볼륨을 같이 남긴다. 원인이 잡히면 이 report만 지운다.
+                val audioManager = getSystemService(AudioManager::class.java)
+                val musicVolume = audioManager?.getStreamVolume(AudioManager.STREAM_MUSIC)
+                val musicMax = audioManager?.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+                val speakResult = ackTts?.speak("네, 부르셨어요", TextToSpeech.QUEUE_FLUSH, ackTtsParams, "wake-ack")
+                reportToServer(
+                    "ackTts.speak() 결과=$speakResult (SUCCESS=${TextToSpeech.SUCCESS}) " +
+                        "STREAM_MUSIC 볼륨=$musicVolume/$musicMax ttsNull=${ackTts == null}",
+                )
                 launchMainActivity()
             } finally {
                 checkingWakeWord = false
@@ -401,6 +425,7 @@ class WakeWordService : Service() {
         // 줄 수 있어 순간값으로는 못 믿는다 - "발화 완료 콜백을 받았는가"로 정확히 추적한다.
         val tts = ackTts
         ackTts = null
+        reportToServer("onDestroy: ackUtteranceDone=$ackUtteranceDone (false면 ${ACK_TTS_SHUTDOWN_GRACE_MS}ms 유예 후 shutdown)")
         if (!ackUtteranceDone) {
             pendingAckShutdown = { tts?.shutdown() }
             Handler(Looper.getMainLooper()).postDelayed({
