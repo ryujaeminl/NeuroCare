@@ -44,6 +44,19 @@ function computeDbfs(samples: Float32Array): number {
   return rms > 0 ? 20 * Math.log10(rms) : -Infinity;
 }
 
+/**
+ * ponytail: 진단용. 앱 안에서 "복실아"를 불러도 무반응이라는 실사용 보고가 있어,
+ * VAD/STT/호출어 판정 중 어디서 끊기는지 원격에서 확인하려고 남긴다.
+ * 원인이 잡히면 이 함수와 호출부를 함께 지운다.
+ */
+function reportToServer(message: string) {
+  void fetch("/api/client-log", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: `[대화엔진] ${message}` }),
+  }).catch(() => undefined);
+}
+
 /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. 너무 낮추면(더 음수로) 잡음에
  * 관대해지고, 너무 높이면 작게 말하는 환자의 목소리까지 걸러낼 수 있으니 실사용 보면서 조정.
  * 실사용 피드백: 평소 대화하듯 자연스러운 톤으로 말하면 -40 기준에 걸러져 인식이 안 됐다 -
@@ -121,7 +134,16 @@ export function useConversationEngine(
 
   const queueSentence = useCallback(
     (sentence: string, signal: AbortSignal) => {
-      const synthesisPromise = ttsProvider.synthesize(sentence, signal).catch(() => null);
+      const synthesisPromise = ttsProvider
+        .synthesize(sentence, signal)
+        .then((blob) => {
+          reportToServer(`TTS 합성 성공: "${sentence}" (${blob.size} bytes)`);
+          return blob;
+        })
+        .catch((err) => {
+          reportToServer(`TTS 합성 실패: "${sentence}" - ${err instanceof Error ? err.message : String(err)}`);
+          return null;
+        });
       // 이 문장이 실제로 끝까지 재생됐을 때만 불린다 - barge-in으로 잘리면 안 불려서,
       // spokenTextRef는 언제나 "환자가 진짜로 들은 부분"만 반영한다.
       const markSpoken = () => {
@@ -241,12 +263,14 @@ export function useConversationEngine(
       // 사용자를 "복실아"라고 부르는 혼란이 실사용에서 확인됐다. LLM 호출 없이 짧게만
       // 반응하고, 대화 기록(messagesRef/서버 저장)에는 남기지 않는다.
       if (WAKE_WORD_ONLY_PATTERN.test(trimmed.replace(/\s+/g, ""))) {
+        reportToServer(`호출어 단독 발화로 판정: "${trimmed}" - 짧게만 응답`);
         setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
         queueSentence("네, 말씀하세요.", new AbortController().signal);
         setPhase("listening");
         return;
       }
 
+      reportToServer(`일반 발화로 판정: "${trimmed}" - LLM 호출`);
       setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
       persistence.saveTurn("user", trimmed);
       void respondTo(trimmed);
@@ -261,7 +285,9 @@ export function useConversationEngine(
 
   const handleSpeechSegment = useCallback(
     async (audio: Float32Array) => {
-      if (computeDbfs(audio) < MIN_SPEECH_DBFS) {
+      const dbfs = computeDbfs(audio);
+      reportToServer(`발화 구간 감지 dbfs=${dbfs.toFixed(1)} (기준 ${MIN_SPEECH_DBFS})`);
+      if (dbfs < MIN_SPEECH_DBFS) {
         // 너무 조용한/먼 소리 - 기존 턴 상태를 건드리지 않고 조용히 무시한다.
         return;
       }
@@ -281,6 +307,7 @@ export function useConversationEngine(
         const data = await response.json();
         if (!response.ok) throw new Error(data.error ?? "전사에 실패했습니다.");
 
+        reportToServer(`전사 결과: "${data.text ?? ""}"`);
         const segmentText: string = (data.text ?? "").trim();
         if (segmentText) {
           turnTextRef.current = turnTextRef.current
