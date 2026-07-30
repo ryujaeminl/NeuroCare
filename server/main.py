@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+from pathlib import Path
 
 import edge_tts
 import numpy as np
@@ -14,6 +15,11 @@ import speaker
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("neurocare-stt")
+
+# 원격에는 SSH를 안 주기로 했으니, 배포가 실제로 어느 커밋을 반영했는지 /health로
+# curl 한 번에 확인하려고 둔다(deploy.sh가 빌드 직전에 이 파일을 만든다).
+_BUILD_INFO_FILE = Path(__file__).parent / "BUILD_INFO"
+_build_info = _BUILD_INFO_FILE.read_text().strip() if _BUILD_INFO_FILE.exists() else "unknown"
 
 app = FastAPI(title="Neurocare STT Backend")
 
@@ -99,7 +105,7 @@ def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) 
 
 @app.get("/health")
 def health() -> dict:
-    return {"status": "ok"}
+    return {"status": "ok", "build": _build_info}
 
 
 @app.post("/transcribe")

@@ -8,6 +8,11 @@ cd "$(dirname "$0")"
 echo "==> git pull"
 git pull
 
+# 원격(Claude Code 등)에는 SSH 접근을 안 주기로 했어서, 이 배포가 실제로 어느 커밋을
+# 반영했는지 외부에서 /health로 curl 한 번으로 확인할 수 있게 남긴다.
+git rev-parse --short HEAD > BUILD_INFO
+date -u +"%Y-%m-%dT%H:%M:%SZ" >> BUILD_INFO
+
 echo "==> Docker 이미지 빌드 (neurocare-stt-image)"
 docker build -t neurocare-stt-image .
 
