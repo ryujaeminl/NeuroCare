@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { FamilyMemberCard, type FamilyMemberSummary } from "@/components/guardian/FamilyMemberCard";
+import { FamilyMessageBoard } from "@/components/guardian/FamilyMessageBoard";
+import { FamilyPlanList } from "@/components/guardian/FamilyPlanList";
+import { FamilyTaskChecklist } from "@/components/guardian/FamilyTaskChecklist";
 import { PatientSelector } from "@/components/guardian/PatientSelector";
 import { useLinkedPatients } from "@/hooks/useLinkedPatients";
 
@@ -154,6 +157,14 @@ export default function FamilyPage() {
             <FamilyMemberCard key={member.id} member={member} />
           ))}
         </div>
+      )}
+
+      {selectedId && (
+        <>
+          <FamilyMessageBoard patientId={selectedId} />
+          <FamilyPlanList patientId={selectedId} />
+          <FamilyTaskChecklist patientId={selectedId} />
+        </>
       )}
     </div>
   );

@@ -32,6 +32,9 @@ model User {
   memories        Memory[]
   photos          Photo[]
   emergencyEvents EmergencyEvent[]
+  familyMessages  FamilyMessage[]
+  familyPlans     FamilyPlan[]
+  familyTasks     FamilyTask[]
 
   // 보호자 계정 전용
   preference        GuardianPreference?
@@ -192,6 +195,56 @@ model Photo {
   patient      User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   familyMember FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
   memory       Memory?       @relation(fields: [memoryId], references: [id], onDelete: SetNull)
+
+  @@index([patientId])
+}
+
+/// 가족이 환자에게 남기는 짧은 메시지. 대화 중 AI가 곧바로 읽어주는 게 아니라 "OO님이
+/// 메시지를 남기셨어요, 읽어드릴까요?"라고 먼저 묻고 환자가 원할 때만 전달한다.
+model FamilyMessage {
+  id          String    @id @default(cuid())
+  patientId   String
+  /// 메시지를 남긴 사람 이름 - FamilyMember로 미리 등록 안 해도 자유롭게 적을 수 있다.
+  fromName    String
+  content     String
+  addedBy     String
+  createdAt   DateTime  @default(now())
+  /// null이면 AI가 아직 이 메시지의 존재를 언급한 적이 없다는 뜻. 시스템 프롬프트에
+  /// 한 번 주입되는 순간(=AI가 물어볼 기회를 갖는 순간) 채워져서 이후엔 반복해서
+  /// 묻지 않는다 - app/api/chat/route.ts 참고.
+  deliveredAt DateTime?
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+/// 방문/생일처럼 다가오는 가족 일정. 날짜가 가까워지면 AI가 대화 중 자연스럽게 언급한다.
+model FamilyPlan {
+  id        String   @id @default(cuid())
+  patientId String
+  title     String
+  date      DateTime
+  notes     String?
+  addedBy   String
+  createdAt DateTime @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+/// 보호자끼리 조율하는 할 일 목록 - 환자 대화와는 무관하고 보호자 화면에서만 보인다.
+model FamilyTask {
+  id        String    @id @default(cuid())
+  patientId String
+  title     String
+  dueDate   DateTime?
+  completed Boolean   @default(false)
+  addedBy   String
+  createdAt DateTime  @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
 }

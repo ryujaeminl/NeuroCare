@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/authOptions";
-import { buildFamilyRoster } from "@/lib/memory/familyContext";
+import { buildFamilyRoster, buildUpcomingFamilyPlans, takePendingFamilyMessages } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
@@ -68,9 +68,11 @@ interface ChatMessage {
 async function buildSystemPrompt(patientId: string | null, latestUserText: string) {
   if (!patientId) return SYSTEM_PROMPT;
 
-  const [roster, rawMemories] = await Promise.all([
+  const [roster, rawMemories, pendingMessages, upcomingPlans] = await Promise.all([
     buildFamilyRoster(patientId),
     latestUserText ? searchMemories(patientId, latestUserText, 3) : Promise.resolve([]),
+    takePendingFamilyMessages(patientId),
+    buildUpcomingFamilyPlans(patientId),
   ]);
 
   // AI 자신의 과거 응답(role: assistant)은 "기억"이 아니라 그냥 대화 로그다 - 이걸
@@ -105,6 +107,27 @@ ${roster}`;
 아래는 이 환자와 관련해 지금 이야기와 관련 있어 보이는 내용입니다(과거 대화 또는 보호자가 등록한 기억).
 자연스러울 때만 부드럽게 언급하고, 억지로 끼워 넣지 마세요. 환자가 기억하지 못해도 다그치지 마세요.
 ${recalled}`;
+  }
+
+  if (pendingMessages.length > 0) {
+    const list = pendingMessages.map((m) => `- ${m.fromName}: "${m.content}"`).join("\n");
+    prompt += `
+
+[아직 전달 안 된 가족 메시지]
+가족이 환자에게 남긴 메시지입니다. 대화 시작하고 자연스러운 시점에 딱 한 번 "OO님이
+메시지를 남기셨어요, 읽어드릴까요?"처럼 먼저 물어보고, 환자가 원한다고 하면 그때 내용을
+전달하세요. 원치 않으면 억지로 읽어주지 마세요. 지금 대화 흐름과 안 맞으면 인사만 하고
+넘어가도 됩니다 - 매 턴 반복해서 묻지 마세요.
+${list}`;
+  }
+
+  if (upcomingPlans) {
+    prompt += `
+
+[다가오는 가족 일정]
+앞으로 2주 안에 있는 가족 일정입니다. 대화 흐름에 자연스러울 때만 언급하세요
+(예: "이번 주말에 손녀가 오신다고 했었죠?"). 매번 먼저 꺼낼 필요는 없습니다.
+${upcomingPlans}`;
   }
 
   return prompt;
