@@ -2,6 +2,9 @@ import { prisma } from "@/lib/db/prisma";
 import { meetsAlertThreshold, type AlertThreshold, type Mood, type NotificationChannel } from "@/lib/db/types";
 import { notifyGuardianByChannel } from "@/lib/guardian/notify";
 
+// 보호자 앱(../Neurocaremam)은 별도 오리진에서 뜬다 - 알림 클릭 시 그 앱의 URL을 절대경로로 열어야 한다.
+const GUARDIAN_APP_URL = process.env.GUARDIAN_APP_URL || "http://localhost:3001";
+
 /**
  * 기분 분석이 끝날 때마다 호출된다. 긴급 알림(emergencyDispatcher)과 달리 보호자마다
  * GuardianPreference를 따로 확인해서, 같은 환자를 보는 보호자끼리도 독립적으로 판단한다.
@@ -21,7 +24,7 @@ export async function dispatchMoodAlerts(patientId: string, patientName: string,
   });
   const prefByGuardian = new Map(preferences.map((p) => [p.guardianId, p]));
 
-  const payload = { title: `${patientName}님의 기분 알림`, body: summary, url: "/guardian" };
+  const payload = { title: `${patientName}님의 기분 알림`, body: summary, url: GUARDIAN_APP_URL };
 
   await Promise.all(
     guardianIds.map((guardianId) => {

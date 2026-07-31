@@ -30,8 +30,9 @@ export default function GuardianLinkPage() {
         return;
       }
 
-      // 세션의 linkedPatientIds를 갱신해야 새 환자 기록에 접근할 수 있다.
-      await update();
+      // update()를 인자 없이 호출하면 next-auth가 GET으로 세션을 재조회할 뿐
+      // trigger:"update"가 서버에 전달되지 않아 jwt 콜백이 재실행되지 않는다.
+      await update({});
       router.push("/guardian");
       router.refresh();
     } catch {

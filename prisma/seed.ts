@@ -1,12 +1,11 @@
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
-import { PrismaClient } from "@prisma/client";
 import { hash } from "bcryptjs";
 import { config as loadEnv } from "dotenv";
+import { createPrismaClient } from "../lib/db/prisma";
 
 loadEnv();
+loadEnv({ path: ".env.local", override: true });
 
-const adapter = new PrismaBetterSqlite3({ url: process.env.DATABASE_URL ?? "file:./dev.db" });
-const prisma = new PrismaClient({ adapter });
+const prisma = createPrismaClient();
 
 /** 개발용 테스트 계정. 실제 배포에서는 절대 쓰지 말 것. */
 async function main() {

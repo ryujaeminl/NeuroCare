@@ -4,6 +4,9 @@ import { sendPush } from "@/lib/guardian/webPush";
 
 const ACK_TIMEOUT_MS = 60_000;
 
+// 보호자 앱(../Neurocaremam)은 별도 오리진에서 뜬다 - 알림 클릭 시 그 앱의 URL을 절대경로로 열어야 한다.
+const GUARDIAN_APP_URL = process.env.GUARDIAN_APP_URL || "http://localhost:3001";
+
 const TRIGGER_LABELS: Record<string, string> = {
   voice_distress: "환자가 도움을 요청하는 말을 했습니다",
   manual_button: "환자가 긴급 호출 버튼을 눌렀습니다",
@@ -45,7 +48,7 @@ export async function dispatchEmergency(eventId: string): Promise<void> {
   const expiredIds: string[] = [];
   await Promise.all(
     subscriptions.map(async (sub) => {
-      const result = await sendPush(sub, { title: "긴급 상황", body, url: `/guardian/emergency/${event.id}` });
+      const result = await sendPush(sub, { title: "긴급 상황", body, url: `${GUARDIAN_APP_URL}/emergency/${event.id}` });
       if (result.expired) expiredIds.push(sub.id);
     }),
   );
