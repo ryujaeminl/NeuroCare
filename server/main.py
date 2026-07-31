@@ -26,10 +26,13 @@ app = FastAPI(title="Neurocare STT Backend")
 # 웹앱(브라우저)이 Vercel을 거치지 않고 이 서버를 직접 호출할 수 있어야 STT/TTS 왕복이
 # 한 홉 줄어든다(Vercel<->GPU 프록시 왕복 제거) - 네이티브 쉘은 이미 직접 호출 중이라
 # CORS 제약이 없었지만, 브라우저는 이 허용 목록에 없으면 막힌다.
+# GET도 허용해야 한다 - 발화 시작 시점에 연결을 미리 데우는 /health ping(hooks/useVAD.ts의
+# preconnectBackend)이 GET인데 여기 POST만 있어서 매번 preflight가 막혀 콘솔에 CORS 오류가
+# 쌓이고 있었다(실사용 로그로 확인: "HTTP 400: .../health" + CORS 차단 메시지 반복).
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000", "https://neuro-care-sand.vercel.app"],
-    allow_methods=["POST"],
+    allow_methods=["GET", "POST"],
     allow_headers=["*"],
 )
 
