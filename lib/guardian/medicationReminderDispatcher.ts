@@ -5,8 +5,11 @@ import { notifyGuardianByChannel } from "@/lib/guardian/notify";
 /** 정확히 그 분에 크론이 안 걸려도 놓치지 않도록 봐주는 여유 창(분). */
 const DUE_WINDOW_MINUTES = 15;
 
-// 보호자 앱(../Neurocaremam)은 별도 오리진에서 뜬다 - 알림 클릭 시 그 앱의 URL을 절대경로로 열어야 한다.
-const GUARDIAN_APP_URL = process.env.GUARDIAN_APP_URL || "http://localhost:3001";
+// 보호자 앱(neurocare-guardian, ../Neurocaremam)은 별도 오리진에서 뜬다 - 알림 클릭 시
+// 그 앱의 URL을 절대경로로 열어야 한다. 아직 그 앱이 배포된 곳이 없어 이 값을 Vercel
+// 프로덕션에 설정하지 않았다 - 설정 전까지는 기존처럼 이 앱 안의 상대경로로 그대로
+// 동작해야 한다("http://localhost:3001"로 하드코딩하면 실사용자 알림이 전부 깨진다).
+const GUARDIAN_APP_URL = process.env.GUARDIAN_APP_URL;
 
 /** KST는 DST 없이 항상 UTC+9로 고정이라, 오프셋을 직접 문자열에 박아 넣으면 서버가
  * 어느 시간대에서 돌든(Vercel은 보통 UTC) 항상 정확한 순간(instant)을 얻는다. */
@@ -114,7 +117,7 @@ async function sendMedicationReminder(medication: DueMedication, time: string): 
   const payload = {
     title: `${medication.patient.name}님 복약 시간 (${time})`,
     body: `${medication.name} ${medication.dosage} 드실 시간이에요.`,
-    url: GUARDIAN_APP_URL,
+    url: GUARDIAN_APP_URL || "/guardian",
   };
 
   await Promise.all(
