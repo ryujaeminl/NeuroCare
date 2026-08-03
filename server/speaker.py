@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 import logging
 import os
+import time
 from pathlib import Path
 
 import numpy as np
@@ -35,6 +36,17 @@ SAMPLE_RATE = 16000
 
 # 안드로이드 웨이크워드 서비스가 "복실아"를 처음 부른 사람의 목소리를 등록하는 ID.
 DEVICE_SPEAKER_ID = "device"
+
+# 세션 스코프 화자 필터(main.py) - 사전 등록 없이 "이번 대화에서 처음 들린 목소리"를
+# 그 세션의 기준으로 삼고, 이후 발화가 그 목소리와 다르면(TV/다른 가족 등) 걸러낸다.
+# MIN_ENROLL_SECONDS(5초, 명시적 등록용)보다 훨씬 관대한 임계값/최소 길이를 쓴다 - 이건
+# 사용자가 의식하지 못하는 사이에 자동으로 이뤄지는 약한 필터라, 너무 엄격하면 예전에
+# 걷어낸 화자 인증과 같은 문제(짧은 음성이라 본인도 종종 거절됨)가 재현된다. 애매하면
+# 통과시키는 쪽으로 기운다(fail-open) - 목표는 "확실히 다른 목소리"만 거르는 것.
+SESSION_SIMILARITY_THRESHOLD = float(os.environ.get("SESSION_SPEAKER_SIMILARITY_THRESHOLD", "0.55"))
+# 이보다 짧은 발화는 세션 기준 목소리로 등록하지 않는다(신뢰할 수 없음) - 다음 발화가
+# 이 길이를 채울 때까지 계속 미등록 상태로 둔다.
+MIN_SESSION_REFERENCE_SECONDS = 1.2
 
 _encoder = None
 
@@ -66,9 +78,26 @@ def _decode_wav(audio_bytes: bytes) -> np.ndarray:
     return mono
 
 
-def _embed(audio_bytes: bytes) -> np.ndarray:
+def _embed_with_duration(audio_bytes: bytes) -> tuple[np.ndarray, float]:
     wav = _decode_wav(audio_bytes)
-    return _get_encoder().embed_utterance(wav)
+    duration = len(wav) / SAMPLE_RATE
+    return _get_encoder().embed_utterance(wav), duration
+
+
+def _embed(audio_bytes: bytes) -> np.ndarray:
+    return _embed_with_duration(audio_bytes)[0]
+
+
+def cosine_similarity(a: np.ndarray, b: np.ndarray) -> float:
+    denominator = float(np.linalg.norm(a) * np.linalg.norm(b))
+    if denominator == 0.0:
+        return 0.0
+    return float(np.dot(a, b) / denominator)
+
+
+def embed_with_duration(audio_bytes: bytes) -> tuple[np.ndarray, float]:
+    """세션 스코프 화자 비교(main.py의 첫 발화 자동 등록)에서 저장 없이 바로 쓴다."""
+    return _embed_with_duration(audio_bytes)
 
 
 def _voiceprint_path(speaker_id: str) -> Path:
@@ -133,8 +162,42 @@ def verify(speaker_id: str, audio_bytes: bytes) -> float | None:
 
     reference = np.load(_voiceprint_path(resolved))
     candidate = _embed(audio_bytes)
+    return cosine_similarity(reference, candidate)
 
-    denominator = float(np.linalg.norm(reference) * np.linalg.norm(candidate))
-    if denominator == 0.0:
-        return 0.0
-    return float(np.dot(reference, candidate) / denominator)
+
+# 세션 스코프 화자 필터 - 사전 등록(enroll) 없이도 "이 대화에서 처음 들린 목소리"를
+# 그 세션의 기준으로 삼고, 이후 발화가 크게 다르면(TV/다른 가족 등) 걸러낸다. 클라이언트가
+# 앱을 새로 열 때마다 임의의 session_id를 만들어 보내므로, 서버 프로세스가 오래 떠 있는
+# 동안 세션이 계속 쌓일 수 있다 - TTL을 두고 오래된 항목을 정리한다.
+# ponytail: 단일 프로세스 in-memory 캐시라 여러 인스턴스로 수평 확장하면 세션별 기준이
+# 인스턴스마다 따로 논다 - 이 서버는 GPU 서버 한 대에서만 돈다는 전제라 지금은 충분하다.
+_SESSION_TTL_SECONDS = 60 * 60 * 2
+_session_speakers: dict[str, tuple[np.ndarray, float]] = {}
+
+
+def _prune_stale_sessions(now: float) -> None:
+    cutoff = now - _SESSION_TTL_SECONDS
+    stale = [sid for sid, (_, last_used) in _session_speakers.items() if last_used < cutoff]
+    for sid in stale:
+        del _session_speakers[sid]
+
+
+def check_session_speaker(session_id: str, audio_bytes: bytes, now: float | None = None) -> float | None:
+    """세션의 기준 목소리와 비교한다. 기준이 아직 없으면(첫 발화, 또는 그동안 너무 짧은
+    발화만 있었음) 이번 발화로 등록을 시도하고 None을 반환한다(비교 대상이 없어 통과).
+    기준이 있으면 유사도를 반환한다. now는 테스트에서 시계를 주입하기 위한 것으로,
+    실제 호출에서는 생략하면 현재 시각을 쓴다."""
+    now = now if now is not None else time.time()
+    _prune_stale_sessions(now)
+    embedding, duration = embed_with_duration(audio_bytes)
+
+    cached = _session_speakers.get(session_id)
+    if cached is None:
+        if duration >= MIN_SESSION_REFERENCE_SECONDS:
+            _session_speakers[session_id] = (embedding, now)
+            logger.info("세션 %s 기준 목소리 등록 (%.1f초)", session_id, duration)
+        return None
+
+    reference, _ = cached
+    _session_speakers[session_id] = (reference, now)  # TTL 갱신
+    return cosine_similarity(reference, embedding)

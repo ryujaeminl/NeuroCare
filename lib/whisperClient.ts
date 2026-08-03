@@ -11,15 +11,19 @@ const BACKEND_URL = process.env.WHISPER_BACKEND_URL ?? "http://127.0.0.1:8000";
 /**
  * Next.js 서버(라우트 핸들러)에서만 호출한다 - 브라우저는 백엔드 주소를 직접 알 필요가 없다.
  * speakerId를 넘기면 백엔드가 등록된 성문과 비교해 본인 목소리가 아니면 빈 텍스트를 돌려준다.
+ * sessionId를 넘기면 사전 등록 없이도 그 대화에서 처음 들린 목소리를 기준으로 이후
+ * 발화를 거른다(server/speaker.py의 check_session_speaker).
  */
 export async function transcribeAudio(
   audio: Blob,
   filename: string,
   speakerId?: string,
+  sessionId?: string,
 ): Promise<TranscribeResult> {
   const form = new FormData();
   form.append("file", audio, filename);
   if (speakerId) form.append("speaker_id", speakerId);
+  if (sessionId) form.append("session_id", sessionId);
 
   const response = await fetch(`${BACKEND_URL}/transcribe`, {
     method: "POST",

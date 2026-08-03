@@ -6,13 +6,19 @@ import { transcribeAudio } from "@/lib/whisperClient";
 export async function POST(request: NextRequest) {
   const form = await request.formData();
   const file = form.get("file");
+  const sessionId = form.get("session_id");
 
   if (!(file instanceof Blob)) {
     return NextResponse.json({ error: "file 필드가 필요합니다." }, { status: 400 });
   }
 
   try {
-    const result = await transcribeAudio(file, "recording.webm");
+    const result = await transcribeAudio(
+      file,
+      "recording.webm",
+      undefined,
+      typeof sessionId === "string" ? sessionId : undefined,
+    );
     return NextResponse.json(result);
   } catch (err) {
     const message = err instanceof Error ? err.message : "전사에 실패했습니다.";

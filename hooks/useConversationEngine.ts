@@ -88,8 +88,11 @@ async function transcribeSegment(form: FormData): Promise<{ text?: string; error
  * 환자가 크게 또박또박 말하지 않는 게 일반적이므로 -50으로 완화. */
 const MIN_SPEECH_DBFS = -50;
 
-/** 다른 내용 없이 호출어("복실아")만 부른 발화를 판별한다 - 근처 발음 오차(예: "복실이")도 허용. */
-const WAKE_WORD_ONLY_PATTERN = /^복실[아이][.!?~,]*$/;
+/** 보호자가 따로 설정 안 하면 쓰는 기본 호출어. */
+const DEFAULT_WAKE_WORD = "복실아";
+/** 호출어 판정에 허용하는 자모 편집거리(발음 오차 허용치) - android WakeWordService.kt의
+ * WAKE_WORD_MAX_JAMO_DIST와 맞춘 값. */
+const WAKE_WORD_MAX_JAMO_DIST = 2;
 
 /** 대화를 끝내고 싶다는 뜻만 담긴 짧은 발화를 판별한다. 앱을 통째로 닫는 동작으로
  * 이어지므로, 문장 일부에 이 단어가 섞인 경우(예: "어제 잘 잤어")까지 걸리지 않게
@@ -134,23 +137,28 @@ function editDistance(a: string, b: string): number {
   return dp[a.length][b.length];
 }
 
-const WAKE_WORD_JAMO = decomposeHangul("복실아");
+/** 다른 내용 없이 호출어만 부른 발화인지 판별한다 - 정확한 문자열이 아니라 자모 편집거리로
+ * 비교해서 "복실이"처럼 근처 발음도, 커스텀 호출어의 STT 오인식도 허용한다. */
+function isWakeWordOnly(trimmed: string, wakeWordJamo: string): boolean {
+  const stripped = trimmed.replace(/[\s.!?~,]+$/g, "");
+  if (!stripped) return false;
+  return editDistance(decomposeHangul(stripped), wakeWordJamo) <= WAKE_WORD_MAX_JAMO_DIST;
+}
 
 /**
  * "복실아, 내일 밥 뭐 먹지?"처럼 호출어 뒤에 진짜 용건이 붙은 발화에서 호출어 부분만
- * 뗀다. STT가 "복실아"를 "옥실아"/"혹시라" 등으로 살짝 다르게 알아듣는 경우가 흔해서
- * 정확한 문자열 대신 자모 편집거리로 판단한다. 앞 단어가 호출어와 충분히 비슷하고
- * 뒤에 실제 내용이 남아있을 때만 그 앞 단어를 제거한 나머지를 돌려준다 - 그래야 이
- * 단어가 LLM 대화 기록에 남아 사용자 이름처럼 오인되는 문제를 막으면서도 실제 질문은
- * 그대로 응답할 수 있다.
+ * 뗀다. STT가 호출어를 살짝 다르게 알아듣는 경우가 흔해서 정확한 문자열 대신 자모
+ * 편집거리로 판단한다. 앞 단어가 호출어와 충분히 비슷하고 뒤에 실제 내용이 남아있을
+ * 때만 그 앞 단어를 제거한 나머지를 돌려준다 - 그래야 이 단어가 LLM 대화 기록에 남아
+ * 사용자 이름처럼 오인되는 문제를 막으면서도 실제 질문은 그대로 응답할 수 있다.
  */
-function stripWakeWordPrefix(text: string): string {
+function stripWakeWordPrefix(text: string, wakeWordJamo: string): string {
   const match = text.match(/^(\S+?)[,.!?~\s]+([\s\S]+)$/);
   if (!match) return text;
   const [, firstWord, rest] = match;
   if (!rest.trim()) return text;
-  const dist = editDistance(decomposeHangul(firstWord), WAKE_WORD_JAMO);
-  return dist <= 2 ? rest.trim() : text;
+  const dist = editDistance(decomposeHangul(firstWord), wakeWordJamo);
+  return dist <= WAKE_WORD_MAX_JAMO_DIST ? rest.trim() : text;
 }
 
 /** LLM에 보내는 대화 기록(턴 수, user+assistant 합산)의 최대 길이. 웨이크워드로 하루 종일
@@ -194,6 +202,11 @@ export function useConversationEngine(
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
+  // 이 대화(앱을 열고 있는 동안)에서 처음 들린 목소리를 서버가 기준으로 삼아 이후
+  // 발화를 거르는 데 쓴다(server/speaker.py의 check_session_speaker) - 사전 성문 등록
+  // 없이도 TV/다른 가족 목소리를 자동으로 걸러내려는 목적. 마운트마다 하나씩 새로
+  // 만들어서, messagesRef(LLM 대화 기록)와 같은 생애주기로 리셋된다.
+  const sttSessionIdRef = useRef(crypto.randomUUID());
   const abortControllerRef = useRef<AbortController | null>(null);
   // TTS 합성은 도착하는 즉시 병렬로 시작하되(지연 최소화), 재생 큐에 들어가는 "순서"는
   // 이 체인으로 보장한다 - 나중에 요청한 문장이 먼저 응답으로 와도 순서가 꼬이지 않는다.
@@ -207,6 +220,22 @@ export function useConversationEngine(
   const spokenTextRef = useRef("");
   // 직전 턴이 끼어들기로 중단됐을 때, 못다 한 말을 바로 다음 LLM 호출 한 번에만 힌트로 넘긴다.
   const interruptedNoteRef = useRef<string | null>(null);
+  // 보호자가 설정한 커스텀 호출어(없으면 기본값) - 세션 중 자주 안 바뀌므로 ref로 들고
+  // finalizeTurn 등의 콜백 의존성에 넣지 않는다.
+  const wakeWordJamoRef = useRef(decomposeHangul(DEFAULT_WAKE_WORD));
+
+  useEffect(() => {
+    fetch("/api/patient/wake-word")
+      .then((r) => r.json())
+      .then((data: { wakeWord: string | null }) => {
+        const word = data.wakeWord?.trim() || DEFAULT_WAKE_WORD;
+        wakeWordJamoRef.current = decomposeHangul(word);
+        // 네이티브 백그라운드 웨이크워드 감시(WakeWordService.kt)도 같은 단어를 듣게
+        // 전달한다 - 웹 브라우저에서 열면 Android가 없어 그냥 no-op.
+        (window as unknown as { Android?: { setWakeWord?: (word: string) => void } }).Android?.setWakeWord?.(word);
+      })
+      .catch(() => undefined);
+  }, []);
 
   const clearFinalizeTimer = useCallback(() => {
     if (finalizeTimerRef.current) {
@@ -354,11 +383,11 @@ export function useConversationEngine(
         return;
       }
 
-      // 앱이 이미 열려있는 상태에서 "복실아"만(다른 내용 없이) 부른 경우 - 이걸 그대로
+      // 앱이 이미 열려있는 상태에서 호출어만(다른 내용 없이) 부른 경우 - 이걸 그대로
       // LLM 대화 기록에 넣으면 AI가 그 단어를 사용자 이름처럼 오인해서 다음 응답부터
-      // 사용자를 "복실아"라고 부르는 혼란이 실사용에서 확인됐다. LLM 호출 없이 짧게만
+      // 사용자를 호출어로 부르는 혼란이 실사용에서 확인됐다. LLM 호출 없이 짧게만
       // 반응하고, 대화 기록(messagesRef/서버 저장)에는 남기지 않는다.
-      if (WAKE_WORD_ONLY_PATTERN.test(trimmed.replace(/\s+/g, ""))) {
+      if (isWakeWordOnly(trimmed, wakeWordJamoRef.current)) {
         reportToServer(`호출어 단독 발화로 판정: "${trimmed}" - 짧게만 응답`);
         setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
         queueSentence("네, 말씀하세요.", new AbortController().signal);
@@ -390,7 +419,7 @@ export function useConversationEngine(
 
       // "복실아, 내일 밥 뭐 먹지?"처럼 호출어 뒤에 실제 용건이 붙은 경우 - 호출어 부분만
       // 떼고 나머지만 LLM에 보낸다(화면/기록에는 원문 그대로 남겨 보호자가 맥락을 알 수 있게 함).
-      const forLlm = stripWakeWordPrefix(trimmed);
+      const forLlm = stripWakeWordPrefix(trimmed, wakeWordJamoRef.current);
       if (forLlm !== trimmed) {
         reportToServer(`호출어 접두어 제거: "${trimmed}" -> "${forLlm}"`);
       }
@@ -427,6 +456,7 @@ export function useConversationEngine(
         const wav = encodeWav(normalizeGain(audio), VAD_SAMPLE_RATE);
         const form = new FormData();
         form.append("file", wav, "segment.wav");
+        form.append("session_id", sttSessionIdRef.current);
 
         const data = await transcribeSegment(form);
 

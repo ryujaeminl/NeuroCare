@@ -93,6 +93,20 @@ class MainActivity : AppCompatActivity() {
         fun closeApp() {
             runOnUiThread { finish() }
         }
+
+        /**
+         * 웹앱이 로그인한 환자의 커스텀 호출어를 알아내면(app/api/patient/wake-word) 이걸로
+         * 넘겨준다 - WakeWordService(백그라운드 감시)는 세션/쿠키가 없어 직접 API를 못
+         * 부르므로, 이미 인증된 웹 레이어가 대신 알려주는 구조다. SharedPreferences에
+         * 저장해두면 WakeWordService.currentWakeWord()가 다음 감시 시작 때부터 읽는다.
+         */
+        @JavascriptInterface
+        fun setWakeWord(word: String) {
+            getSharedPreferences(WakeWordService.WAKE_WORD_PREFS, MODE_PRIVATE)
+                .edit()
+                .putString(WakeWordService.WAKE_WORD_PREF_KEY, word)
+                .apply()
+        }
     }
 
     /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */

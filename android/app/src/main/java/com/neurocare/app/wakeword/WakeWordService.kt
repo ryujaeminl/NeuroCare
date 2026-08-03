@@ -186,6 +186,12 @@ class WakeWordService : Service() {
         }
     }
 
+    /** 저장된 커스텀 호출어가 있으면 그걸, 없으면 빌드 타임 기본값("복실아")을 쓴다. */
+    private fun currentWakeWord(): String {
+        val saved = getSharedPreferences(WAKE_WORD_PREFS, MODE_PRIVATE).getString(WAKE_WORD_PREF_KEY, null)
+        return saved?.takeIf { it.isNotBlank() } ?: BuildConfig.WAKE_WORD_LABEL
+    }
+
     private fun hasMicPermission() =
         ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
             PackageManager.PERMISSION_GRANTED
@@ -217,7 +223,7 @@ class WakeWordService : Service() {
                 // 걸러지므로 이중으로 화자까지 확인할 필요가 없다.
                 val text = whisperClient.transcribe(boosted)
                 reportToServer("전사 결과: \"$text\"")
-                val targetJamo = decomposeHangul(normalize(BuildConfig.WAKE_WORD_LABEL))
+                val targetJamo = decomposeHangul(normalize(currentWakeWord()))
                 if (targetJamo.isEmpty()) return@thread
                 val dist = approxEditDistance(decomposeHangul(normalize(text)), targetJamo)
                 reportToServer("호출어 자모거리: $dist (기준 <=$WAKE_WORD_MAX_JAMO_DIST)")
@@ -291,7 +297,7 @@ class WakeWordService : Service() {
         val notification = NotificationCompat.Builder(this, WAKE_ALERT_CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_btn_speak_now)
             .setContentTitle(getString(R.string.notification_title))
-            .setContentText("\"${BuildConfig.WAKE_WORD_LABEL}\" 호출을 들었어요")
+            .setContentText("\"${currentWakeWord()}\" 호출을 들었어요")
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_CALL)
             .setFullScreenIntent(pendingIntent, true)
@@ -482,6 +488,12 @@ class WakeWordService : Service() {
 
         /** MainActivity가 열릴 때(자동 실행 포함) 이 알림을 지우기 위해 모듈 내에 공개한다. */
         internal const val WAKE_NOTIFICATION_ID = 2
+
+        /** 보호자가 웹 설정 화면에서 커스텀 호출어를 저장하면 MainActivity의 WebAppBridge가
+         * 이 SharedPreferences에 써두고, 이 서비스는 여기서 읽는다 - 값이 없으면(한 번도
+         * 저장된 적 없으면) BuildConfig의 빌드 타임 기본값으로 돌아간다. */
+        internal const val WAKE_WORD_PREFS = "neurocare_wakeword"
+        internal const val WAKE_WORD_PREF_KEY = "wake_word"
 
         /** 이보다 작으면(=조용/먼 소리) whisper 호출 없이 무시한다. */
         // 실기기 측정치(-55.5dBFS로 부른 "복실아"가 걸러짐) 기준으로 여유를 두고 낮췄다.

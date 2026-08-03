@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { DashboardLayoutEditor } from "@/components/guardian/DashboardLayoutEditor";
 import { PushOptIn } from "@/components/guardian/PushOptIn";
+import { WakeWordSettings } from "@/components/guardian/WakeWordSettings";
 import { useLinkedPatients } from "@/hooks/useLinkedPatients";
 import {
   ALERT_THRESHOLD_VALUES,
@@ -98,6 +99,8 @@ export default function SettingsPage() {
       <h2 className="text-lg font-semibold">알림 설정</h2>
 
       <PushOptIn />
+
+      <WakeWordSettings patients={patients} />
 
       <section className="flex flex-col gap-4 rounded-2xl border border-surface-border bg-surface p-5">
         <label className="flex items-center justify-between gap-4">

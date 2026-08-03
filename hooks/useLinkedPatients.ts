@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 export interface LinkedPatient {
   id: string;
   name: string;
+  /** null이면 기본 호출어("복실아")를 쓴다는 뜻. */
+  wakeWord: string | null;
   lastSession: {
     startedAt: string;
     mood: { mood: string; summary: string } | null;

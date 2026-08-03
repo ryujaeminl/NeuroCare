@@ -115,6 +115,7 @@ def health() -> dict:
 async def transcribe(
     file: UploadFile = File(...),
     speaker_id: str | None = Form(default=None),
+    session_id: str | None = Form(default=None),
 ) -> dict:
     audio_bytes = await file.read()
     if not audio_bytes:
@@ -132,6 +133,18 @@ async def transcribe(
         if similarity is not None and similarity < speaker.SIMILARITY_THRESHOLD:
             logger.info("다른 화자로 판단해 무시 (유사도 %.2f)", similarity)
             return {"text": "", "language": "ko", "duration": 0.0, "speaker_similarity": similarity}
+
+    # 사전 등록(speaker_id) 없이도, 이 대화(session_id)에서 처음 들린 목소리를 기준으로
+    # 삼아 이후 발화를 거른다 - "목소리 개인화 안 한 사람도 첫 인사 목소리만 듣게" 요청.
+    if session_id:
+        try:
+            session_similarity = speaker.check_session_speaker(session_id, audio_bytes)
+        except Exception:  # noqa: BLE001 - 세션 화자 필터 실패가 전사를 막지 않게 한다
+            logger.exception("session speaker check failed")
+            session_similarity = None
+        if session_similarity is not None and session_similarity < speaker.SESSION_SIMILARITY_THRESHOLD:
+            logger.info("세션 다른 목소리로 판단해 무시 (유사도 %.2f)", session_similarity)
+            return {"text": "", "language": "ko", "duration": 0.0, "speaker_similarity": session_similarity}
 
     try:
         # 클라이언트가 이미 VAD로 발화 구간만 잘라 보내지만, 마이크 주변 TV 소리 같은

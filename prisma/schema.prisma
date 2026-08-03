@@ -20,6 +20,8 @@ model User {
   role         String
   /// 환자 계정만 보유. 보호자가 이 코드를 입력해 연동한다.
   inviteCode   String?  @unique
+  /// 환자 계정만 의미 있음. null이면 기본값("복실아")을 쓴다 - 보호자가 설정 화면에서 바꿀 수 있다.
+  wakeWord     String?
   createdAt    DateTime @default(now())
 
   guardianLinks PatientGuardianLink[] @relation("PatientToLinks")
