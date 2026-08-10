@@ -5,6 +5,20 @@
 
 export type UserRole = "patient" | "guardian";
 
+/** 알츠하이머 진행 단계 - 경도/중등도/중증. null이면 "moderate"로 취급한다(대화 페르소나 기본값). */
+export const DEMENTIA_STAGE_VALUES = ["mild", "moderate", "severe"] as const;
+export type DementiaStage = (typeof DEMENTIA_STAGE_VALUES)[number];
+
+export function isDementiaStage(value: string): value is DementiaStage {
+  return (DEMENTIA_STAGE_VALUES as readonly string[]).includes(value);
+}
+
+export const DEMENTIA_STAGE_LABELS: Record<DementiaStage, string> = {
+  mild: "경도 (초기)",
+  moderate: "중등도 (중기)",
+  severe: "중증 (말기)",
+};
+
 export const MOOD_VALUES = ["positive", "neutral", "anxious", "confused", "sad"] as const;
 export type Mood = (typeof MOOD_VALUES)[number];
 

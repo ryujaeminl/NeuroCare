@@ -22,6 +22,9 @@ model User {
   inviteCode   String?  @unique
   /// 환자 계정만 의미 있음. null이면 기본값("복실아")을 쓴다 - 보호자가 설정 화면에서 바꿀 수 있다.
   wakeWord     String?
+  /// 환자 계정만 의미 있음. "mild" | "moderate" | "severe" - null이면 "moderate"로 취급한다.
+  /// 대화 페르소나(app/api/chat/route.ts)가 단계별로 문장 길이/질문 방식을 조절한다.
+  dementiaStage String?
   createdAt    DateTime @default(now())
 
   guardianLinks PatientGuardianLink[] @relation("PatientToLinks")

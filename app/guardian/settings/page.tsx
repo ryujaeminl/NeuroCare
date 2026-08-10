@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { DashboardLayoutEditor } from "@/components/guardian/DashboardLayoutEditor";
+import { DementiaStageSettings } from "@/components/guardian/DementiaStageSettings";
 import { PushOptIn } from "@/components/guardian/PushOptIn";
 import { WakeWordSettings } from "@/components/guardian/WakeWordSettings";
 import { useLinkedPatients } from "@/hooks/useLinkedPatients";
@@ -101,6 +102,8 @@ export default function SettingsPage() {
       <PushOptIn />
 
       <WakeWordSettings patients={patients} />
+
+      <DementiaStageSettings patients={patients} />
 
       <section className="flex flex-col gap-4 rounded-2xl border border-surface-border bg-surface p-5">
         <label className="flex items-center justify-between gap-4">

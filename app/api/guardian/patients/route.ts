@@ -17,6 +17,7 @@ export async function GET() {
             id: true,
             name: true,
             wakeWord: true,
+            dementiaStage: true,
             sessions: {
               orderBy: { startedAt: "desc" },
               take: 1,
@@ -35,6 +36,7 @@ export async function GET() {
         id: patient.id,
         name: patient.name,
         wakeWord: patient.wakeWord,
+        dementiaStage: patient.dementiaStage,
         lastSession: patient.sessions[0] ?? null,
       })),
     });

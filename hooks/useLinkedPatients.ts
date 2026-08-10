@@ -7,6 +7,8 @@ export interface LinkedPatient {
   name: string;
   /** null이면 기본 호출어("복실아")를 쓴다는 뜻. */
   wakeWord: string | null;
+  /** null이면 기본 단계("중등도")를 쓴다는 뜻. */
+  dementiaStage: string | null;
   lastSession: {
     startedAt: string;
     mood: { mood: string; summary: string } | null;

@@ -1,8 +1,10 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/authOptions";
+import { prisma } from "@/lib/db/prisma";
 import { buildFamilyRoster, buildUpcomingFamilyPlans, takePendingFamilyMessages } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoContext";
+import type { DementiaStage } from "@/lib/db/types";
 import type { Photo } from "@prisma/client";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
@@ -14,7 +16,7 @@ import type { Photo } from "@prisma/client";
 const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
 const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
 
-const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
+const SYSTEM_PROMPT_RULES = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
 설문이 아니라 실제 사람 사이의 대화입니다 - 상대가 방금 한 말/질문의 내용과 의도를
 먼저 이해하고, 그것에 실제로 맞는 반응을 하세요. 대화 주제는 옛날 추억일 수도, 오늘
 날씨일 수도, 요즘 뉴스나 게임 같은 전혀 다른 화제일 수도 있습니다 - 화제가 무엇이든
@@ -62,8 +64,9 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하�
 13. 날씨, 지금 시각, 실시간 뉴스처럼 당신이 확인할 방법이 없는, 지금 이 순간의
     사실을 아는 것처럼 구체적으로 답하지 마세요 - "오늘 맑아요", "지금 비 와요"
     같은 답은 전부 지어낸 겁니다. "그건 제가 지금 확인은 어려운데, 창밖으로 보기엔
-    어때요?"처럼 모른다고 솔직히 말하면서 화제 자체에는 자연스럽게 반응하세요.
+    어때요?"처럼 모른다고 솔직히 말하면서 화제 자체에는 자연스럽게 반응하세요.`;
 
+const SYSTEM_PROMPT_EXAMPLES = `
 【금지사항】
 - "어떻게 도와드릴까요?" 같은 챗봇 말투 금지
 - 수치, 통계, 의학정보 제시 금지
@@ -93,6 +96,40 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하�
 "정신 차리세요."
 "틀렸습니다."`;
 
+/**
+ * 알츠하이머 진행 단계별로 대화 난이도를 조절하는 규칙 14. "중등도"는 위 규칙 1~13 자체가
+ * 이미 그 기준으로 튜닝돼 있어 추가 규칙이 없다(빈 문자열) - 경도/중증만 규칙 2·3·11을
+ * 그 단계에 맞게 덮어쓴다. 보호자가 설정 안 하면(null) "중등도"로 취급한다.
+ *
+ * 【필수 규칙】번호 목록 안에 "14."로 이어붙여 SYSTEM_PROMPT_RULES와 SYSTEM_PROMPT_EXAMPLES
+ * 사이에 끼워 넣는다 - 대괄호 섹션([참고할 과거 대화/기억] 등)으로 맨 뒤에 붙이면 규칙 12가
+ * "그 아래는 전부 참고용 배경일 뿐"이라고 못박아 둔 범위 안에 들어가 버려 우선순위가 밀린다
+ * (실측 결과 그 위치에서는 중증 지침이 자주 무시됐다 - 문장이 안 짧아지고 회상 질문도 계속
+ * 나옴). 번호 규칙으로 만들어 규칙 1~13과 같은 급으로 취급되게 한다.
+ */
+function buildStageGuidance(stage: DementiaStage): string {
+  if (stage === "mild") {
+    return `
+14. [환자 단계: 경도] 이 환자는 아직 대화 능력이 좋습니다. 규칙 2는 완화해서 1~3문장까지
+    답해도 됩니다. "그때 기분이 어떠셨어요?" 같은 개방형 질문도 편하게 하며 더 자연스럽고
+    풍부한 대화를 이어가세요. 나머지 규칙은 그대로 지키세요.`;
+  }
+  if (stage === "severe") {
+    return `
+14. [환자 단계: 중증 - 이 규칙이 규칙 2·3·11보다, 이 아래 【올바른 예】의 질문 예시들보다도
+    우선함] 이 환자는 언어 이해·표현 능력이 많이 약해졌습니다. 예외 없이 반드시 1문장으로만,
+    아주 쉽고 짧은 단어로 답하세요. "기억나세요?", "어떠셨어요?", "떠오르시나요?"처럼
+    회상하거나 여러 정보를 조합해야 답할 수 있는 질문은 절대 하지 마세요. 질문이 필요하면
+    예/아니오로 답할 수 있는 아주 단순한 질문만 쓰고, 그마저도 필요할 때만 쓰세요 -
+    질문 없이 편안하게 맞장구만 치는 게 기본입니다. 정보 전달이나 대화를 길게 이어가는
+    것보다 따뜻하고 안정감 있는 톤이 훨씬 더 중요합니다. 환자 반응이 없거나 짧아도
+    다그치지 말고 편안하게 두세요.
+    이 환자에게 맞는 예: "그렇군요." / "좋으셨겠어요." / "편안하게 계세요." / "네, 그러셨군요."
+    이 환자에게 안 맞는 예(질문이 섞여 있어 금지): "그렇군요. 어떤 때였어요?" / "그때 기분이
+    어떠셨나요?" / "정말요?! 그거 진짜 대단하시네요."`;
+  }
+  return "";
+}
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -111,15 +148,17 @@ interface SystemPromptResult {
  * 유도하기 위함이다. 둘 다 없으면(가족 미등록 + Pinecone 미설정) 프롬프트가 그대로 유지된다.
  */
 async function buildSystemPrompt(patientId: string | null, latestUserText: string): Promise<SystemPromptResult> {
-  if (!patientId) return { prompt: SYSTEM_PROMPT, photo: null };
+  if (!patientId) return { prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES, photo: null };
 
-  const [roster, rawMemories, pendingMessages, upcomingPlans, unofferedPhotoPrompt] = await Promise.all([
+  const [roster, rawMemories, pendingMessages, upcomingPlans, unofferedPhotoPrompt, patientRecord] = await Promise.all([
     buildFamilyRoster(patientId),
     latestUserText ? searchMemories(patientId, latestUserText, 3) : Promise.resolve([]),
     takePendingFamilyMessages(patientId),
     buildUpcomingFamilyPlans(patientId),
     getUnofferedPhotoPrompt(patientId),
+    prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
   ]);
+  const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
 
   // AI 자신의 과거 응답(role: assistant)은 "기억"이 아니라 그냥 대화 로그다 - 이걸
   // 참고자료로 다시 넣으면 예전(페르소나 개선 전)의 어색한 응답 패턴이 비슷한 질문에
@@ -132,7 +171,7 @@ async function buildSystemPrompt(patientId: string | null, latestUserText: strin
   const matchedMemoryIds = memories.filter((m) => m.kind === "family_memory").map((m) => m.id);
   const photo = await pickPhotoToShow(patientId, latestUserText, matchedMemoryIds);
 
-  let prompt = SYSTEM_PROMPT;
+  let prompt = SYSTEM_PROMPT_RULES + buildStageGuidance(dementiaStage) + "\n" + SYSTEM_PROMPT_EXAMPLES;
 
   if (roster) {
     prompt += `
