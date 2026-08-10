@@ -386,6 +386,21 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        reportToServer("MainActivity.onDestroy: WebView 강제 파괴 + 웨이크워드 서비스 시작 보장")
+        // onPause()가 웹 대화엔진 정지 신호를 보내지만 evaluateJavascript는 비동기다 -
+        // 최근 앱 목록에서 스와이프로 앱을 완전히 닫을 때처럼 onPause 직후 onDestroy가
+        // 빠르게 이어지면, 신호가 웹 쪽에서 실제로 실행되기 전에 액티비티가 사라져버릴
+        // 수 있다. 게다가 onPause에서 이미 웨이크워드 서비스를 포그라운드로 띄워
+        // 프로세스 자체는 안 죽는 상태라, 정지 신호를 놓친 WebView가 마이크/TTS/LLM
+        // 스트리밍을 백그라운드에서 계속 붙잡고 있을 수 있다("앱을 꺼도 계속 대화를
+        // 하는 경우가 있어" 실사용 보고) - JS의 협조적인 정지 신호에만 기대지 않고
+        // WebView 자체를 여기서 확실히 파괴해 마이크/오디오/네트워크를 강제로 끊는다.
+        webView.destroy()
+        // onPause가 어떤 이유로든 못 불렸을 경우(화면 꺼짐이 onPause를 못 부르는
+        // 것과 같은 종류의 플랫폼 엣지 케이스)를 대비해, 액티비티가 사라지는 시점에
+        // 한 번 더 웨이크워드 서비스 시작을 보장한다 - 이미 떠 있으면 아무 효과 없는
+        // 멱등 호출이다.
+        startWakeWordService()
         unregisterReceiver(screenPowerReceiver)
     }
 
