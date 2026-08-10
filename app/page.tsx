@@ -117,6 +117,13 @@ export default function HomePage() {
         <h1 className="text-xl font-bold tracking-tight text-accent">뉴로케어</h1>
         <div className="flex items-center gap-4 text-muted-foreground">
           <Link
+            href="/memories"
+            aria-label="내 추억"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-surface-border text-lg transition hover:border-accent"
+          >
+            🖼️
+          </Link>
+          <Link
             href="/history"
             aria-label="대화 기록"
             className="flex h-9 w-9 items-center justify-center rounded-full border border-surface-border text-lg transition hover:border-accent"

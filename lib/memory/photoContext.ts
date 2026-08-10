@@ -66,7 +66,16 @@ export async function pickPhotoToShow(
       where: { patientId, memoryId: { in: matchedMemoryIds } },
       orderBy: { createdAt: "desc" },
     });
-    if (memoryPhoto) return memoryPhoto;
+    if (memoryPhoto) {
+      // 이 순간 환자가 실제로 한 말(회상 매칭을 트리거한 발화 그 자체)을 그 사진에
+      // 남겨둔다 - "내 추억"(/memories)에서 환자 본인이 나중에 다시 볼 수 있게 하려는
+      // 목적. 동의 경로(위 offered 분기)는 latestUserText가 그냥 "네"라 의미 없어서
+      // 여기(회상 매칭 경로)에서만 남긴다.
+      return prisma.photo.update({
+        where: { id: memoryPhoto.id },
+        data: { patientQuote: latestUserText, quotedAt: new Date() },
+      });
+    }
   }
 
   return null;
