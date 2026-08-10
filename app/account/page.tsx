@@ -6,10 +6,13 @@ import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { VoiceEnrollment } from "@/components/VoiceEnrollment";
 
+const DEFAULT_WAKE_WORD = "복실아";
+
 export default function AccountPage() {
   const router = useRouter();
   const { data: session, status } = useSession();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [wakeWord, setWakeWord] = useState<string | null>(null);
 
   useEffect(() => {
     if (status === "unauthenticated") router.push("/login");
@@ -25,6 +28,15 @@ export default function AccountPage() {
         setInviteCode(data.inviteCode ?? null);
       } catch {
         // 초대 코드는 부가 정보이므로 실패해도 화면은 그대로 둔다.
+      }
+    })();
+    void (async () => {
+      try {
+        const response = await fetch("/api/patient/wake-word");
+        const data = (await response.json()) as { wakeWord?: string | null };
+        setWakeWord(data.wakeWord ?? DEFAULT_WAKE_WORD);
+      } catch {
+        setWakeWord(DEFAULT_WAKE_WORD);
       }
     })();
   }, [session?.user?.role]);
@@ -59,6 +71,16 @@ export default function AccountPage() {
         {isPatient && (
           <div className="mt-4">
             <VoiceEnrollment />
+          </div>
+        )}
+
+        {isPatient && (
+          <div className="mt-4 rounded-2xl border border-surface-border bg-surface p-5">
+            <p className="font-semibold">호출어</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              지금은 &ldquo;{wakeWord ?? DEFAULT_WAKE_WORD}&rdquo;라고 부르면 앱이 켜져요. 다른 이름으로
+              바꾸고 싶으면 가족(보호자)이 보호자 앱의 설정에서 바꿀 수 있어요.
+            </p>
           </div>
         )}
 

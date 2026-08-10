@@ -208,8 +208,10 @@ export function useConversationEngine(
   const messagesRef = useRef<ChatMessage[]>([]);
   // 이 대화(앱을 열고 있는 동안)에서 처음 들린 목소리를 서버가 기준으로 삼아 이후
   // 발화를 거르는 데 쓴다(server/speaker.py의 check_session_speaker) - 사전 성문 등록
-  // 없이도 TV/다른 가족 목소리를 자동으로 걸러내려는 목적. 마운트마다 하나씩 새로
-  // 만들어서, messagesRef(LLM 대화 기록)와 같은 생애주기로 리셋된다.
+  // 없이도 TV/다른 가족 목소리를 자동으로 걸러내려는 목적. 마운트 시 한 번 만들고,
+  // 그 뒤로는 handleAppForeground에서 포그라운드로 돌아올 때마다 새로 만든다(액티비티는
+  // 백그라운드↔포그라운드 전환에 재마운트되지 않아 마운트 시점에만 새로 만들면 하루
+  // 종일 같은 세션으로 남는다).
   const sttSessionIdRef = useRef(crypto.randomUUID());
   const abortControllerRef = useRef<AbortController | null>(null);
   // TTS 합성은 도착하는 즉시 병렬로 시작하되(지연 최소화), 재생 큐에 들어가는 "순서"는
@@ -555,7 +557,15 @@ export function useConversationEngine(
   }, [abortCurrentTurn, vad.stop, clearFinalizeTimer]);
 
   const handleAppForeground = useCallback(() => {
-    reportToServer("앱 포그라운드 복귀 - 대화엔진 재개");
+    reportToServer("앱 포그라운드 복귀 - 대화엔진 재개 + 화자 세션 리셋");
+    // 액티비티는 백그라운드↔포그라운드를 오가도 재마운트되지 않는다(onPause/onResume만
+    // 호출되고 onCreate는 다시 안 불림) - sttSessionIdRef를 마운트 시 한 번만 만들면
+    // 태블릿을 하루 종일 켜둘 때 이 화자 세션이 사실상 "오늘 하루 전체"로 늘어난다.
+    // 그러면 앱을 연 지 한참 뒤(예: TV 소리)가 그날의 "기준 목소리"로 잘못 등록되고,
+    // 그 뒤로는 실제 환자 목소리가 오히려 걸러지거나 TV 소리가 계속 통과하는 문제가
+    // 생길 수 있다. "이 대화(앱이 켜져 있는 동안)에서 처음 들린 목소리"라는 원래 의도에
+    // 맞게, 포그라운드로 돌아올 때마다(=새로 부른 대화가 시작될 때마다) 세션을 새로 만든다.
+    sttSessionIdRef.current = crypto.randomUUID();
     void vad.start();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vad.start]);

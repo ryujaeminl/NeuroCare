@@ -323,6 +323,17 @@ class WakeWordService : Service() {
         )
         if (!isLockedOrScreenOff && canOverlay) {
             launchViaOverlay(intent)
+        } else if (!isLockedOrScreenOff) {
+            // 오버레이("다른 앱 위에 그리기") 권한이 없으면 위 트릭을 못 쓴다 - 그런데 잠금
+            // 해제+화면 켜짐 상태라 전체화면 알림도 자동으로는 안 열려서, 지금까지는 배너
+            // 알림만 뜨고 아무것도 열리지 않았다("태블릿에서 호출어로 앱 실행이 안 됨" 실사용
+            // 보고와 정확히 일치하는 상태 조합 - 위 진단 로그가 이 사례를 의심해 이미 남겨져
+            // 있었다). 포그라운드 서비스에서의 startActivity()가 항상 통하진 않는다는 걸
+            // 알고 오버레이 트릭을 만들었지만(launchViaOverlay 주석 참고), 오버레이 권한이
+            // 아예 없는 이 경우엔 그것도 시도조차 못 하므로 안 하는 것보다는 시도하는 게 낫다.
+            reportToServer("오버레이 권한 없음 - startActivity() 직접 시도(최선의 노력)")
+            runCatching { startActivity(intent) }
+                .onFailure { e -> reportToServer("startActivity() 직접 시도 실패: ${e.javaClass.simpleName}") }
         }
     }
 

@@ -44,7 +44,16 @@ export function WakeWordSettings({ patients }: WakeWordSettingsProps) {
     }
   }
 
-  if (patients.length === 0) return null;
+  if (patients.length === 0) {
+    return (
+      <section className="flex flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-5">
+        <h2 className="text-lg font-semibold">호출어</h2>
+        <p className="text-sm text-muted-foreground">
+          환자를 먼저 연동하면 여기서 호출어(기본값 &ldquo;{DEFAULT_WAKE_WORD}&rdquo;)를 바꿀 수 있어요.
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">

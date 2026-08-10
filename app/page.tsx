@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useConversationEngine } from "@/hooks/useConversationEngine";
 import { EmergencyButton } from "@/components/EmergencyButton";
-import { ProgressRing } from "@/components/ProgressRing";
 import { TodayMoodCard } from "@/components/TodayMoodCard";
 
 interface DashboardCardProps {
@@ -34,10 +33,43 @@ function DashboardCard({ icon, iconClassName, title, description, children }: Da
 
 const DEFAULT_SUBTITLE = "오늘도 기분 좋은 하루네요. 필요한 것이 있다면 언제든 말씀해주세요.";
 
+interface DashboardSummary {
+  familyMembers: { name: string; relation: string }[];
+  upcomingPlan: { title: string; date: string } | null;
+  pendingMessageFrom: string | null;
+  dueMedication: { name: string; dosage: string; time: string } | null;
+}
+
+function formatPlanDate(iso: string): string {
+  const date = new Date(iso);
+  const today = new Date();
+  const days = Math.round((date.setHours(0, 0, 0, 0) - today.setHours(0, 0, 0, 0)) / 86_400_000);
+  if (days === 0) return "오늘";
+  if (days === 1) return "내일";
+  return `${new Date(iso).getMonth() + 1}월 ${new Date(iso).getDate()}일`;
+}
+
 export default function HomePage() {
   const [medsDismissed, setMedsDismissed] = useState(false);
+  const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const { data: session, status } = useSession();
   const router = useRouter();
+
+  // 하단 카드들(가족 연결/오늘의 계획/가족 메시지/복약 알림)이 예전엔 전부 하드코딩된
+  // 가짜 데이터였다 - 보호자 앱이 실제로 입력한 내용과 전혀 연동되지 않고 있었다.
+  // 로그인한 환자 계정일 때만 실제 요약을 불러온다.
+  useEffect(() => {
+    if (session?.user?.role !== "patient") return;
+    void (async () => {
+      try {
+        const response = await fetch("/api/patient/dashboard");
+        if (!response.ok) return;
+        setDashboard(await response.json());
+      } catch {
+        // 대시보드 요약은 부가 정보라 실패해도 대화 화면 자체는 그대로 쓸 수 있어야 한다.
+      }
+    })();
+  }, [session?.user?.role]);
 
   // 로그인 없이는 마이크도, 기분/기록 조회도 전부 401만 반복된다 - 대시보드를 보여주기 전에
   // 먼저 로그인부터 시키는 게 맞다. status가 "loading"인 동안은 아직 세션 확인 중이라
@@ -136,7 +168,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {!medsDismissed && (
+        {!medsDismissed && dashboard?.dueMedication && (
           <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-rose-400/60 bg-danger-bg px-5 py-4">
             <div className="flex items-center gap-3 text-left">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500 text-lg">
@@ -144,8 +176,10 @@ export default function HomePage() {
               </span>
               <div>
                 <p className="text-xs font-medium text-rose-300">중요한 알림</p>
-                <p className="font-semibold">오후 약 복용 시간입니다</p>
-                <p className="text-sm text-muted-foreground">혈압약과 비타민을 챙겨 드실 시간이에요.</p>
+                <p className="font-semibold">{dashboard.dueMedication.time} 약 복용 시간입니다</p>
+                <p className="text-sm text-muted-foreground">
+                  {dashboard.dueMedication.name} {dashboard.dueMedication.dosage} 챙겨 드실 시간이에요.
+                </p>
               </div>
             </div>
             <button
@@ -162,77 +196,42 @@ export default function HomePage() {
             icon="👪"
             iconClassName="bg-emerald-500/20 text-emerald-300"
             title="가족 연결"
-            description="가족들의 최근 소식과 사진을 확인해보세요."
+            description={
+              dashboard && dashboard.familyMembers.length === 0
+                ? "아직 등록된 가족이 없어요."
+                : "가족들의 최근 소식과 사진을 확인해보세요."
+            }
           >
-            <div className="flex items-center -space-x-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-amber-200 text-sm">
-                👵
-              </span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-sky-200 text-sm">
-                👴
-              </span>
-              <span className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-surface bg-accent text-xs font-semibold text-accent-foreground">
-                +2
-              </span>
-            </div>
+            {dashboard && dashboard.familyMembers.length > 0 && (
+              <p className="text-sm text-muted-foreground">
+                {dashboard.familyMembers.map((m) => m.name).join(", ")}
+                {dashboard.familyMembers.length >= 4 ? " 외" : ""}
+              </p>
+            )}
           </DashboardCard>
 
           <DashboardCard
             icon="📋"
             iconClassName="bg-sky-500/20 text-sky-300"
             title="오늘의 계획"
-            description="오후 3시에 산책 예약이 있습니다."
-          >
-            <span className="text-sm font-medium text-accent">일정 더 보기 →</span>
-          </DashboardCard>
+            description={
+              dashboard?.upcomingPlan
+                ? `${formatPlanDate(dashboard.upcomingPlan.date)} - ${dashboard.upcomingPlan.title}`
+                : "다가오는 일정이 없어요."
+            }
+          />
 
           <TodayMoodCard refreshKey={engine.log.length} />
         </div>
 
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-surface-border bg-surface p-5">
-            <div className="flex flex-col gap-4">
-              <p className="font-semibold">활동 요약</p>
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-500/20 text-emerald-300">
-                  🚶
-                </span>
-                <div>
-                  <p className="font-semibold">3,240 걸음</p>
-                  <p className="text-xs text-muted-foreground">목표까지 1,760 걸음 남음</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-sky-500/20 text-sky-300">
-                  🌙
-                </span>
-                <div>
-                  <p className="font-semibold">7시간 20분</p>
-                  <p className="text-xs text-muted-foreground">매우 깊은 수면 상태</p>
-                </div>
-              </div>
-            </div>
-            <ProgressRing percent={70} />
-          </div>
-
-          <div className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+        {dashboard?.pendingMessageFrom && (
+          <div className="flex flex-col gap-1 rounded-2xl border border-surface-border bg-surface p-5">
             <p className="font-semibold">가족 메시지</p>
             <p className="text-muted-foreground">
-              &ldquo;할아버지, 이번 주말에 맛있는 거 먹으러 가요! 사랑해요.&rdquo; - 지민
+              {dashboard.pendingMessageFrom}님이 메시지를 남기셨어요. 대화 중에 들려드릴게요.
             </p>
-            <div className="flex items-center justify-between">
-              <div className="flex gap-2">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-sm">
-                  📹
-                </span>
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-background text-sm">
-                  💬
-                </span>
-              </div>
-              <span className="text-xs text-muted-foreground">5분 전</span>
-            </div>
           </div>
-        </div>
+        )}
       </main>
 
       {session?.user?.role === "patient" && <EmergencyButton />}
