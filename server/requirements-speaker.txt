@@ -12,4 +12,8 @@
 # 의존성(webrtcvad-wheels, librosa, scipy)은 requirements.txt에 이미 들어있다.
 # speaker.py의 _get_encoder()가 torch.cuda.is_available()로 자동 감지하므로,
 # CUDA가 안 보이는 환경(로컬 개발 등)에 그대로 설치해도 CPU로 안전하게 내려간다.
+#
+# GPU 서버(rookie)에 직접(Docker 없이) 설치한다면 server/Dockerfile을 참고할 것 -
+# 그 서버 드라이버가 CUDA 12.2까지만 지원해서 기본(인덱스 미지정) 설치는 조용히
+# CPU로 주저앉는다(실측 확인) - `--index-url https://download.pytorch.org/whl/cu121`을 써야 한다.
 resemblyzer==0.1.4

@@ -6,11 +6,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements-speaker.txt ./
-# torch는 기본 인덱스(CUDA 빌드)로 받는다 - speaker.py가 GPU를 쓰려면 CUDA 런타임이
-# 포함된 빌드가 필요하다(이 서버는 --gpus all로 뜬다). 용량은 늘지만(수 GB) 화자
-# 임베딩이 매 턴 whisper 앞에서 CPU로 순차 실행되던 지연을 없앤다.
+# torch는 CUDA 12.1 빌드로 고정한다 - speaker.py가 GPU를 쓰려면 CUDA 런타임이 포함된
+# 빌드가 필요하다(이 서버는 --gpus all로 뜬다). 기본(인덱스 미지정) 설치는 pip이 그 시점의
+# 최신 CUDA 빌드(예: cu124/cu126)를 받아오는데, 이 서버의 드라이버는 CUDA 12.2까지만
+# 지원해서(`torch.cuda.is_available()`가 False + "found version 12020" 경고로 실측 확인)
+# 드라이버보다 새 CUDA를 요구하는 빌드는 조용히 CPU로 주저앉는다. cu121은 12.1~12.2대
+# 드라이버에서 안정적으로 동작하는 걸 확인한 버전 - 드라이버를 올리기 전까진 이 인덱스로
+# 고정한다. 용량은 늘지만(수 GB) 화자 임베딩이 매 턴 whisper 앞에서 CPU로 순차 실행되던
+# 지연을 없앤다.
 RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir torch \
+    && pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu121 \
     && pip install --no-cache-dir --no-deps -r requirements-speaker.txt \
     && pip install --no-cache-dir nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*
 
