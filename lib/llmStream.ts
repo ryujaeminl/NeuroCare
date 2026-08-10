@@ -4,11 +4,18 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface ChatPhoto {
+  url: string;
+  caption: string | null;
+}
+
 export interface StreamChatOptions {
   /** 청크가 도착할 때마다 호출 (지금까지 누적된 전체 텍스트를 넘겨준다) */
   onChunk?: (fullTextSoFar: string) => void;
   /** 문장 하나가 완성될 때마다 호출 - TTS에 바로 넘기기 위함 */
   onSentence?: (sentence: string) => void;
+  /** 서버가 이번 턴에 보여줄 사진을 골랐으면 스트림을 읽기 전에 호출 (app/api/chat/route.ts 참고) */
+  onPhoto?: (photo: ChatPhoto) => void;
   signal?: AbortSignal;
 }
 
@@ -29,6 +36,15 @@ export async function streamChat(
   if (!response.ok || !response.body) {
     const detail = await response.text().catch(() => "");
     throw new Error(detail || "LLM 요청에 실패했습니다.");
+  }
+
+  const photoUrl = response.headers.get("X-Photo-Url");
+  if (photoUrl) {
+    const caption = response.headers.get("X-Photo-Caption");
+    options.onPhoto?.({
+      url: decodeURIComponent(photoUrl),
+      caption: caption ? decodeURIComponent(caption) : null,
+    });
   }
 
   const reader = response.body.getReader();

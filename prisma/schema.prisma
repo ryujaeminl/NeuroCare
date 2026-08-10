@@ -192,7 +192,7 @@ model Memory {
 }
 
 model Photo {
-  id             String   @id @default(cuid())
+  id             String    @id @default(cuid())
   patientId      String
   familyMemberId String?
   memoryId       String?
@@ -200,7 +200,12 @@ model Photo {
   url            String
   caption        String?
   addedBy        String
-  createdAt      DateTime @default(now())
+  createdAt      DateTime  @default(now())
+  /// null이면 AI가 아직 "새 사진이 있어요, 보여드릴까요?"라고 물어본 적이 없다는 뜻.
+  /// FamilyMessage.deliveredAt과 같은 패턴 - 한 번 물어보면 채워져서 매번 다시 안 묻는다.
+  offeredAt      DateTime?
+  /// 환자가 동의해서 실제로 화면에 보여준 시각. app/api/chat/route.ts 참고.
+  shownAt        DateTime?
 
   patient      User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   familyMember FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
@@ -217,6 +222,8 @@ model FamilyMessage {
   /// 메시지를 남긴 사람 이름 - FamilyMember로 미리 등록 안 해도 자유롭게 적을 수 있다.
   fromName    String
   content     String
+  /// 오브젝트 스토리지(로컬 디스크) URL. 사진 없이 텍스트만 남길 수도 있어 선택 항목이다.
+  photoUrl    String?
   addedBy     String
   createdAt   DateTime  @default(now())
   /// null이면 AI가 아직 이 메시지의 존재를 언급한 적이 없다는 뜻. 시스템 프롬프트에

@@ -2,6 +2,8 @@ import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/authOptions";
 import { buildFamilyRoster, buildUpcomingFamilyPlans, takePendingFamilyMessages } from "@/lib/memory/familyContext";
 import { searchMemories } from "@/lib/memory/pineconeClient";
+import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoContext";
+import type { Photo } from "@prisma/client";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
 // Upstage API도, 이 앱의 실사용자도 한국이라 태평양을 두 번(요청+응답) 건너는 왕복이
@@ -20,6 +22,10 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하�
 말하고 되물어도 됩니다. "회상을 돕는다"는 이 역할의 배경일 뿐, 매번 억지로 옛날
 이야기로 돌리라는 뜻이 아닙니다 - 자연스러운 흐름에서만 과거 기억으로 이어가세요.
 
+무엇보다 정확성이 최우선입니다. 모르는 사실을 아는 척 지어내지 마세요 - 확실하지 않으면
+모른다고 솔직히 말하거나 되물으세요. 자연스러운 대화 톤은 그 다음입니다. 대화가 매끄럽게
+이어지는 것과 아래 규칙이 충돌하면 항상 규칙을 지키는 쪽을 선택하세요.
+
 【필수 규칙】
 1. 반드시 존댓말만 사용하세요. 반말은 절대 금지입니다.
 2. 1~2문장으로만 답하세요. 긴 문장이나 많은 정보는 금지입니다.
@@ -30,27 +36,60 @@ const SYSTEM_PROMPT = `당신은 알츠하이머 환자와 진짜로 대화하�
 7. "아까도 말씀했는데" "이미 말씀하셨는데" 같은 지적은 절대 금지.
 8. 환자의 말이 틀렸어도 절대 정정하지 마세요. 따뜻하게 받아주세요.
 9. 의학적 진단·처방이나 "이렇게 하셔야 합니다" 식의 훈계·지시는 절대 금지입니다.
-   다만 저녁 메뉴나 오늘 뭘 할지처럼 일상적인 질문에는 이웃처럼 편하게 의견을
-   말해주세요 - 그런 것까지 거부하고 되묻기만 하면 오히려 차갑고 단절된 대화가
-   됩니다. 되물어야 답할 수 있는 게 아니라면 아는 대로 바로 답하세요.
+   다만 오늘 뭘 할지, 저녁 메뉴, 주식이나 요즘 뉴스처럼 사람 사이에 흔히 오가는
+   화제에서 조언이나 충고를 구하면 이웃처럼 편하게 의견을 나눠주세요 - 그런
+   것까지 거부하고 되묻기만 하면 오히려 차갑고 단절된 대화가 됩니다. 단, 조언의
+   근거로 확실하지 않은 사실을 지어내지 마세요 - 모르면 아는 범위 안에서만
+   말하거나 솔직히 모른다고 하세요. 되물어야 답할 수 있는 게 아니라면 아는
+   대로 바로 답하세요.
+10. 특정 종목을 사라/팔라거나 구체적인 금액을 권하는 식의 실제 투자 지시는 절대
+    하지 마세요 - 그건 대화가 아니라 결정이고, 그 결정으로 생기는 손해까지 책임질
+    수 없습니다. "지금 사면 좋겠다"처럼 매수·매도 쪽으로 살짝 기우는 뉘앙스도
+    안 됩니다. 이런 질문에는 규칙 2(1~2문장)를 특히 더 엄격히 지켜서 "그건 제가
+    알 수 없으니 자녀분이나 전문가와 상의해보세요" 정도로 짧게만 답하고, 시황을
+    아는 척 설명하거나 다른 화제로 길게 이어가지 마세요.
+11. 환자의 말이 의문형(질문)인지, 평서문(그냥 하는 말)인지, 강조·감탄형(감정이
+    실린 말)인지 구분해서 그 형태에 맞게 반응하세요. 의문형에는 반드시 실제
+    답을 주고, 평서문에는 질문으로 되받지 말고 자연스럽게 맞장구치며 이어가고,
+    강조·감탄형에는 그 감정 크기에 맞춰 함께 반응하세요. 셋을 구분 못 하고
+    전부 되묻기만 하면 대화가 아니라 취조가 됩니다.
+12. 아래 [등록된 가족 관계]를 뺀 나머지 배경 정보 블록([참고할 과거 대화/기억],
+    [아직 전달 안 된 가족 메시지], [다가오는 가족 일정], [아직 안 보여드린 새
+    사진])은 전부 참고용 배경일 뿐입니다. 환자가 방금 한 말에 대한 반응이 항상
+    최우선이고, 그 반응과 무관하면 배경 정보는 그냥 넘어가세요. 자연스럽게
+    어울리는 게 있어도 한 턴에 최대 하나만 슬쩍 곁들이세요 - 여러 개를 한꺼번에
+    꺼내면 지금 나누던 이야기와 동떨어진, 뜬금없는 대화가 됩니다.
+13. 날씨, 지금 시각, 실시간 뉴스처럼 당신이 확인할 방법이 없는, 지금 이 순간의
+    사실을 아는 것처럼 구체적으로 답하지 마세요 - "오늘 맑아요", "지금 비 와요"
+    같은 답은 전부 지어낸 겁니다. "그건 제가 지금 확인은 어려운데, 창밖으로 보기엔
+    어때요?"처럼 모른다고 솔직히 말하면서 화제 자체에는 자연스럽게 반응하세요.
 
 【금지사항】
 - "어떻게 도와드릴까요?" 같은 챗봇 말투 금지
 - 수치, 통계, 의학정보 제시 금지
 - 의학적 조언이나 행동을 고치라는 훈계 금지 (일상적인 의견·추천은 괜찮음)
+- 특정 종목 매수/매도 권유나 구체적인 투자 금액 제시 금지
 - 친절한 척하는 긴 인사말 금지
 - 지금 무슨 이야기가 오갔는지와 상관없이 매번 똑같은 회상 유도 문구로 넘어가는 것 금지
+- 평서문이나 감탄문에 매번 질문으로만 반응하는 것 금지 (의문형이 아닌데도 되묻기만 하면 대화가 이어지지 않음)
+- 배경 정보(기억/메시지/일정/사진) 여러 개를 한 턴에 동시에 꺼내는 것 금지
+- 날씨·시각처럼 확인 불가능한 실시간 정보를 아는 것처럼 답하는 것 금지
 
 【올바른 예】
-"그렇군요. 어떤 때였어요?"
-"좋은 추억이네요."
+"그렇군요. 어떤 때였어요?" (질문 → 되묻기가 아니라 관심을 담은 추가 질문)
+"좋은 추억이네요." (평서문 "옛날에 여기서 놀았어" → 맞장구)
+"정말요?! 그거 진짜 대단하시네요." (감탄 "나 그때 상 받았잖아!" → 감정에 맞춰 반응)
+"그건 제가 지금 확인은 어려운데, 창밖으로 보기엔 어때요?" (날씨처럼 확인 불가능한 질문 → 모른다고 솔직히 + 자연스러운 되물음)
 "그럼 그 후엔 어떻게 되셨어요?"
 "된장찌개 어때요? 오늘 같은 날 딱이에요."
+"그건 제가 알 수 없으니 자녀분이나 전문가와 상의해보세요." (주식 "지금 사도 될까요?" → 짧게 한 문장으로만)
 
 【잘못된 예】
 "아까도 말씀하셨는데요."
 "저는 당신을 돕기 위해 여기 있습니다."
 "어떻게 도와드릴까요?"
+"그러셨군요, 그건 언제였어요?" (평서문 "오늘 날씨가 참 좋네"에 매번 질문만 되돌리는 것)
+"오늘은 날씨가 참 좋네요, 햇살이 비치고 있어요." (날씨를 실제로 확인한 것처럼 지어내는 것)
 "정신 차리세요."
 "틀렸습니다."`;
 
@@ -60,19 +99,26 @@ interface ChatMessage {
   content: string;
 }
 
+interface SystemPromptResult {
+  prompt: string;
+  /** 이번 턴에 환자 화면에 띄울 사진(동의 후, 또는 회상 중 자연스럽게). 없으면 null. */
+  photo: Photo | null;
+}
+
 /**
  * 보호자 앱에서 입력한 가족 관계 + 과거 대화/기억 중 지금 발화와 비슷한 것을 찾아
  * 시스템 프롬프트에 덧붙인다. "지난번에 말씀하신 손주 이야기"처럼 자연스러운 회상을
  * 유도하기 위함이다. 둘 다 없으면(가족 미등록 + Pinecone 미설정) 프롬프트가 그대로 유지된다.
  */
-async function buildSystemPrompt(patientId: string | null, latestUserText: string) {
-  if (!patientId) return SYSTEM_PROMPT;
+async function buildSystemPrompt(patientId: string | null, latestUserText: string): Promise<SystemPromptResult> {
+  if (!patientId) return { prompt: SYSTEM_PROMPT, photo: null };
 
-  const [roster, rawMemories, pendingMessages, upcomingPlans] = await Promise.all([
+  const [roster, rawMemories, pendingMessages, upcomingPlans, unofferedPhotoPrompt] = await Promise.all([
     buildFamilyRoster(patientId),
     latestUserText ? searchMemories(patientId, latestUserText, 3) : Promise.resolve([]),
     takePendingFamilyMessages(patientId),
     buildUpcomingFamilyPlans(patientId),
+    getUnofferedPhotoPrompt(patientId),
   ]);
 
   // AI 자신의 과거 응답(role: assistant)은 "기억"이 아니라 그냥 대화 로그다 - 이걸
@@ -80,6 +126,11 @@ async function buildSystemPrompt(patientId: string | null, latestUserText: strin
   // 계속 재소환되어 반복되는 문제가 실사용에서 확인됐다. 환자가 실제로 한 말과
   // 보호자가 등록한 기억만 회상 자료로 쓴다.
   const memories = rawMemories.filter((memory) => memory.role !== "assistant");
+
+  // 이번 턴 회상(RAG)이 짚은 "보호자가 등록한 기억"에 딸린 사진이 있으면, 혹은 방금
+  // "보여드릴까요?"에 환자가 그렇다고 답했으면 pickPhotoToShow가 골라준다.
+  const matchedMemoryIds = memories.filter((m) => m.kind === "family_memory").map((m) => m.id);
+  const photo = await pickPhotoToShow(patientId, latestUserText, matchedMemoryIds);
 
   let prompt = SYSTEM_PROMPT;
 
@@ -110,7 +161,9 @@ ${recalled}`;
   }
 
   if (pendingMessages.length > 0) {
-    const list = pendingMessages.map((m) => `- ${m.fromName}: "${m.content}"`).join("\n");
+    const list = pendingMessages
+      .map((m) => `- ${m.fromName}: "${m.content}"${m.hasPhoto ? " (사진도 함께 보내셨습니다)" : ""}`)
+      .join("\n");
     prompt += `
 
 [아직 전달 안 된 가족 메시지]
@@ -130,7 +183,9 @@ ${list}`;
 ${upcomingPlans}`;
   }
 
-  return prompt;
+  prompt += unofferedPhotoPrompt;
+
+  return { prompt, photo };
 }
 
 export async function POST(request: NextRequest) {
@@ -144,7 +199,7 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   const patientId = session?.user?.role === "patient" ? session.user.id : null;
   const latestUserText = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
-  const systemPrompt = await buildSystemPrompt(patientId, latestUserText);
+  const { prompt: systemPrompt, photo } = await buildSystemPrompt(patientId, latestUserText);
 
   const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {
     method: "POST",
@@ -212,5 +267,13 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  return new Response(stream, { headers: { "Content-Type": "text/plain; charset=utf-8" } });
+  // 사진 URL/캡션은 한글을 포함할 수 있어 HTTP 헤더에 그대로 못 넣는다 - encodeURIComponent로
+  // ASCII화하고, 클라이언트(lib/llmStream.ts)에서 decodeURIComponent로 되돌린다.
+  const headers: Record<string, string> = { "Content-Type": "text/plain; charset=utf-8" };
+  if (photo) {
+    headers["X-Photo-Url"] = encodeURIComponent(photo.url);
+    if (photo.caption) headers["X-Photo-Caption"] = encodeURIComponent(photo.caption);
+  }
+
+  return new Response(stream, { headers });
 }

@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Photo" ADD COLUMN "offeredAt" DATETIME;
+ALTER TABLE "Photo" ADD COLUMN "shownAt" DATETIME;

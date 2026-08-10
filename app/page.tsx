@@ -121,6 +121,21 @@ export default function HomePage() {
           </div>
         </section>
 
+        {engine.photo && (
+          <div className="relative mx-auto flex w-full max-w-md flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-4">
+            <button
+              onClick={engine.dismissPhoto}
+              aria-label="사진 닫기"
+              className="absolute right-3 top-3 flex h-7 w-7 items-center justify-center rounded-full bg-background text-sm"
+            >
+              ✕
+            </button>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={engine.photo.url} alt={engine.photo.caption ?? "가족 사진"} className="w-full rounded-xl object-cover" />
+            {engine.photo.caption && <p className="text-center text-sm text-muted-foreground">{engine.photo.caption}</p>}
+          </div>
+        )}
+
         {!medsDismissed && (
           <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-rose-400/60 bg-danger-bg px-5 py-4">
             <div className="flex items-center gap-3 text-left">

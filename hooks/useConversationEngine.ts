@@ -9,7 +9,7 @@ import { useConversationPersistence } from "@/hooks/useConversationPersistence";
 import { isUtteranceComplete } from "@/lib/turnDetector";
 import { encodeWav } from "@/lib/audio/encodeWav";
 import { normalizeGain } from "@/lib/audio/normalizeGain";
-import { streamChat, type ChatMessage } from "@/lib/llmStream";
+import { streamChat, type ChatMessage, type ChatPhoto } from "@/lib/llmStream";
 import { ttsProvider } from "@/lib/tts/ttsClient";
 import { speechQueue } from "@/lib/speechQueue";
 
@@ -30,6 +30,9 @@ export interface UseConversationEngineResult {
   vadListening: boolean;
   vadUserSpeaking: boolean;
   vadError: string | null;
+  /** 이번 턴에 서버가 골라준 사진(동의 후 또는 회상 매칭). 다음 턴이 시작되면 자동으로 지워진다. */
+  photo: ChatPhoto | null;
+  dismissPhoto: () => void;
 }
 
 /** 발화 구간의 평균 음량(dBFS). VAD 확률만으로는 "말소리 같은 패턴"인지만 보고
@@ -191,6 +194,7 @@ export function useConversationEngine(
   const [assistantDraft, setAssistantDraft] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [log, setLog] = useState<ConversationLogEntry[]>([]);
+  const [photo, setPhoto] = useState<ChatPhoto | null>(null);
 
   const calibration = useSpeechCalibration();
   const audioQueue = useAudioQueue();
@@ -295,6 +299,7 @@ export function useConversationEngine(
     async (userText: string) => {
       setPhase("thinking");
       setErrorMsg(null);
+      setPhoto(null);
       spokenTextRef.current = "";
 
       // 직전 턴의 오디오가 아직 큐에 남아있으면(레이스로 정리가 안 된 경우 등) 이번 턴의
@@ -344,6 +349,7 @@ export function useConversationEngine(
             setAssistantDraft(fullSoFar);
           },
           onSentence: (sentence) => queueSentence(sentence, controller.signal),
+          onPhoto: (p) => setPhoto(p),
         });
 
         messagesRef.current = trimHistory([
@@ -601,5 +607,7 @@ export function useConversationEngine(
     vadListening: vad.listening,
     vadUserSpeaking: vad.userSpeaking,
     vadError: vad.error,
+    photo,
+    dismissPhoto: () => setPhoto(null),
   };
 }

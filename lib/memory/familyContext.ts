@@ -24,11 +24,13 @@ export async function buildFamilyRoster(patientId: string): Promise<string> {
  * 다음 턴/다음 대화에서 똑같은 메시지를 또 언급하라고 반복해서 지시하지 않는다. 실제로
  * 읽어줄지 말지, 언제 물어볼지는 페르소나 프롬프트 지시에 맡긴다(강제로 읽어주지 않음).
  */
-export async function takePendingFamilyMessages(patientId: string): Promise<{ fromName: string; content: string }[]> {
+export async function takePendingFamilyMessages(
+  patientId: string,
+): Promise<{ fromName: string; content: string; hasPhoto: boolean }[]> {
   const pending = await prisma.familyMessage.findMany({
     where: { patientId, deliveredAt: null },
     orderBy: { createdAt: "asc" },
-    select: { id: true, fromName: true, content: true },
+    select: { id: true, fromName: true, content: true, photoUrl: true },
   });
   if (pending.length === 0) return [];
 
@@ -37,7 +39,7 @@ export async function takePendingFamilyMessages(patientId: string): Promise<{ fr
     data: { deliveredAt: new Date() },
   });
 
-  return pending.map(({ fromName, content }) => ({ fromName, content }));
+  return pending.map(({ fromName, content, photoUrl }) => ({ fromName, content, hasPhoto: Boolean(photoUrl) }));
 }
 
 /** 앞으로 14일 안에 있는 가족 일정 - 매번 전체를 주기엔 너무 많아질 수 있어 기간을 제한한다. */
