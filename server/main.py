@@ -162,14 +162,18 @@ async def transcribe(
     }
 
 
-# WebSocket 스트리밍 전사 프로토콜 (실험 단계 - 클라이언트 통합 전 서버 단독 테스트용):
+# WebSocket 스트리밍 전사 프로토콜:
 #   클라이언트 -> 서버
 #     binary frame: 16kHz mono 16-bit PCM little-endian 오디오 조각
-#     text frame {"type": "start"}: 새 발화 시작, 버퍼 비움
+#     text frame {"type": "start", "session_id"?: "..."}: 새 발화 시작, 버퍼 비움.
+#       session_id를 주면 /transcribe(HTTP 업로드 경로)의 session_id와 동일하게 "이 대화에서
+#       처음 들린 목소리"를 기준으로 다른 화자(TV/다른 가족)를 거른다 - 매 발화마다 새로
+#       보내야 한다(연결 자체가 아니라 발화 단위로 바뀔 수 있어 start 페이로드에 싣는다).
 #     text frame {"type": "end"}: 발화 종료, 지금까지 쌓인 오디오로 최종 전사 1회 후 버퍼 비움
 #   서버 -> 클라이언트
 #     {"type": "partial", "text": "..."}: 아직 말하는 중, 지금까지 들은 걸 다시 통째로 재전사한 결과
-#     {"type": "final", "text": "..."}: "end" 신호에 대한 확정 결과
+#     {"type": "final", "text": "..."}: "end" 신호에 대한 확정 결과. 다른 화자로 판단되면
+#       빈 문자열("")이 온다(HTTP 업로드 경로와 동일한 규약).
 #     {"type": "error", "detail": "..."}
 _WS_SAMPLE_RATE = 16000
 # 새 오디오가 이만큼 쌓일 때마다 재전사한다 - 너무 짧으면 GPU에 과부하, 너무 길면 실시간성이 떨어진다.
@@ -181,6 +185,7 @@ async def websocket_transcribe(websocket: WebSocket) -> None:
     await websocket.accept()
     buffer = np.zeros(0, dtype=np.float32)
     last_partial_at = 0
+    session_id: str | None = None
 
     try:
         while True:
@@ -197,15 +202,29 @@ async def websocket_transcribe(websocket: WebSocket) -> None:
                 if payload.get("type") == "start":
                     buffer = np.zeros(0, dtype=np.float32)
                     last_partial_at = 0
+                    session_id = payload.get("session_id") or None
                 elif payload.get("type") == "end":
                     if buffer.size > 0:
-                        try:
-                            text, _ = _run_transcription(buffer, vad_filter=False)
-                        except Exception as exc:  # noqa: BLE001
-                            logger.exception("streaming final transcription failed")
-                            await websocket.send_json({"type": "error", "detail": str(exc)})
+                        # HTTP 업로드 경로(/transcribe)와 동일하게, 세션 기준 목소리와 다르면
+                        # 전사 자체를 건너뛰고 빈 텍스트를 돌려준다.
+                        similarity: float | None = None
+                        if session_id:
+                            try:
+                                similarity = speaker.check_session_speaker_array(session_id, buffer)
+                            except Exception:  # noqa: BLE001 - 화자 필터 실패가 전사를 막지 않게 한다
+                                logger.exception("streaming session speaker check failed")
+
+                        if similarity is not None and similarity < speaker.SESSION_SIMILARITY_THRESHOLD:
+                            logger.info("세션 다른 목소리로 판단해 무시 (스트리밍, 유사도 %.2f)", similarity)
+                            await websocket.send_json({"type": "final", "text": ""})
                         else:
-                            await websocket.send_json({"type": "final", "text": text})
+                            try:
+                                text, _ = _run_transcription(buffer, vad_filter=False)
+                            except Exception as exc:  # noqa: BLE001
+                                logger.exception("streaming final transcription failed")
+                                await websocket.send_json({"type": "error", "detail": str(exc)})
+                            else:
+                                await websocket.send_json({"type": "final", "text": text})
                     buffer = np.zeros(0, dtype=np.float32)
                     last_partial_at = 0
                 continue

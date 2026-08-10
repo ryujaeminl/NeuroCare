@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useVAD, VAD_SAMPLE_RATE } from "@/hooks/useVAD";
+import { useStreamingStt } from "@/hooks/useStreamingStt";
 import { useSpeechCalibration } from "@/hooks/useSpeechCalibration";
 import { useAudioQueue } from "@/hooks/useAudioQueue";
 import { useBargeIn } from "@/hooks/useBargeIn";
@@ -65,6 +66,21 @@ function reportToServer(message: string) {
 // Vercel(/api/stt, /api/tts)을 한 번 더 거쳤는데, 왕복이 그만큼 늘어난다. 직접 호출로
 // 그 홉을 없애고, 실패할 때만(네트워크/CORS 등) 기존 Vercel 경유 경로로 폴백한다.
 const DIRECT_BACKEND_URL = process.env.NEXT_PUBLIC_WHISPER_BACKEND_URL;
+
+// /ws/transcribe(스트리밍 전사)용 URL. http(s) 주소를 ws(s)로 바꾸기만 하면 되고, 이 값
+// 자체는 세션 동안 안 바뀌므로 모듈 스코프에서 한 번만 계산한다 - 화자 세션 id는 연결이
+// 아니라 매번 보내는 "start" 메시지에 실어 보낸다(server/main.py 참고). 그래서 세션이
+// 바뀌어도(앱 재개 시 sttSessionIdRef 재발급) 연결을 새로 열 필요가 없다.
+const STREAMING_WS_URL = (() => {
+  if (!DIRECT_BACKEND_URL) return null;
+  try {
+    const url = new URL("/ws/transcribe", DIRECT_BACKEND_URL);
+    url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+    return url.toString();
+  } catch {
+    return null;
+  }
+})();
 
 async function transcribeSegment(form: FormData): Promise<{ text?: string; error?: string }> {
   if (DIRECT_BACKEND_URL) {
@@ -198,6 +214,10 @@ export function useConversationEngine(
 
   const calibration = useSpeechCalibration();
   const audioQueue = useAudioQueue();
+  const streaming = useStreamingStt(STREAMING_WS_URL);
+  // 지금 진행 중인 발화가 스트리밍으로 서버에 전송되고 있었는지 - handleSpeechSegment가
+  // endUtterance()를 시도할지, 곧바로 기존 업로드 경로로 갈지 여기로 판단한다.
+  const utteranceStreamedRef = useRef(false);
 
   // vad-web이 넘겨주는 각 발화 구간은 이미 앞뒤로 무음이 붙은 깨끗한 조각이므로,
   // 조각별로 각각 전사한 뒤 텍스트만 이어붙인다 (오디오를 이어붙이면 이음매에서
@@ -447,10 +467,16 @@ export function useConversationEngine(
 
   const handleSpeechSegment = useCallback(
     async (audio: Float32Array) => {
+      // 이 발화가 시작될 때 스트리밍이 진행됐었는지 여기서 딱 한 번만 읽고 리셋한다 -
+      // 그 뒤로 처리 중 아무 시점에 다음 발화가 시작돼 이 값이 덮여써도 영향받지 않는다.
+      const wasStreamed = utteranceStreamedRef.current;
+      utteranceStreamedRef.current = false;
+
       const dbfs = computeDbfs(audio);
       reportToServer(`발화 구간 감지 dbfs=${dbfs.toFixed(1)} (기준 ${MIN_SPEECH_DBFS})`);
       if (dbfs < MIN_SPEECH_DBFS) {
-        // 너무 조용한/먼 소리 - 기존 턴 상태를 건드리지 않고 조용히 무시한다.
+        // 너무 조용한/먼 소리 - 기존 턴 상태를 건드리지 않고 조용히 무시한다. 스트리밍 중이었다면
+        // 서버에 "end"를 보내지 않아 이번 구간 버퍼가 남지만, 다음 "start"가 자동으로 비운다.
         return;
       }
 
@@ -461,15 +487,26 @@ export function useConversationEngine(
       setErrorMsg(null);
 
       try {
-        const wav = encodeWav(normalizeGain(audio), VAD_SAMPLE_RATE);
-        const form = new FormData();
-        form.append("file", wav, "segment.wav");
-        form.append("session_id", sttSessionIdRef.current);
+        // 스트리밍이 진행 중이었으면 이미 서버에 오디오 대부분이 가 있으니 "end"만 보내 끝낸다
+        // - 실패/타임아웃이면 null이 와서 아래 업로드 경로로 폴백한다(안전망).
+        const streamedText = wasStreamed ? await streaming.endUtterance() : null;
 
-        const data = await transcribeSegment(form);
+        let segmentText: string;
+        if (streamedText !== null) {
+          reportToServer(`전사 결과(스트리밍): "${streamedText}"`);
+          segmentText = streamedText.trim();
+        } else {
+          const wav = encodeWav(normalizeGain(audio), VAD_SAMPLE_RATE);
+          const form = new FormData();
+          form.append("file", wav, "segment.wav");
+          form.append("session_id", sttSessionIdRef.current);
 
-        reportToServer(`전사 결과: "${data.text ?? ""}"`);
-        const segmentText: string = (data.text ?? "").trim();
+          const data = await transcribeSegment(form);
+
+          reportToServer(`전사 결과: "${data.text ?? ""}"`);
+          segmentText = (data.text ?? "").trim();
+        }
+
         if (segmentText) {
           turnTextRef.current = turnTextRef.current
             ? `${turnTextRef.current} ${segmentText}`
@@ -501,10 +538,30 @@ export function useConversationEngine(
         processingSegmentRef.current = false;
       }
     },
-    [calibration, finalizeTurn],
+    [calibration, finalizeTurn, streaming],
   );
 
-  const vad = useVAD(handleSpeechSegment);
+  // 발화가 시작되는 순간 스트리밍 연결이 준비돼 있으면 "start"를 보내고, 이번 발화는
+  // 스트리밍으로 처리 중임을 표시한다. state가 아니라 ref라 onFrameProcessed(매 프레임)가
+  // 같은 틱에 바로 이 값을 볼 수 있다.
+  const handleVadSpeechStart = useCallback(() => {
+    utteranceStreamedRef.current = streaming.ready;
+    if (streaming.ready) streaming.startUtterance(sttSessionIdRef.current);
+  }, [streaming]);
+
+  const handleAudioFrame = useCallback(
+    (frame: Float32Array) => {
+      if (!utteranceStreamedRef.current) return;
+      streaming.sendFrame(frame);
+    },
+    [streaming],
+  );
+
+  const vad = useVAD({
+    onSpeechSegment: handleSpeechSegment,
+    onSpeechStart: handleVadSpeechStart,
+    onAudioFrame: handleAudioFrame,
+  });
 
   // 진행 중인 턴을 즉시 멈춘다. 실제로 들려준 부분은 대화 기록에 남기고 못다 한 나머지는
   // 다음 LLM 호출 힌트로 넘긴다 - 응답을 통째로 버리지 않고 끊긴 지점부터 이어가기 위함.
@@ -536,7 +593,8 @@ export function useConversationEngine(
 
   useBargeIn({
     userSpeaking: vad.userSpeaking,
-    assistantBusy: phase === "thinking" || phase === "speaking",
+    thinking: phase === "thinking",
+    speaking: phase === "speaking",
     onBargeIn: abortCurrentTurn,
   });
 

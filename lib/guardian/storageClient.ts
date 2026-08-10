@@ -1,12 +1,12 @@
 import { randomUUID } from "crypto";
-import { mkdir, unlink, writeFile } from "fs/promises";
-import path from "path";
+import { del, put } from "@vercel/blob";
 
-// ponytail: 실제 S3/R2 자격증명이 없어 로컬 디스크에 저장한다. S3로 옮기려면
-// putObject(file, patientId)를 @aws-sdk/client-s3 PutObjectCommand 호출로 바꾸고
-// deletePhoto를 DeleteObjectCommand로 바꾸면 된다 - 호출부(API 라우트)는 그대로 둬도 된다.
-const UPLOAD_ROOT = path.join(process.cwd(), "public", "uploads", "patients");
-
+// ponytail: 예전엔 로컬 디스크(public/uploads/...)에 썼는데, Vercel 서버리스는
+// 파일시스템이 읽기전용/휘발성이라 프로덕션에서 조용히 실패했다(로컬 개발 서버에서만
+// 동작해 문제를 못 알아챘다 - 실제 프로덕션 API로 직접 확인해서 발견) - Vercel Blob으로
+// 교체. 기존 로컬 저장과 같은 보안 수준(추측 불가능한 경로, 별도 인증 없음)을 유지하려고
+// public 접근 스토어를 쓴다 - 더 엄격한 접근 제어가 필요해지면 Blob을 private로 바꾸고
+// 읽을 때 서명 URL을 발급하는 방식으로 옮길 것.
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
 const MAX_BYTES = 8 * 1024 * 1024;
 
@@ -22,21 +22,17 @@ export async function putPhoto(file: Blob, patientId: string): Promise<string> {
   }
 
   const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
-  const filename = `${randomUUID()}.${ext}`;
-  const dir = path.join(UPLOAD_ROOT, patientId);
-  await mkdir(dir, { recursive: true });
+  const pathname = `patients/${patientId}/${randomUUID()}.${ext}`;
 
-  const buffer = Buffer.from(await file.arrayBuffer());
-  await writeFile(path.join(dir, filename), buffer);
-
-  return `/uploads/patients/${patientId}/${filename}`;
+  const blob = await put(pathname, file, { access: "public", addRandomSuffix: false });
+  return blob.url;
 }
 
-/** url이 이 스토리지가 발급한 로컬 경로일 때만 실제 파일을 지운다. */
+/** url이 이 스토리지가 발급한 Blob URL일 때만 실제 파일을 지운다. */
 export async function deletePhoto(url: string): Promise<void> {
-  if (!url.startsWith("/uploads/patients/")) return;
+  if (!url.includes(".public.blob.vercel-storage.com/")) return;
   try {
-    await unlink(path.join(process.cwd(), "public", url));
+    await del(url);
   } catch {
     // 이미 지워졌거나 없는 파일이면 조용히 넘어간다 (DB 레코드 삭제를 막지 않는다).
   }

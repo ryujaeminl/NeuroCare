@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/db/prisma";
+import { isAffirmativeReply } from "@/lib/memory/photoContext";
 
 /**
  * 보호자가 등록한 가족 관계를 항상 프롬프트에 넣어준다 - 대화 중 나올지 안 나올지 모르는
@@ -40,6 +41,29 @@ export async function takePendingFamilyMessages(
   });
 
   return pending.map(({ fromName, content, photoUrl }) => ({ fromName, content, hasPhoto: Boolean(photoUrl) }));
+}
+
+/**
+ * 사진이 딸린 가족 메시지를 이미 물어봤고(deliveredAt 있음) 아직 화면에 안 보여줬는데
+ * (photoShownAt 없음) 환자가 방금 "읽어주세요"에 그렇다고 답했으면, 그 사진을 골라
+ * photoShownAt을 채우고 반환한다 - Photo.offeredAt/shownAt과 같은 패턴
+ * (lib/memory/photoContext.ts의 pickPhotoToShow). 메시지 내용 자체는 텍스트라 이미
+ * 프롬프트에 있고 AI가 말로 전달하니, 여기서는 사진만 화면에 띄우면 된다.
+ */
+export async function pickMessagePhotoToShow(
+  patientId: string,
+  latestUserText: string,
+): Promise<{ url: string; caption: string | null } | null> {
+  if (!isAffirmativeReply(latestUserText)) return null;
+
+  const message = await prisma.familyMessage.findFirst({
+    where: { patientId, deliveredAt: { not: null }, photoUrl: { not: null }, photoShownAt: null },
+    orderBy: { deliveredAt: "asc" },
+  });
+  if (!message?.photoUrl) return null;
+
+  await prisma.familyMessage.update({ where: { id: message.id }, data: { photoShownAt: new Date() } });
+  return { url: message.photoUrl, caption: `${message.fromName}님이 보낸 사진` };
 }
 
 /** 앞으로 14일 안에 있는 가족 일정 - 매번 전체를 주기엔 너무 많아질 수 있어 기간을 제한한다. */

@@ -17,6 +17,21 @@ def fake_embed(vector: list[float], duration: float):
     return _embed
 
 
+def fake_encoder(vector: list[float]):
+    """check_session_speaker_array(스트리밍 경로)는 _get_encoder().embed_utterance(wav)를
+    직접 부른다 - embed_with_duration을 거치지 않으므로 인코더 자체를 바꿔치기한다."""
+
+    class _FakeEncoder:
+        def embed_utterance(self, _wav: np.ndarray) -> np.ndarray:
+            return np.array(vector, dtype=np.float32)
+
+    return _FakeEncoder()
+
+
+def seconds_of_silence(seconds: float) -> np.ndarray:
+    return np.zeros(int(speaker.SAMPLE_RATE * seconds), dtype=np.float32)
+
+
 def reset():
     speaker._session_speakers.clear()
 
@@ -74,6 +89,34 @@ def test_stale_sessions_are_pruned():
     far_future = 1000.0 + speaker._SESSION_TTL_SECONDS + 1
     speaker.check_session_speaker("s2", b"first", now=far_future)
     assert "s1" not in speaker._session_speakers, "TTL을 넘긴 세션은 정리돼야 한다"
+
+
+def test_array_variant_short_first_utterance_does_not_register():
+    reset()
+    speaker._get_encoder = lambda: fake_encoder([1.0, 0.0])
+    result = speaker.check_session_speaker_array("s1", seconds_of_silence(0.5))
+    assert result is None, "배열 버전도 짧은 첫 발화는 등록 없이 통과해야 한다"
+    assert "s1" not in speaker._session_speakers
+
+
+def test_array_variant_same_voice_high_similarity():
+    reset()
+    speaker._get_encoder = lambda: fake_encoder([1.0, 0.0])
+    speaker.check_session_speaker_array("s1", seconds_of_silence(2.0))
+    speaker._get_encoder = lambda: fake_encoder([1.0, 0.0001])
+    similarity = speaker.check_session_speaker_array("s1", seconds_of_silence(2.0))
+    assert similarity is not None and similarity > 0.99, f"배열 버전도 같은 목소리는 유사도가 높아야 한다: {similarity}"
+
+
+def test_array_variant_different_voice_low_similarity():
+    reset()
+    speaker._get_encoder = lambda: fake_encoder([1.0, 0.0])
+    speaker.check_session_speaker_array("s1", seconds_of_silence(2.0))
+    speaker._get_encoder = lambda: fake_encoder([0.0, 1.0])
+    similarity = speaker.check_session_speaker_array("s1", seconds_of_silence(2.0))
+    assert similarity is not None and similarity < speaker.SESSION_SIMILARITY_THRESHOLD, (
+        f"배열 버전도 다른 목소리는 임계값 밑이어야 한다: {similarity}"
+    )
 
 
 if __name__ == "__main__":

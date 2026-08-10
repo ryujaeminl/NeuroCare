@@ -29,12 +29,25 @@ export interface UseVADResult {
   stop: () => Promise<void>;
 }
 
+export interface UseVADCallbacks {
+  /** 발화 구간이 끝날 때마다 그 구간의 오디오(16kHz mono Float32Array)를 넘겨준다
+   * - 대기 화면의 웨이크워드 감지, 2단계 턴 종료 판단 등에서 재사용한다. */
+  onSpeechSegment?: (audio: Float32Array) => void;
+  /** 발화가 시작되는 순간(끝나길 기다리지 않고) 동기적으로 알려준다 - 서버 스트리밍
+   * 전사(/ws/transcribe)에 "start" 신호를 보내는 시점을 잡는 데 쓴다. state(userSpeaking)를
+   * 보고 useEffect로 유추하면 같은 콜백 틱 안에서 반영이 늦어 경쟁 상태가 생길 수 있어
+   * 별도 콜백으로 둔다. */
+  onSpeechStart?: () => void;
+  /** 발화 구간이 끝나길 기다리지 않고, VAD가 처리하는 매 프레임(16kHz mono)을 실시간으로
+   * 넘겨준다 - 서버 스트리밍 전사에 발화 도중 청크를 바로 올려 보내는 데 쓴다.
+   * 필요 없으면 생략해도 기존 동작(구간 단위 일괄 전사)은 그대로다. */
+  onAudioFrame?: (frame: Float32Array) => void;
+}
+
 /**
  * Silero VAD(@ricky0123/vad-web)를 감싸는 훅.
- * onSpeechSegment은 발화 구간이 끝날 때마다 그 구간의 오디오(16kHz mono Float32Array)를 넘겨준다
- * - 대기 화면의 웨이크워드 감지, 2단계 턴 종료 판단 등에서 재사용한다.
  */
-export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADResult {
+export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
   const [listening, setListening] = useState(false);
   const [userSpeaking, setUserSpeaking] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,10 +57,15 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
   // 발화를 두 인스턴스가 각각 감지해 STT/응답이 통째로 두 번 돈다(실사용에서 확인된 버그).
   // 비동기 구간 전체를 이 플래그로 막아 재진입을 원천 차단한다.
   const startingRef = useRef(false);
-  const onSpeechSegmentRef = useRef(onSpeechSegment);
+  const callbacksRef = useRef(callbacks);
   useEffect(() => {
-    onSpeechSegmentRef.current = onSpeechSegment;
-  }, [onSpeechSegment]);
+    callbacksRef.current = callbacks;
+  });
+  // onSpeechStart~onSpeechEnd/onVADMisfire 구간 안에서만 onAudioFrame을 흘려보낸다 - 이
+  // 범위 밖(무음 구간)의 프레임까지 스트리밍 전사 쪽으로 보내면 낭비이기도 하고, 다음
+  // 발화가 시작되기도 전에 서버 버퍼가 채워지기 시작하는 꼴이 된다. state(userSpeaking)가
+  // 아니라 ref로 즉시(동기적으로) 갱신해 같은 콜백 틱 안에서도 정확히 반영되게 한다.
+  const speakingActiveRef = useRef(false);
 
   const start = useCallback(async () => {
     if (vadRef.current || startingRef.current) return;
@@ -89,14 +107,22 @@ export function useVAD(onSpeechSegment?: (audio: Float32Array) => void): UseVADR
           redemptionMs: 400,
           onSpeechStart: () => {
             setUserSpeaking(true);
+            speakingActiveRef.current = true;
             preconnectBackend();
+            callbacksRef.current.onSpeechStart?.();
           },
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
-            onSpeechSegmentRef.current?.(audio);
+            speakingActiveRef.current = false;
+            callbacksRef.current.onSpeechSegment?.(audio);
+          },
+          onFrameProcessed: (_probabilities, frame) => {
+            if (!speakingActiveRef.current) return;
+            callbacksRef.current.onAudioFrame?.(frame);
           },
           onVADMisfire: () => {
             setUserSpeaking(false);
+            speakingActiveRef.current = false;
             // ponytail: 진단용. "복실아"/"야" 같은 아주 짧은 호출이 misfire로 무시되는지
             // 확인하려고 남긴다. 원인이 잡히면 지운다.
             void fetch("/api/client-log", {

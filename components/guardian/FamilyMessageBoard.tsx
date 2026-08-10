@@ -11,6 +11,7 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [fromName, setFromName] = useState("");
   const [content, setContent] = useState("");
+  const [photo, setPhoto] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
@@ -38,11 +39,13 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
     setSubmitting(true);
     setError(null);
     try {
-      const response = await fetch("/api/guardian/messages", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ patientId, fromName, content }),
-      });
+      const form = new FormData();
+      form.append("patientId", patientId);
+      form.append("fromName", fromName);
+      form.append("content", content);
+      if (photo) form.append("file", photo);
+
+      const response = await fetch("/api/guardian/messages", { method: "POST", body: form });
       const data = await response.json();
       if (!response.ok) {
         setError(data.error ?? "등록에 실패했습니다.");
@@ -51,6 +54,7 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
       setMessages((prev) => [data.message, ...prev]);
       setFromName("");
       setContent("");
+      setPhoto(null);
     } catch {
       setError("등록에 실패했습니다.");
     } finally {
@@ -71,28 +75,39 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
         물어본 뒤 원하실 때만 전달합니다.
       </p>
 
-      <form onSubmit={handleAdd} className="flex flex-col gap-2 sm:flex-row">
-        <input
-          value={fromName}
-          onChange={(e) => setFromName(e.target.value)}
-          placeholder="보낸 사람 (예: 손녀 지민)"
-          required
-          className="rounded-xl border border-surface-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:w-40"
-        />
-        <input
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="메시지 내용"
-          required
-          className="flex-1 rounded-xl border border-surface-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
-        />
-        <button
-          type="submit"
-          disabled={submitting}
-          className="rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:brightness-110 disabled:opacity-50"
-        >
-          남기기
-        </button>
+      <form onSubmit={handleAdd} className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <input
+            value={fromName}
+            onChange={(e) => setFromName(e.target.value)}
+            placeholder="보낸 사람 (예: 손녀 지민)"
+            required
+            className="rounded-xl border border-surface-border bg-background px-3 py-2 text-sm outline-none focus:border-accent sm:w-40"
+          />
+          <input
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="메시지 내용"
+            required
+            className="flex-1 rounded-xl border border-surface-border bg-background px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            type="file"
+            accept="image/jpeg,image/png,image/webp,image/gif"
+            onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
+            className="flex-1 text-sm text-muted-foreground file:mr-3 file:rounded-full file:border-0 file:bg-background file:px-3 file:py-1.5 file:text-sm file:text-foreground"
+          />
+          <button
+            type="submit"
+            disabled={submitting}
+            className="shrink-0 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:brightness-110 disabled:opacity-50"
+          >
+            남기기
+          </button>
+        </div>
+        {photo && <p className="text-xs text-muted-foreground">사진 첨부됨: {photo.name}</p>}
       </form>
 
       {error && <p className="text-sm text-danger-foreground">{error}</p>}
@@ -112,9 +127,14 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
                 <p>
                   <span className="font-medium">{message.fromName}</span>: {message.content}
                 </p>
+                {message.photoUrl && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={message.photoUrl} alt="" className="mt-2 h-24 w-24 rounded-lg object-cover" />
+                )}
                 <p className="mt-0.5 text-xs text-muted-foreground">
                   {new Date(message.createdAt).toLocaleString("ko-KR")} ·{" "}
                   {message.deliveredAt ? "전달됨" : "아직 전달 전"}
+                  {message.photoUrl && (message.photoShownAt ? " · 사진 보여드림" : " · 사진 아직 안 보여줌")}
                 </p>
               </div>
               <button

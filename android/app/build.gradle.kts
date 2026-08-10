@@ -14,9 +14,10 @@ android {
         versionCode = 30
         versionName = "2.19"
 
-        // 배포된 Vercel 사이트 + Railway에 상시 구동 중인 STT 백엔드(server/Dockerfile).
-        // 더 이상 로컬 PC/터널에 의존하지 않는다. LAN 개발로 되돌리려면 192.168.x/10.0.2.2로.
-        // GPU 서버(rookie-s52)의 STT 백엔드를 ngrok 고정 도메인으로 노출한다.
+        // 배포된 Vercel 사이트 + GPU 서버(rookie-s52, systemd 상시구동)의 STT 백엔드
+        // (server/Dockerfile)를 ngrok 고정 도메인으로 노출해서 쓴다. Railway는 GPU 서버가
+        // 안정화되기 전 임시 백엔드였고 지금은 안 쓴다 - 더 이상 로컬 PC/터널에도 의존하지
+        // 않는다. LAN 개발로 되돌리려면 192.168.x/10.0.2.2로.
         // 이 서버 네트워크가 443만 outbound로 열려있어(다른 포트는 다 막힘) cloudflared
         // 터널(7844 필요)은 안 되고, 443을 쓰는 ngrok만 통과한다. 무료 고정 도메인이라
         // 서버 재시작해도 이 값은 안 바뀐다.

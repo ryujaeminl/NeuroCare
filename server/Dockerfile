@@ -6,8 +6,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends libsndfile1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt requirements-speaker.txt ./
+# torch는 기본 인덱스(CUDA 빌드)로 받는다 - speaker.py가 GPU를 쓰려면 CUDA 런타임이
+# 포함된 빌드가 필요하다(이 서버는 --gpus all로 뜬다). 용량은 늘지만(수 GB) 화자
+# 임베딩이 매 턴 whisper 앞에서 CPU로 순차 실행되던 지연을 없앤다.
 RUN pip install --no-cache-dir -r requirements.txt \
-    && pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu \
+    && pip install --no-cache-dir torch \
     && pip install --no-cache-dir --no-deps -r requirements-speaker.txt \
     && pip install --no-cache-dir nvidia-cublas-cu12 nvidia-cudnn-cu12==9.*
 

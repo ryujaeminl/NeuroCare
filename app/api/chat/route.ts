@@ -1,11 +1,16 @@
 import { NextRequest } from "next/server";
 import { auth } from "@/lib/auth/authOptions";
 import { prisma } from "@/lib/db/prisma";
-import { buildFamilyRoster, buildUpcomingFamilyPlans, takePendingFamilyMessages } from "@/lib/memory/familyContext";
+import {
+  buildFamilyRoster,
+  buildUpcomingFamilyPlans,
+  pickMessagePhotoToShow,
+  takePendingFamilyMessages,
+} from "@/lib/memory/familyContext";
+import { maybeTriggerVoiceDistress } from "@/lib/guardian/emergencyDispatcher";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoContext";
 import type { DementiaStage } from "@/lib/db/types";
-import type { Photo } from "@prisma/client";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
 // Upstage API도, 이 앱의 실사용자도 한국이라 태평양을 두 번(요청+응답) 건너는 왕복이
@@ -161,10 +166,15 @@ interface ChatMessage {
   content: string;
 }
 
+interface PhotoToShow {
+  url: string;
+  caption: string | null;
+}
+
 interface SystemPromptResult {
   prompt: string;
   /** 이번 턴에 환자 화면에 띄울 사진(동의 후, 또는 회상 중 자연스럽게). 없으면 null. */
-  photo: Photo | null;
+  photo: PhotoToShow | null;
 }
 
 /**
@@ -192,9 +202,13 @@ async function buildSystemPrompt(patientId: string | null, latestUserText: strin
   const memories = rawMemories.filter((memory) => memory.role !== "assistant");
 
   // 이번 턴 회상(RAG)이 짚은 "보호자가 등록한 기억"에 딸린 사진이 있으면, 혹은 방금
-  // "보여드릴까요?"에 환자가 그렇다고 답했으면 pickPhotoToShow가 골라준다.
+  // "보여드릴까요?"에 환자가 그렇다고 답했으면 pickPhotoToShow가 골라준다. 두 사진
+  // 후보가 같은 턴에 동시에 나올 일은 거의 없지만(회상 기억 vs 방금 온 메시지),
+  // 혹시 겹치면 회상 매칭 쪽을 우선한다 - 방금 나누던 대화와 더 직접 연결돼 있어서다.
   const matchedMemoryIds = memories.filter((m) => m.kind === "family_memory").map((m) => m.id);
-  const photo = await pickPhotoToShow(patientId, latestUserText, matchedMemoryIds);
+  const photo: PhotoToShow | null =
+    (await pickPhotoToShow(patientId, latestUserText, matchedMemoryIds)) ??
+    (await pickMessagePhotoToShow(patientId, latestUserText));
 
   let prompt = SYSTEM_PROMPT_RULES + buildStageGuidance(dementiaStage) + "\n" + SYSTEM_PROMPT_EXAMPLES;
 
@@ -233,8 +247,11 @@ ${recalled}`;
 [아직 전달 안 된 가족 메시지]
 가족이 환자에게 남긴 메시지입니다. 대화 시작하고 자연스러운 시점에 딱 한 번 "OO님이
 메시지를 남기셨어요, 읽어드릴까요?"처럼 먼저 물어보고, 환자가 원한다고 하면 그때 내용을
-전달하세요. 원치 않으면 억지로 읽어주지 마세요. 지금 대화 흐름과 안 맞으면 인사만 하고
-넘어가도 됩니다 - 매 턴 반복해서 묻지 마세요.
+전달하세요. "(사진도 함께 보내셨습니다)"라고 되어 있으면, 환자가 원한다고 답하는 순간
+시스템이 화면에 사진을 자동으로 띄워주니 "네, 사진도 같이 보내셨어요, 여기 있어요"
+정도로만 자연스럽게 반응하세요 - 사진 내용을 직접 묘사하려 하지 마세요(아직 무슨
+사진인지 알 수 없습니다). 원치 않으면 억지로 읽어주지 마세요. 지금 대화 흐름과 안 맞으면
+인사만 하고 넘어가도 됩니다 - 매 턴 반복해서 묻지 마세요.
 ${list}`;
   }
 
@@ -263,6 +280,11 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   const patientId = session?.user?.role === "patient" ? session.user.id : null;
   const latestUserText = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+
+  // 응답을 막지 않도록 기다리지 않는다 - 실패해도 대화 자체는 정상 진행돼야 한다
+  // (실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다).
+  if (patientId) void maybeTriggerVoiceDistress(patientId, latestUserText);
+
   const { prompt: systemPrompt, photo } = await buildSystemPrompt(patientId, latestUserText);
 
   const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {

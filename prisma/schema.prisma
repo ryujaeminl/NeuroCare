@@ -232,7 +232,7 @@ model FamilyMessage {
   /// 메시지를 남긴 사람 이름 - FamilyMember로 미리 등록 안 해도 자유롭게 적을 수 있다.
   fromName    String
   content     String
-  /// 오브젝트 스토리지(로컬 디스크) URL. 사진 없이 텍스트만 남길 수도 있어 선택 항목이다.
+  /// Vercel Blob URL. 사진 없이 텍스트만 남길 수도 있어 선택 항목이다.
   photoUrl    String?
   addedBy     String
   createdAt   DateTime  @default(now())
@@ -240,6 +240,9 @@ model FamilyMessage {
   /// 한 번 주입되는 순간(=AI가 물어볼 기회를 갖는 순간) 채워져서 이후엔 반복해서
   /// 묻지 않는다 - app/api/chat/route.ts 참고.
   deliveredAt DateTime?
+  /// photoUrl이 있고 환자가 메시지를 읽어달라고 동의했을 때, 그 사진을 실제로 화면에
+  /// 보여준 시각. Photo.shownAt과 같은 패턴 - lib/memory/familyContext.ts 참고.
+  photoShownAt DateTime?
 
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 

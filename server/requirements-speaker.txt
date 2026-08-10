@@ -1,10 +1,15 @@
 # 화자 인식용 추가 설치 (requirements.txt 설치 후 별도로 실행)
 #
-#   # 1) CPU 전용 PyTorch (기본 인덱스로 받으면 GPU 빌드라 수 GB가 된다)
-#   uv pip install --python server/.venv torch --index-url https://download.pytorch.org/whl/cpu
+#   # 1) GPU(CUDA) 빌드 PyTorch - 매 턴 whisper 앞에서 화자 임베딩이 CPU로 순차
+#   #    실행되는 게 응답 지연의 한 원인이었다. 기본 인덱스로 받으면 CUDA 런타임이
+#   #    같이 딸려와 수 GB가 되지만(과거엔 이걸 피하려고 CPU 전용을 썼다), GPU 서버
+#   #    한 대에서만 도는 배포라 용량보다 속도를 우선한다.
+#   uv pip install --python server/.venv torch
 #
 #   # 2) resemblyzer 본체 (webrtcvad 소스 빌드를 피하려고 --no-deps)
 #   uv pip install --python server/.venv --no-deps -r server/requirements-speaker.txt
 #
 # 의존성(webrtcvad-wheels, librosa, scipy)은 requirements.txt에 이미 들어있다.
+# speaker.py의 _get_encoder()가 torch.cuda.is_available()로 자동 감지하므로,
+# CUDA가 안 보이는 환경(로컬 개발 등)에 그대로 설치해도 CPU로 안전하게 내려간다.
 resemblyzer==0.1.4

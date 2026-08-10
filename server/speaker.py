@@ -52,12 +52,17 @@ _encoder = None
 
 
 def _get_encoder():
-    """VoiceEncoder는 로딩 비용이 있으므로 처음 쓸 때 한 번만 만든다."""
+    """VoiceEncoder는 로딩 비용이 있으므로 처음 쓸 때 한 번만 만든다.
+    GPU가 보이면 그쪽을 쓰고(매 턴 whisper 앞을 CPU로 순차 실행하던 게 지연의
+    한 원인이었다), 없으면 CPU로 조용히 내려간다(로컬 개발 환경 등)."""
     global _encoder
     if _encoder is None:
+        import torch
         from resemblyzer import VoiceEncoder
 
-        _encoder = VoiceEncoder("cpu")
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        _encoder = VoiceEncoder(device)
+        logger.info("화자 인식 인코더 로딩 완료 (device=%s)", device)
     return _encoder
 
 
@@ -182,15 +187,10 @@ def _prune_stale_sessions(now: float) -> None:
         del _session_speakers[sid]
 
 
-def check_session_speaker(session_id: str, audio_bytes: bytes, now: float | None = None) -> float | None:
+def _match_session_speaker(session_id: str, embedding: np.ndarray, duration: float, now: float) -> float | None:
     """세션의 기준 목소리와 비교한다. 기준이 아직 없으면(첫 발화, 또는 그동안 너무 짧은
     발화만 있었음) 이번 발화로 등록을 시도하고 None을 반환한다(비교 대상이 없어 통과).
-    기준이 있으면 유사도를 반환한다. now는 테스트에서 시계를 주입하기 위한 것으로,
-    실제 호출에서는 생략하면 현재 시각을 쓴다."""
-    now = now if now is not None else time.time()
-    _prune_stale_sessions(now)
-    embedding, duration = embed_with_duration(audio_bytes)
-
+    기준이 있으면 유사도를 반환한다."""
     cached = _session_speakers.get(session_id)
     if cached is None:
         if duration >= MIN_SESSION_REFERENCE_SECONDS:
@@ -201,3 +201,23 @@ def check_session_speaker(session_id: str, audio_bytes: bytes, now: float | None
     reference, _ = cached
     _session_speakers[session_id] = (reference, now)  # TTL 갱신
     return cosine_similarity(reference, embedding)
+
+
+def check_session_speaker(session_id: str, audio_bytes: bytes, now: float | None = None) -> float | None:
+    """바이트 입력 버전(HTTP 업로드 경로, main.py의 /transcribe용). now는 테스트에서
+    시계를 주입하기 위한 것으로, 실제 호출에서는 생략하면 현재 시각을 쓴다."""
+    now = now if now is not None else time.time()
+    _prune_stale_sessions(now)
+    embedding, duration = embed_with_duration(audio_bytes)
+    return _match_session_speaker(session_id, embedding, duration, now)
+
+
+def check_session_speaker_array(session_id: str, wav: np.ndarray, now: float | None = None) -> float | None:
+    """이미 16kHz mono float32로 디코드된 오디오 배열 버전(스트리밍(/ws/transcribe) 경로용) -
+    청크들을 이미 배열로 이어붙여 놨으므로, WAV로 다시 인코딩했다 디코드하는 왕복
+    (check_session_speaker가 하는 일)을 건너뛴다."""
+    now = now if now is not None else time.time()
+    _prune_stale_sessions(now)
+    duration = len(wav) / SAMPLE_RATE
+    embedding = _get_encoder().embed_utterance(wav)
+    return _match_session_speaker(session_id, embedding, duration, now)
