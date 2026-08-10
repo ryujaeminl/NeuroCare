@@ -20,7 +20,7 @@ export default function LoginPage() {
     const result = await signIn("credentials", { email, password, redirect: false });
 
     if (result?.error) {
-      setError("이메일 또는 비밀번호가 올바르지 않습니다.");
+      setError("아이디 또는 비밀번호가 올바르지 않습니다.");
       setSubmitting(false);
       return;
     }
@@ -37,13 +37,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="mt-8 flex flex-col gap-4">
           <label className="flex flex-col gap-2">
-            <span className="text-sm text-muted-foreground">이메일</span>
+            <span className="text-sm text-muted-foreground">아이디</span>
             <input
-              type="email"
+              type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
+              autoComplete="username"
               className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-lg outline-none focus:border-accent"
             />
           </label>

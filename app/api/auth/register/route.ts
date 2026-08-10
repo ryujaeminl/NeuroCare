@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    return Response.json({ error: "이미 가입된 이메일입니다." }, { status: 409 });
+    return Response.json({ error: "이미 사용 중인 아이디(이메일)입니다." }, { status: 409 });
   }
 
   const user = await prisma.user.create({

@@ -80,13 +80,13 @@ export default function SignupPage() {
           </label>
 
           <label className="flex flex-col gap-2">
-            <span className="text-sm text-muted-foreground">이메일</span>
+            <span className="text-sm text-muted-foreground">{role === "patient" ? "아이디" : "이메일"}</span>
             <input
-              type="email"
+              type={role === "patient" ? "text" : "email"}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
+              autoComplete={role === "patient" ? "username" : "email"}
               className="rounded-xl border border-surface-border bg-surface px-4 py-3 text-lg outline-none focus:border-accent"
             />
           </label>
