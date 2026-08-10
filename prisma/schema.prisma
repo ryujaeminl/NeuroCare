@@ -64,12 +64,20 @@ model ConversationSession {
   patientId String
   startedAt DateTime  @default(now())
   endedAt   DateTime?
+  /// "YYYY-MM-DD"(KST 기준). 하루 한 세션만 만들도록 DB 유니크 제약으로 강제하는 키 -
+  /// 이전엔 "오늘 세션 있으면 재사용, 없으면 생성"을 앱코드에서 조회 후 분기했는데, 웨이크워드로
+  /// 앱이 짧은 간격에 여러 번 열리면 두 요청이 동시에 "없음"을 보고 각자 세션을 만드는 경쟁이
+  /// 실사용에서 발생했다(하루에 세션이 여러 개로 쪼개짐 = 기분 분석도 조각남). 이 필드가
+  /// 생기기 전 과거 세션은 null로 남아있다(SQLite는 유니크 제약에서 NULL끼리 안 겹치는 걸로
+  /// 취급하므로 이력에 영향 없음) - app/api/sessions/route.ts 참고.
+  dateKey   String?
 
   patient User          @relation(fields: [patientId], references: [id], onDelete: Cascade)
   turns   Turn[]
   mood    MoodAnalysis?
 
   @@index([patientId, startedAt])
+  @@unique([patientId, dateKey])
 }
 
 model Turn {
