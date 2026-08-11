@@ -99,7 +99,7 @@ export default function FamilyMemberDetailPage() {
         ← 가족 목록으로
       </Link>
 
-      <div className="flex items-center justify-between rounded-2xl border border-surface-border bg-surface p-5">
+      <div className="flex items-center justify-between rounded-lg border border-surface-border bg-surface p-5">
         <div>
           <h2 className="text-xl font-bold">{member.name}</h2>
           <p className="text-muted-foreground">
@@ -164,7 +164,7 @@ export default function FamilyMemberDetailPage() {
         ) : (
           <div className="flex flex-col gap-3">
             {member.memories.map((memory) => (
-              <div key={memory.id} className="rounded-2xl border border-surface-border bg-surface p-4">
+              <div key={memory.id} className="rounded-lg border border-surface-border bg-surface p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="font-semibold">{memory.title}</p>

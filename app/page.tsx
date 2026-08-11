@@ -18,7 +18,7 @@ interface DashboardCardProps {
 
 function DashboardCard({ icon, iconClassName, title, description, children }: DashboardCardProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 text-left">
+    <div className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5 text-left">
       <span className={`flex h-10 w-10 items-center justify-center rounded-lg text-lg ${iconClassName}`}>
         {icon}
       </span>
@@ -142,8 +142,8 @@ export default function HomePage() {
 
       <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-8 px-6 py-10">
         <section className="flex flex-col items-center gap-4 text-center">
-          <div className="relative flex items-center justify-center overflow-hidden rounded-2xl bg-white">
-            <div className={`absolute inset-0 rounded-2xl blur-xl transition ${mascotGlow}`} aria-hidden />
+          <div className="relative flex items-center justify-center overflow-hidden rounded-lg bg-white">
+            <div className={`absolute inset-0 rounded-lg blur-xl transition ${mascotGlow}`} aria-hidden />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/mascot-dog.png" alt="" className="relative h-56 w-56 object-contain p-4" />
           </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
         </section>
 
         {engine.photo && (
-          <div className="relative mx-auto flex w-full max-w-md flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-4">
+          <div className="relative mx-auto flex w-full max-w-md flex-col gap-2 rounded-lg border border-surface-border bg-surface p-4">
             <button
               onClick={engine.dismissPhoto}
               aria-label="사진 닫기"
@@ -176,7 +176,7 @@ export default function HomePage() {
         )}
 
         {!medsDismissed && dashboard?.dueMedication && (
-          <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-rose-400/60 bg-danger-bg px-5 py-4">
+          <div className="flex items-center justify-between gap-4 rounded-lg border-2 border-rose-400/60 bg-danger-bg px-5 py-4">
             <div className="flex items-center gap-3 text-left">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500 text-lg">
                 💊
@@ -232,7 +232,7 @@ export default function HomePage() {
         </div>
 
         {dashboard?.pendingMessageFrom && (
-          <div className="flex flex-col gap-1 rounded-2xl border border-surface-border bg-surface p-5">
+          <div className="flex flex-col gap-1 rounded-lg border border-surface-border bg-surface p-5">
             <p className="font-semibold">가족 메시지</p>
             <p className="text-muted-foreground">
               {dashboard.pendingMessageFrom}님이 메시지를 남기셨어요. 대화 중에 들려드릴게요.

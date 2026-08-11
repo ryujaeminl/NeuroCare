@@ -46,7 +46,7 @@ export function WakeWordSettings({ patients }: WakeWordSettingsProps) {
 
   if (patients.length === 0) {
     return (
-      <section className="flex flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-5">
+      <section className="flex flex-col gap-2 rounded-lg border border-surface-border bg-surface p-5">
         <h2 className="text-lg font-semibold">호출어</h2>
         <p className="text-sm text-muted-foreground">
           환자를 먼저 연동하면 여기서 호출어(기본값 &ldquo;{DEFAULT_WAKE_WORD}&rdquo;)를 바꿀 수 있어요.
@@ -56,7 +56,7 @@ export function WakeWordSettings({ patients }: WakeWordSettingsProps) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
       <h2 className="text-lg font-semibold">호출어</h2>
       <p className="text-sm text-muted-foreground">
         환자가 이 이름을 부르면 앱이 켜집니다. 기본값은 &ldquo;{DEFAULT_WAKE_WORD}&rdquo;예요.

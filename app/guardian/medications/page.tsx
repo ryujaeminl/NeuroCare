@@ -119,7 +119,7 @@ export default function MedicationsPage() {
           {medications.map((medication) => (
             <div
               key={medication.id}
-              className={`flex items-center justify-between rounded-2xl border p-4 ${
+              className={`flex items-center justify-between rounded-lg border p-4 ${
                 isEnded(medication.endDate)
                   ? "border-surface-border bg-surface opacity-60"
                   : isEndingSoon(medication.endDate)

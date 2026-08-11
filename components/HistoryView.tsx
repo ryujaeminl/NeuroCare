@@ -128,7 +128,7 @@ export function HistoryView({ patientId, dense = false }: HistoryViewProps) {
 
   return (
     <div className="flex flex-col gap-8">
-      <section className="rounded-2xl border border-surface-border bg-surface p-5">
+      <section className="rounded-lg border border-surface-border bg-surface p-5">
         <h2 className="font-semibold">기분 추이</h2>
         <p className="mt-1 mb-4 text-xs text-muted-foreground">
           의학적 진단이 아니라 대화에서 드러난 정서적 톤을 참고용으로 정리한 것입니다. 걱정되는
@@ -203,7 +203,7 @@ export function HistoryView({ patientId, dense = false }: HistoryViewProps) {
           {detail && (
             <div className="flex flex-col gap-4">
               {detail.mood && isMood(detail.mood.mood) && (
-                <div className="rounded-2xl border border-surface-border bg-surface p-4">
+                <div className="rounded-lg border border-surface-border bg-surface p-4">
                   <p className={`font-semibold ${MOOD_LABELS[detail.mood.mood].className}`}>
                     {MOOD_LABELS[detail.mood.mood].emoji} {MOOD_LABELS[detail.mood.mood].label}
                     <span className="ml-2 text-xs font-normal text-muted-foreground">

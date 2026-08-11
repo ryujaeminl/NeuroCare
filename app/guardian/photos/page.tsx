@@ -106,7 +106,10 @@ export default function PhotosPage() {
       ) : (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {visiblePhotos.map((photo) => (
-            <div key={photo.id} className="group relative overflow-hidden rounded-xl border border-surface-border">
+            <div
+              key={photo.id}
+              className="group relative overflow-hidden rounded-xl border border-surface-border transition hover:shadow-md"
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={photo.url} alt={photo.caption ?? ""} className="aspect-square w-full object-cover" />
               <div className="absolute inset-x-0 bottom-0 flex items-center justify-between gap-2 bg-black/60 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100">

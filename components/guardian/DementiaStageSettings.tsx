@@ -46,7 +46,7 @@ export function DementiaStageSettings({ patients }: DementiaStageSettingsProps) 
 
   if (patients.length === 0) {
     return (
-      <section className="flex flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-5">
+      <section className="flex flex-col gap-2 rounded-lg border border-surface-border bg-surface p-5">
         <h2 className="text-lg font-semibold">진행 단계</h2>
         <p className="text-sm text-muted-foreground">
           환자를 먼저 연동하면 여기서 알츠하이머 진행 단계를 설정할 수 있어요.
@@ -56,7 +56,7 @@ export function DementiaStageSettings({ patients }: DementiaStageSettingsProps) 
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
       <h2 className="text-lg font-semibold">진행 단계</h2>
       <p className="text-sm text-muted-foreground">
         대화 AI가 이 단계에 맞춰 문장 길이와 질문 방식을 조절해요. 잘 모르시면 &ldquo;중등도&rdquo;를 두시면 됩니다.

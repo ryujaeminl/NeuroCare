@@ -60,7 +60,7 @@ export default function AccountPage() {
       </header>
 
       <main className="mx-auto w-full max-w-md flex-1 px-6 py-8">
-        <div className="rounded-2xl border border-surface-border bg-surface p-5">
+        <div className="rounded-lg border border-surface-border bg-surface p-5">
           <p className="text-lg font-semibold">{session?.user?.name}</p>
           <p className="text-sm text-muted-foreground">{session?.user?.email}</p>
           <p className="mt-2 text-sm text-muted-foreground">
@@ -75,7 +75,7 @@ export default function AccountPage() {
         )}
 
         {isPatient && (
-          <div className="mt-4 rounded-2xl border border-surface-border bg-surface p-5">
+          <div className="mt-4 rounded-lg border border-surface-border bg-surface p-5">
             <p className="font-semibold">호출어</p>
             <p className="mt-1 text-sm text-muted-foreground">
               지금은 &ldquo;{wakeWord ?? DEFAULT_WAKE_WORD}&rdquo;라고 부르면 앱이 켜져요. 다른 이름으로
@@ -85,7 +85,7 @@ export default function AccountPage() {
         )}
 
         {isPatient && (
-          <div className="mt-4 rounded-2xl border border-surface-border bg-surface p-5">
+          <div className="mt-4 rounded-lg border border-surface-border bg-surface p-5">
             <p className="font-semibold">보호자 초대 코드</p>
             <p className="mt-1 text-sm text-muted-foreground">
               이 코드를 가족에게 알려주면, 가족이 대화 기록을 볼 수 있습니다.
@@ -99,7 +99,7 @@ export default function AccountPage() {
         {!isPatient && (
           <Link
             href="/guardian/link"
-            className="mt-4 block rounded-2xl border border-surface-border bg-surface p-5 transition hover:border-accent/50"
+            className="mt-4 block rounded-lg border border-surface-border bg-surface p-5 transition hover:border-accent/50"
           >
             <p className="font-semibold">환자 연동하기</p>
             <p className="mt-1 text-sm text-muted-foreground">초대 코드로 환자를 추가합니다.</p>

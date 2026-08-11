@@ -72,7 +72,7 @@ export function FamilyTaskChecklist({ patientId }: { patientId: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
       <h3 className="font-semibold">보호자 할 일</h3>
       <p className="text-sm text-muted-foreground">
         보호자끼리 나눠서 챙길 일을 정리해두는 목록입니다. 환자와의 대화에는 쓰이지 않습니다.

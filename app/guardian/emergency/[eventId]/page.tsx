@@ -84,7 +84,7 @@ export default function EmergencyEventPage() {
         ← 대시보드로
       </Link>
 
-      <div className={`rounded-2xl border-2 p-6 ${isOpen ? "border-rose-500 bg-danger-bg" : "border-emerald-500/60 bg-emerald-500/10"}`}>
+      <div className={`rounded-lg border-2 p-6 ${isOpen ? "border-rose-500 bg-danger-bg" : "border-emerald-500/60 bg-emerald-500/10"}`}>
         <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
           {isOpen ? "미확인 긴급 상황" : "확인됨"}
         </p>

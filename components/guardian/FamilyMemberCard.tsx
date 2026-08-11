@@ -15,7 +15,7 @@ export function FamilyMemberCard({ member }: { member: FamilyMemberSummary }) {
   return (
     <Link
       href={`/guardian/family/${member.id}`}
-      className="flex flex-col items-center gap-3 rounded-2xl border border-surface-border bg-surface p-5 text-center transition hover:border-accent/50"
+      className="animate-card-rise flex flex-col items-center gap-3 rounded-lg border border-surface-border bg-surface p-5 text-center transition hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-md"
     >
       {photo ? (
         // eslint-disable-next-line @next/next/no-img-element

@@ -103,7 +103,7 @@ export default function FamilyPage() {
       </div>
 
       {showForm && (
-        <form onSubmit={handleAdd} className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+        <form onSubmit={handleAdd} className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             <input
               value={name}

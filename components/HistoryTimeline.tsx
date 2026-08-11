@@ -49,7 +49,7 @@ export function HistoryTimeline({
             <button
               type="button"
               onClick={() => onSelect(session.id)}
-              className={`w-full rounded-2xl border p-4 text-left transition ${
+              className={`w-full rounded-lg border p-4 text-left transition ${
                 isSelected
                   ? "border-accent bg-accent/10"
                   : "border-surface-border bg-surface hover:border-accent/50"

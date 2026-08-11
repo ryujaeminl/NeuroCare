@@ -70,7 +70,7 @@ export function FamilyPlanList({ patientId }: { patientId: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
       <h3 className="font-semibold">가족 일정</h3>
       <p className="text-sm text-muted-foreground">
         방문 예정일, 생일처럼 다가오는 일정을 등록하면 2주 이내로 가까워졌을 때 AI가 대화 중

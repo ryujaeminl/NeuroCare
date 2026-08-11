@@ -105,7 +105,7 @@ export default function SettingsPage() {
 
       <DementiaStageSettings patients={patients} />
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-surface-border bg-surface p-5">
+      <section className="flex flex-col gap-4 rounded-lg border border-surface-border bg-surface p-5">
         <label className="flex items-center justify-between gap-4">
           <span>기분 이상 신호 알림</span>
           <input

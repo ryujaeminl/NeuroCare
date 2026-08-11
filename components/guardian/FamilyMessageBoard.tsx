@@ -68,7 +68,7 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
   }
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
+    <section className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5">
       <h3 className="font-semibold">가족 메시지</h3>
       <p className="text-sm text-muted-foreground">
         여기 남긴 메시지는 대화 중 AI가 먼저 &ldquo;OO님이 메시지를 남기셨어요, 읽어드릴까요?&rdquo;라고

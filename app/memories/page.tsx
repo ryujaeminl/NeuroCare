@@ -49,7 +49,7 @@ export default async function MemoriesPage() {
         ) : (
           <div className="flex flex-col gap-4">
             {photos.map((photo) => (
-              <div key={photo.id} className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-4">
+              <div key={photo.id} className="flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-4">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={photo.url}
