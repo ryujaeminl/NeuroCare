@@ -104,15 +104,17 @@ export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
           // misfire로 무시되는 경우가 있었다 - 250ms로 더 완화.
           minSpeechMs: 250,
           // vad-web 기본값은 1400ms - "말이 끝난 것 같다"고 판단한 뒤에도 이만큼 무음이
-          // 더 지속돼야 onSpeechEnd가 불린다. 지금까지 이 값을 따로 안 정해서 매 턴마다
-          // STT가 시작되기도 전에 1.4초가 그냥 죽는 시간이었다("응답까지 2초 이내" 요청 시
-          // 로그로 확인). 문장이 진짜 끝났는지 더 세밀하게 보는 로직(turnDetector의
-          // isUtteranceComplete + 미완결이면 더 기다리는 하이브리드 대기)이 이 뒤에 이미
-          // 있고, 구간을 여러 개로 짧게 나눠 잡아도 텍스트가 이어붙는 구조(turnTextRef)라
-          // 여기서 짧게 끊겨도 안전하다 - 줄인다("최대한 짧게" 요청에 따라 600 -> 400으로
-          // 더 내림. 이 아래로는 사람이 숨 고르는 정도의 자연스러운 틈에도 걸릴 위험이
-          // 커진다 - 실사용에서 말 중간에 자꾸 끊긴다면 이 값을 다시 올릴 것).
-          redemptionMs: 400,
+          // 더 지속돼야 onSpeechEnd가 불린다. 1400 -> 600 -> 400을 거쳐 "음성 대기시간을
+          // 더 줄여달라"는 요청에 맞춰 300으로 더 내렸다. 이렇게 짧게 내려도 안전한 이유:
+          // (1) 문장이 진짜 끝났는지 더 세밀하게 보는 로직(turnDetector의 isUtteranceComplete
+          // + 미완결이면 더 기다리는 하이브리드 대기)이 이 뒤에 있고, (2) 사용자가 말을
+          // 이어가면(userSpeaking이 다시 true가 되는 순간) 대기 타이머를 즉시 취소하고
+          // 이어지는 발화를 텍스트에 그대로 이어붙이는 안전망(useConversationEngine.ts의
+          // "말을 다시 시작하면 대기 타이머를 취소" effect)이 이미 있다 - redemptionMs가
+          // 짧아 숨 고르는 틈에 onSpeechEnd가 일찍 불려도, 이 안전망이 그 조기 종료를
+          // 무효화하고 이어지는 말을 그대로 받아 합친다. 그래도 말 중간에 자꾸 끊긴다면
+          // 이 값을 다시 올릴 것.
+          redemptionMs: 300,
           onSpeechStart: () => {
             setUserSpeaking(true);
             speakingActiveRef.current = true;
