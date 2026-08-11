@@ -40,6 +40,8 @@ model User {
   familyMessages  FamilyMessage[]
   familyPlans     FamilyPlan[]
   familyTasks     FamilyTask[]
+  calendarEvents          CalendarEvent[]
+  pendingCalendarProposal PendingCalendarProposal?
 
   // 보호자 계정 전용
   preference        GuardianPreference?
@@ -262,6 +264,38 @@ model FamilyPlan {
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 
   @@index([patientId])
+}
+
+/// 대화 중 음성으로 확인 후 추가되거나(source="patient_voice") 보호자가 웹에서
+/// 바로 추가한(source="guardian_web") 일정. 서버 DB가 소스 오브 트루스이고,
+/// syncedToDeviceAt이 null이면 아직 환자 휴대폰의 네이티브 캘린더에 반영 전이다.
+model CalendarEvent {
+  id               String    @id @default(cuid())
+  patientId        String
+  title            String
+  date             DateTime
+  notes            String?
+  /// "patient_voice" | "guardian_web"
+  source           String
+  /// 보호자 User.id - source가 patient_voice면 null.
+  addedBy          String?
+  syncedToDeviceAt DateTime?
+  createdAt        DateTime  @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+}
+
+/// 환자가 음성으로 일정을 언급했을 때 "추가할까요?" 확인을 기다리는 상태. 환자당
+/// 최대 1개만 대기하고, 새 제안이 들어오면 기존 것은 버린다(여러 개 동시 대기 방지).
+model PendingCalendarProposal {
+  patientId String   @id
+  title     String
+  date      DateTime
+  createdAt DateTime @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
 }
 
 /// 보호자끼리 조율하는 할 일 목록 - 환자 대화와는 무관하고 보호자 화면에서만 보인다.
