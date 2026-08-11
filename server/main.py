@@ -72,9 +72,24 @@ _HALLUCINATION_PHRASES = {
     "mbc뉴스",
 }
 
+# initial_prompt(_DIALECT_PROMPT)로 넣어준 방언 어휘 힌트를, 정작 음성 신호가 약할 때
+# whisper가 그대로 되읊는(hallucinate) 사례가 실사용 로그로 확인됐다(예:
+# "워쩌까, 이추룩, 게메마씀, 그려, 워쩌까," - 환자가 한 말이 아니라 프롬프트 문구 자체가
+# 그대로 나옴). 방언 힌트 단어가 한 발화에 여러 개 연달아 나오면 진짜 발화가 아니라
+# 프롬프트를 되읊은 것으로 본다 - 일반 대화에서 이 특이한 방언 단어들이 여러 개 동시에
+# 나올 가능성은 거의 없다.
+_DIALECT_PROMPT_WORDS = {w.strip() for w in _DIALECT_PROMPT.replace(",", " ").split()}
+_DIALECT_ECHO_MIN_MATCHES = 2
+
 
 def _normalize(text: str) -> str:
     return "".join(text.split()).lower()
+
+
+def _looks_like_dialect_prompt_echo(text: str) -> bool:
+    tokens = [t.strip(",") for t in text.split()]
+    matches = sum(1 for t in tokens if t in _DIALECT_PROMPT_WORDS)
+    return matches >= _DIALECT_ECHO_MIN_MATCHES
 
 
 def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) -> tuple[str, float]:
@@ -101,7 +116,7 @@ def _run_transcription(audio: io.BytesIO | np.ndarray, vad_filter: bool = True) 
         if segment.no_speech_prob < 0.5 and segment.avg_logprob > -0.8:
             kept_text.append(segment.text)
     text = "".join(kept_text).strip()
-    if _normalize(text) in _HALLUCINATION_PHRASES:
+    if _normalize(text) in _HALLUCINATION_PHRASES or _looks_like_dialect_prompt_echo(text):
         text = ""
     return text, info.duration
 
@@ -116,6 +131,13 @@ async def transcribe(
     file: UploadFile = File(...),
     speaker_id: str | None = Form(default=None),
     session_id: str | None = Form(default=None),
+    # 기본값 True(기존 동작 유지) - 대화 발화는 보통 몇 초 분량이라 whisper 자체 VAD가
+    # 실제 잡음/무음 구간만 골라내지만, 호출어("복실아" 등)처럼 아주 짧은(1초 미만)
+    # 발화는 이 VAD가 발화 전체를 "말 아님"으로 오판해 통째로 버리는 경우가 실기기
+    # 로그로 확인됐다(dBFS 정상인데도 전사 결과가 계속 빈 문자열). 호출어 클라이언트
+    # (WhisperClient.kt)는 이미 자체 Silero VAD로 발화 구간만 잘라 보내므로 이중 필터가
+    # 필요 없어 false로 끄고 호출한다.
+    vad_filter: bool = Form(default=True),
 ) -> dict:
     audio_bytes = await file.read()
     if not audio_bytes:
@@ -148,8 +170,9 @@ async def transcribe(
 
     try:
         # 클라이언트가 이미 VAD로 발화 구간만 잘라 보내지만, 마이크 주변 TV 소리 같은
-        # 잡음이 섞여 들어온 경우를 대비해 whisper 자체 VAD로 한 번 더 걸러낸다.
-        text, duration = _run_transcription(io.BytesIO(audio_bytes), vad_filter=True)
+        # 잡음이 섞여 들어온 경우를 대비해 기본적으로 whisper 자체 VAD로 한 번 더 걸러낸다
+        # (짧은 호출어 발화는 호출부가 vad_filter=False로 넘겨 이 이중 필터를 끈다).
+        text, duration = _run_transcription(io.BytesIO(audio_bytes), vad_filter=vad_filter)
     except Exception as exc:  # noqa: BLE001 - 클라이언트가 원인을 알 수 있게 그대로 전달
         logger.exception("transcription failed")
         raise HTTPException(status_code=500, detail=f"transcription failed: {exc}") from exc

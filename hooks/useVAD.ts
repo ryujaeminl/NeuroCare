@@ -100,9 +100,11 @@ export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
           positiveSpeechThreshold: 0.8,
           negativeSpeechThreshold: 0.65,
           // 짧은 잡음(문 닫는 소리, 헛기침 등)이 발화로 잡히지 않게 최소 발화 길이를 둔다.
-          // 실사용 피드백: "야", "복실아"처럼 아주 짧게 부르는 말은 400ms도 넘겨서
-          // misfire로 무시되는 경우가 있었다 - 250ms로 더 완화.
-          minSpeechMs: 250,
+          // 400 -> 250으로 낮췄는데도 실사용 로그(Vercel)에 "야"/"너" 같은 한 음절 호출이
+          // "VAD misfire (너무 짧은 발화로 무시됨)"으로 계속 잡히는 게 확인돼 150으로
+          // 더 낮췄다. 짧은 잡음(문 닫는 소리 등)을 오인식할 위험은 늘지만, dBFS
+          // 게이트(MIN_SPEECH_DBFS)가 그중 조용한/먼 소리는 이어서 걸러준다.
+          minSpeechMs: 150,
           // vad-web 기본값은 1400ms - "말이 끝난 것 같다"고 판단한 뒤에도 이만큼 무음이
           // 더 지속돼야 onSpeechEnd가 불린다. 1400 -> 600 -> 400을 거쳐 "음성 대기시간을
           // 더 줄여달라"는 요청에 맞춰 300으로 더 내렸다. 이렇게 짧게 내려도 안전한 이유:

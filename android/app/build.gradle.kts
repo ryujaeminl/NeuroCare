@@ -11,8 +11,8 @@ android {
         applicationId = "com.neurocare.app"
         minSdk = 26
         targetSdk = 34
-        versionCode = 30
-        versionName = "2.19"
+        versionCode = 31
+        versionName = "2.20"
 
         // 배포된 Vercel 사이트 + GPU 서버(rookie-s52, systemd 상시구동)의 STT 백엔드
         // (server/Dockerfile)를 ngrok 고정 도메인으로 노출해서 쓴다. Railway는 GPU 서버가

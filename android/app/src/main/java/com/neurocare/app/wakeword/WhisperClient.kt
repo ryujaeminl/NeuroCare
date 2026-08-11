@@ -36,6 +36,11 @@ class WhisperClient(private val baseUrl: String) {
                     encodeWav(samples, sampleRate).toRequestBody("audio/wav".toMediaType()),
                 )
                 .apply { if (speakerId != null) addFormDataPart("speaker_id", speakerId) }
+                // 호출어는 1초 미만의 아주 짧은 발화라, 서버의 whisper 자체 VAD(vad_filter
+                // 기본값 True)가 발화 전체를 "말 아님"으로 오판해 통째로 버리는 경우가 실기기
+                // 로그로 확인됐다(dBFS 정상인데도 전사 결과가 계속 빈 문자열). 여기서는 이미
+                // SileroVad(AudioCapture)로 발화 구간만 잘라 보내므로 서버 쪽 이중 필터를 끈다.
+                .addFormDataPart("vad_filter", "false")
                 .build()
             val request = Request.Builder().url("$baseUrl/transcribe").post(body).build()
             client.newCall(request).execute().use { response ->
