@@ -19,7 +19,11 @@ import type { DementiaStage } from "@/lib/db/types";
 // 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도 적용됐다 -
 // 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
 const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
-const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro3";
+// solar-pro4로 교체 전 이 페르소나 프롬프트로 실측 비교함(같은 4개 발화, pro3 대비):
+// 응답 속도 비슷~더 빠름(500~750ms대), 토큰 사용량 비슷~더 적음, 날씨처럼 확인 불가능한
+// 정보를 지어내지 말라는 규칙 13도 더 잘 지켰다. 무료/대폭 할인 프로모션 기간(~9/10)이라
+// 비용 부담도 없다.
+const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro4";
 
 const SYSTEM_PROMPT_RULES = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
 설문이 아니라 실제 사람 사이의 대화입니다 - 상대가 방금 한 말/질문의 내용과 의도를
@@ -314,17 +318,14 @@ export async function POST(request: NextRequest) {
       stream: true,
       temperature: 0.7,
       max_tokens: 200,
-      // solar-pro3는 reasoning 모델이라 이걸 명시하지 않으면 가끔 "생각 과정"이
-      // 정제되지 않은 채 그대로 응답으로 나온 사례가 실사용에서 확인됐다(예:
-      // "사용자 메시지는 '혹시라고 해'인데... 다음 문장은" 처럼 중간에 끊긴 서술체 출력).
-      // 페르소나/프롬프트 문제가 아니라 reasoning 출력 자체였다 - 최소로 고정한다.
-      // ("minimal"은 solar-pro2 전용 값이고 solar-pro3에는 없는 값이라 - Upstage
-      // 공식 문서 확인 - 인식 못 된 값은 기본값 "medium"(추론 켜짐, 컨텍스트의 30%까지
-      // 추론 토큰 소모)으로 조용히 대체됐을 가능성이 높다. 지금까지 매 요청이 실제로는
-      // "최소"가 아니라 "중간" 추론 비용을 그대로 물고 있었던 셈 - 응답 속도에 영향이
-      // 컸을 것. solar-pro3가 실제로 지원하는 값(high/medium/low) 중 추론을 완전히
-      // 끄는 "low"로 교체.
-      reasoning_effort: "low",
+      // reasoning 모델이라 이걸 명시하지 않으면 "생각 과정"에 토큰을 다 쓰고 실제
+      // 답변이 안 나올 수 있다 - 짧은 1~2문장 대화에는 추론이 필요 없으므로 완전히 끈다.
+      // 주의: pro3와 pro4는 같은 값이 반대로 동작한다. pro3는 "low"가 추론을 끄는 값이고
+      // "minimal"은 pro2 전용이라 pro3엔 없는 값(인식 못 해 조용히 "medium"으로 대체됨).
+      // 반면 pro4는 "low"가 오히려 추론을 켜는 값이고(실측: max_tokens=200에서 응답이
+      // 통째로 비었다 - reasoning 필드에 영어로 사고 과정만 200토큰 넘게 채우고 끝남),
+      // "minimal"이 추론을 완전히 끄는 값이다 - 모델 바꿀 때 이 값도 반드시 같이 바꿀 것.
+      reasoning_effort: "minimal",
     }),
   });
 
