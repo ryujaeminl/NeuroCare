@@ -227,6 +227,22 @@ export function useConversationEngine(
   const finalizeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const waitingSinceRef = useRef<number | null>(null);
   const messagesRef = useRef<ChatMessage[]>([]);
+  // 날씨 질문에 실제로 답하기 위한 대략적 위치 - 세션당 한 번만 구해서 재사용한다(매
+  // 턴마다 다시 물어볼 필요 없음). 권한이 없거나 실패해도 조용히 넘어간다 - 날씨 없이도
+  // 대화 자체는 항상 되어야 한다.
+  const locationRef = useRef<{ lat: number; lon: number } | undefined>(undefined);
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        locationRef.current = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+      },
+      () => {
+        // 권한 거부/실패 - locationRef는 undefined로 남고, 날씨 질문엔 모른다고 답하게 된다.
+      },
+      { maximumAge: 30 * 60 * 1000, timeout: 5000 },
+    );
+  }, []);
   // 이 대화(앱을 열고 있는 동안)에서 처음 들린 목소리를 서버가 기준으로 삼아 이후
   // 발화를 거르는 데 쓴다(server/speaker.py의 check_session_speaker) - 사전 성문 등록
   // 없이도 TV/다른 가족 목소리를 자동으로 걸러내려는 목적. 마운트 시 한 번 만들고,
@@ -366,6 +382,7 @@ export function useConversationEngine(
 
         const reply = await streamChat(history, {
           signal: controller.signal,
+          location: locationRef.current,
           onChunk: (fullSoFar) => {
             setPhase("speaking");
             assistantDraftRef.current = fullSoFar;

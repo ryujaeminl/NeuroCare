@@ -10,6 +10,7 @@ import {
 import { maybeTriggerVoiceDistress } from "@/lib/guardian/emergencyDispatcher";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoContext";
+import { buildWeatherContext } from "@/lib/weather";
 import type { DementiaStage } from "@/lib/db/types";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
@@ -73,10 +74,12 @@ const SYSTEM_PROMPT_RULES = `당신은 알츠하이머 환자와 진짜로 대�
     최우선이고, 그 반응과 무관하면 배경 정보는 그냥 넘어가세요. 자연스럽게
     어울리는 게 있어도 한 턴에 최대 하나만 슬쩍 곁들이세요 - 여러 개를 한꺼번에
     꺼내면 지금 나누던 이야기와 동떨어진, 뜬금없는 대화가 됩니다.
-13. 날씨, 지금 시각, 실시간 뉴스처럼 당신이 확인할 방법이 없는, 지금 이 순간의
-    사실을 아는 것처럼 구체적으로 답하지 마세요 - "오늘 맑아요", "지금 비 와요"
-    같은 답은 전부 지어낸 겁니다. "그건 제가 지금 확인은 어려운데, 창밖으로 보기엔
-    어때요?"처럼 모른다고 솔직히 말하면서 화제 자체에는 자연스럽게 반응하세요.`;
+13. 지금 시각, 실시간 뉴스처럼 당신이 확인할 방법이 없는, 지금 이 순간의 사실을
+    아는 것처럼 구체적으로 답하지 마세요 - 전부 지어낸 겁니다. "그건 제가 지금
+    확인은 어려운데, 창밖으로 보기엔 어때요?"처럼 모른다고 솔직히 말하면서 화제
+    자체에는 자연스럽게 반응하세요. 날씨는 예외입니다 - 아래 [현재 날씨]가 주어져
+    있으면 그 내용으로 실제로 답하세요(예: "오늘은 흐리고 12도래요"). [현재 날씨]가
+    없으면 날씨도 위와 똑같이 모른다고 솔직히 말하세요 - 지어내지 마세요.`;
 
 const SYSTEM_PROMPT_EXAMPLES = `
 【금지사항】
@@ -88,13 +91,15 @@ const SYSTEM_PROMPT_EXAMPLES = `
 - 지금 무슨 이야기가 오갔는지와 상관없이 매번 똑같은 회상 유도 문구로 넘어가는 것 금지
 - 평서문이나 감탄문에 매번 질문으로만 반응하는 것 금지 (의문형이 아닌데도 되묻기만 하면 대화가 이어지지 않음)
 - 배경 정보(기억/메시지/일정/사진) 여러 개를 한 턴에 동시에 꺼내는 것 금지
-- 날씨·시각처럼 확인 불가능한 실시간 정보를 아는 것처럼 답하는 것 금지
+- 시각처럼 확인 불가능한 실시간 정보를 아는 것처럼 답하는 것 금지. 날씨는 [현재
+  날씨]가 주어졌을 때만 예외 - 없으면 날씨도 똑같이 지어내면 안 됨
 
 【올바른 예】
 "그렇군요. 어떤 때였어요?" (질문 → 되묻기가 아니라 관심을 담은 추가 질문)
 "좋은 추억이네요." (평서문 "옛날에 여기서 놀았어" → 맞장구)
 "정말요?! 그거 진짜 대단하시네요." (감탄 "나 그때 상 받았잖아!" → 감정에 맞춰 반응)
-"그건 제가 지금 확인은 어려운데, 창밖으로 보기엔 어때요?" (날씨처럼 확인 불가능한 질문 → 모른다고 솔직히 + 자연스러운 되물음)
+"그건 제가 지금 확인은 어려운데, 창밖으로 보기엔 어때요?" ([현재 날씨]가 없을 때 → 모른다고 솔직히 + 자연스러운 되물음)
+"오늘은 흐리고 12도래요." ([현재 날씨]가 있을 때 → 실제 정보로 바로 답함)
 "그럼 그 후엔 어떻게 되셨어요?"
 "된장찌개 어때요? 오늘 같은 날 딱이에요."
 "산책이나 가벼운 스트레칭 어때요? 몸이 한결 가벼워질 거예요." (운동 "운동 추천해줘" → "OO 필요하세요?" 되묻기 대신 가볍고 무난한 걸 바로 하나 추천)
@@ -105,7 +110,7 @@ const SYSTEM_PROMPT_EXAMPLES = `
 "저는 당신을 돕기 위해 여기 있습니다."
 "어떻게 도와드릴까요?"
 "그러셨군요, 그건 언제였어요?" (평서문 "오늘 날씨가 참 좋네"에 매번 질문만 되돌리는 것)
-"오늘은 날씨가 참 좋네요, 햇살이 비치고 있어요." (날씨를 실제로 확인한 것처럼 지어내는 것)
+"오늘은 날씨가 참 좋네요, 햇살이 비치고 있어요." ([현재 날씨]가 없는데 확인한 것처럼 지어내는 것)
 "정신 차리세요."
 "틀렸습니다."`;
 
@@ -190,8 +195,17 @@ interface SystemPromptResult {
  * 시스템 프롬프트에 덧붙인다. "지난번에 말씀하신 손주 이야기"처럼 자연스러운 회상을
  * 유도하기 위함이다. 둘 다 없으면(가족 미등록 + Pinecone 미설정) 프롬프트가 그대로 유지된다.
  */
-async function buildSystemPrompt(patientId: string | null, latestUserText: string): Promise<SystemPromptResult> {
-  if (!patientId) return { prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES, photo: null };
+async function buildSystemPrompt(
+  patientId: string | null,
+  latestUserText: string,
+  location: { lat: number; lon: number } | undefined,
+): Promise<SystemPromptResult> {
+  // 위치는 로그인 여부와 무관하게 브라우저에서 오는 값이라, 비로그인 대화(위 "비로그인도
+  // 대화는 가능" 참고)에서도 날씨는 그대로 답할 수 있어야 한다.
+  const weather = await buildWeatherContext(location);
+  const weatherBlock = weather ? `\n\n[현재 날씨]\n${weather}` : "";
+
+  if (!patientId) return { prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES + weatherBlock, photo: null };
 
   const [roster, rawMemories, pendingMessages, upcomingPlans, unofferedPhotoPrompt, patientRecord] = await Promise.all([
     buildFamilyRoster(patientId),
@@ -277,7 +291,7 @@ ${list}`;
 ${upcomingPlans}`;
   }
 
-  prompt += unofferedPhotoPrompt;
+  prompt += unofferedPhotoPrompt + weatherBlock;
 
   return { prompt, photo };
 }
@@ -287,7 +301,10 @@ export async function POST(request: NextRequest) {
     return new Response("UPSTAGE_API_KEY가 설정되지 않았습니다.", { status: 500 });
   }
 
-  const { messages } = (await request.json()) as { messages: ChatMessage[] };
+  const { messages, location } = (await request.json()) as {
+    messages: ChatMessage[];
+    location?: { lat: number; lon: number };
+  };
 
   // 로그인 상태면 그 환자의 과거 대화를 검색해 컨텍스트로 넣는다(비로그인도 대화는 가능).
   const session = await auth();
@@ -304,7 +321,7 @@ export async function POST(request: NextRequest) {
   // (실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다).
   if (patientId) void maybeTriggerVoiceDistress(patientId, latestUserText);
 
-  const { prompt: systemPrompt, photo } = await buildSystemPrompt(patientId, latestUserText);
+  const { prompt: systemPrompt, photo } = await buildSystemPrompt(patientId, latestUserText, location);
 
   const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {
     method: "POST",

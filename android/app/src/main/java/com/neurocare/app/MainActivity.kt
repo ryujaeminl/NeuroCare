@@ -204,6 +204,9 @@ class MainActivity : AppCompatActivity() {
             domStorageEnabled = true
             mediaPlaybackRequiresUserGesture = false
             mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            // navigator.geolocation을 웹에서 쓰려면 이것도 켜야 한다 - 안드로이드 런타임
+            // 권한(ACCESS_COARSE_LOCATION)과는 별개로 WebView 자체가 막아둔 상태다.
+            setGeolocationEnabled(true)
             // 개발 서버를 다시 빌드하면 JS 청크 파일명이 바뀐다. 캐시된 HTML이 사라진 옛
             // 청크를 계속 가리키면 화면만 그려지고 스크립트가 하나도 안 붙는다.
             cacheMode = WebSettings.LOAD_NO_CACHE
@@ -288,6 +291,18 @@ class MainActivity : AppCompatActivity() {
                 pendingMicRequest = request
                 requestMicForWebView.launch(Manifest.permission.RECORD_AUDIO)
             }
+
+            /** 안드로이드 런타임 권한만 확인해서 넘겨준다 - 없으면 그냥 거부(날씨 없이도 대화는 되어야 한다). */
+            override fun onGeolocationPermissionsShowPrompt(
+                origin: String?,
+                callback: android.webkit.GeolocationPermissions.Callback?,
+            ) {
+                val granted = ContextCompat.checkSelfPermission(
+                    this@MainActivity,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                ) == PackageManager.PERMISSION_GRANTED
+                callback?.invoke(origin, granted, false)
+            }
         }
     }
 
@@ -325,7 +340,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ensurePermissionsThenStart() {
-        val needed = mutableListOf(Manifest.permission.RECORD_AUDIO)
+        val needed = mutableListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_COARSE_LOCATION)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             needed += Manifest.permission.POST_NOTIFICATIONS
         }

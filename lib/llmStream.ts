@@ -16,6 +16,8 @@ export interface StreamChatOptions {
   onSentence?: (sentence: string) => void;
   /** 서버가 이번 턴에 보여줄 사진을 골랐으면 스트림을 읽기 전에 호출 (app/api/chat/route.ts 참고) */
   onPhoto?: (photo: ChatPhoto) => void;
+  /** 날씨 질문에 실제로 답하기 위한 대략적 위치. 못 구했으면 생략 - 없어도 대화는 그대로 된다. */
+  location?: { lat: number; lon: number };
   signal?: AbortSignal;
 }
 
@@ -29,7 +31,7 @@ export async function streamChat(
   const response = await fetch("/api/chat", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, location: options.location }),
     signal: options.signal,
   });
 
