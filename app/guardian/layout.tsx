@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth/authOptions";
 import { EmergencyBanner } from "@/components/guardian/EmergencyBanner";
+import { FontSizeToggle } from "@/components/guardian/FontSizeToggle";
 
 /** /guardian/* 전체의 접근 관문. 여기서 막으면 하위 페이지는 role 체크를 반복하지 않아도 된다. */
 export default async function GuardianLayout({ children }: { children: React.ReactNode }) {
@@ -36,6 +37,7 @@ export default async function GuardianLayout({ children }: { children: React.Rea
               내 계정
             </Link>
           </nav>
+          <FontSizeToggle />
         </div>
       </header>
 

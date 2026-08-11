@@ -135,7 +135,7 @@ export default function MedicationsPage() {
                 <p className="text-xs text-muted-foreground">
                   {formatDate(medication.startDate)} ~ {medication.endDate ? formatDate(medication.endDate) : "계속"}
                   {isEndingSoon(medication.endDate) && !isEnded(medication.endDate) && (
-                    <span className="ml-2 font-medium text-amber-300">곧 종료</span>
+                    <span className="ml-2 font-medium text-amber-700">곧 종료</span>
                   )}
                   {isEnded(medication.endDate) && <span className="ml-2 font-medium">종료됨</span>}
                 </p>

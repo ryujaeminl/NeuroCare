@@ -143,7 +143,7 @@ export function VoiceEnrollment() {
 
       {enrolled === true && status === "idle" && (
         <div className="mt-3 flex items-center justify-between gap-3">
-          <p className="text-sm text-emerald-300">✓ 등록되어 있습니다</p>
+          <p className="text-sm text-emerald-700">✓ 등록되어 있습니다</p>
           <div className="flex gap-2">
             <button
               type="button"

@@ -44,9 +44,13 @@ export function EmergencyBanner() {
           <Link
             key={event.id}
             href={`/guardian/emergency/${event.id}`}
-            className="flex items-center justify-between gap-3 text-sm font-medium text-rose-100"
+            className="flex items-center justify-between gap-3 text-sm font-medium text-rose-800"
           >
-            <span>
+            <span className="flex items-center gap-2">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-600" />
+              </span>
               🆘 {event.patient.name}님에게 긴급 상황이 발생했습니다 ({new Date(event.createdAt).toLocaleTimeString("ko-KR")})
             </span>
             <span className="shrink-0 underline">확인하기 →</span>

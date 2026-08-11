@@ -95,7 +95,7 @@ export default function EmergencyEventPage() {
           발생 시각: {new Date(event.createdAt).toLocaleString("ko-KR")}
         </p>
         {event.acknowledgedByName && (
-          <p className="mt-1 text-sm text-emerald-300">
+          <p className="mt-1 text-sm text-emerald-700">
             {event.acknowledgedByName}님이 확인했습니다
             {event.acknowledgedAt && ` (${new Date(event.acknowledgedAt).toLocaleString("ko-KR")})`}
           </p>

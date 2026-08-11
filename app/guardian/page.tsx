@@ -38,12 +38,12 @@ export default function GuardianPage() {
 
   if (patients.length === 0) {
     return (
-      <div className="rounded-2xl border border-surface-border bg-surface p-6 text-center">
+      <div className="rounded-lg border border-surface-border bg-surface p-6 text-center">
         <p className="font-medium">아직 연동된 환자가 없습니다.</p>
         <p className="mt-2 text-sm text-muted-foreground">환자분께 초대 코드를 받아 연동해주세요.</p>
         <Link
           href="/guardian/link"
-          className="mt-4 inline-block rounded-full bg-accent px-6 py-3 font-medium text-accent-foreground hover:brightness-110"
+          className="mt-4 inline-block rounded-lg bg-accent px-6 py-3 font-medium text-accent-foreground transition hover:-translate-y-0.5 hover:shadow-md hover:brightness-110"
         >
           초대 코드 입력하기
         </Link>
@@ -60,7 +60,7 @@ export default function GuardianPage() {
 
       {selectedId && selectedPatient && (
         <>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3 [&>*:nth-child(1)]:[animation-delay:0ms] [&>*:nth-child(2)]:[animation-delay:70ms] [&>*:nth-child(3)]:[animation-delay:140ms]">
             {widgetOrder.map((widget) => {
               if (widget === "mood") {
                 return <MoodSummaryCard key={widget} patientId={selectedId} lastSession={selectedPatient.lastSession} />;

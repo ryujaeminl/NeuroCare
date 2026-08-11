@@ -1,22 +1,34 @@
 @import "tailwindcss";
 
+/* Deca UI Kit(공유받은 디자인 레퍼런스)에서 차용한 라이트 테마 - 흰 카드, 파란 강조색,
+   부드러운 파스텔 배지. 기존 다크 테마에서 라이트로 전환하는 큰 변경이라, 명도 대비는
+   WCAG AA 이상(본문 텍스트 7:1 안팎)을 목표로 잡았다 - 고령/치매 환자용 화면이 이
+   토큰을 그대로 쓰기 때문에 "예쁘지만 흐릿한" 회색 조합은 피했다. */
 :root {
-  --background: #0b0f1a;
-  --foreground: #f5f7fa;
-  --surface: #141a2b;
-  --surface-border: #232b40;
-  --muted-foreground: #94a3b8;
-  --accent: #7dd3fc;
-  --accent-foreground: #082f3a;
-  --danger-bg: #34121d;
-  --danger-border: #5c1f2e;
-  --danger-foreground: #fca5a5;
+  --background: #ffffff;
+  --foreground: #14161f;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+  --surface-border: #e4e6ef;
+  --muted-foreground: #475569;
+  --accent: #2f6fed;
+  --accent-foreground: #ffffff;
+  --danger-bg: #fdeaea;
+  --danger-border: #f6b8b8;
+  --danger-foreground: #b42323;
 }
+
+/* 고령 가족 구성원도 쓰는 화면이라 글씨 크기를 즉시 조절할 수 있어야 한다 - FontSizeToggle이
+   html[data-font-scale]를 토글하면 rem 기반 Tailwind 크기가 전부 같이 커진다. */
+html { font-size: 16px; }
+html[data-font-scale="lg"] { font-size: 18px; }
+html[data-font-scale="xl"] { font-size: 20px; }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-surface-border: var(--surface-border);
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
@@ -32,4 +44,25 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-card-rise {
+  animation: card-rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-card-rise {
+    animation: none;
+  }
 }

@@ -35,7 +35,7 @@ export function MedicationSummaryCard({ patientId }: { patientId: string }) {
   return (
     <Link
       href="/guardian/medications"
-      className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 transition hover:border-accent/50"
+      className="animate-card-rise flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-md"
     >
       <h3 className="font-semibold">복용약 현황</h3>
       {active.length === 0 ? (
@@ -44,7 +44,7 @@ export function MedicationSummaryCard({ patientId }: { patientId: string }) {
         <div>
           <p className="text-lg font-semibold">{active.length}개 복용 중</p>
           {endingSoon.length > 0 && (
-            <p className="mt-1 text-sm text-amber-300">{endingSoon.map((m) => m.name).join(", ")} 곧 종료</p>
+            <p className="mt-1 text-sm text-amber-700">{endingSoon.map((m) => m.name).join(", ")} 곧 종료</p>
           )}
         </div>
       )}

@@ -23,7 +23,7 @@ export function FamilySummaryCard({ patientId }: { patientId: string }) {
   return (
     <Link
       href="/guardian/family"
-      className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5 transition hover:border-accent/50"
+      className="animate-card-rise flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5 transition hover:-translate-y-0.5 hover:border-accent/50 hover:shadow-md"
     >
       <h3 className="font-semibold">가족 구성원</h3>
       {members.length === 0 ? (
