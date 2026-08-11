@@ -31,6 +31,7 @@ import androidx.core.content.ContextCompat
 import com.neurocare.app.BuildConfig
 import com.neurocare.app.MainActivity
 import com.neurocare.app.R
+import com.neurocare.app.emergency.EmergencyNotifier
 import kotlin.concurrent.thread
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
@@ -315,11 +316,14 @@ class WakeWordService : Service() {
         val powerManager = getSystemService(PowerManager::class.java)
         val isLockedOrScreenOff = keyguardManager.isKeyguardLocked || !powerManager.isInteractive
         val canOverlay = Settings.canDrawOverlays(this)
-        // ponytail: 진단용. 잠금해제+배경 상태에서 앱이 안 열리는 사례가 있어 원인을
-        // 원격에서 확인하려고 남긴다. 원인이 잡히면 이 report 호출만 지운다.
+        // ponytail: 진단용. 잠금/화면꺼짐 상태에서도 화면이 안 뜨고 배너만 남는 사례가
+        // 있어(설정에서 "전체 화면 알림" 권한이 꺼져있으면 setFullScreenIntent()가 조용히
+        // 일반 배너로 강등된다) 이 권한 상태를 원격에서 바로 확인하려고 남긴다.
+        // 원인이 잡히면 이 report 호출만 지운다.
         reportToServer(
             "launchMainActivity: isKeyguardLocked=${keyguardManager.isKeyguardLocked} " +
-                "isInteractive=${powerManager.isInteractive} canOverlay=$canOverlay",
+                "isInteractive=${powerManager.isInteractive} canOverlay=$canOverlay " +
+                "canUseFullScreenIntent=${EmergencyNotifier.canUseFullScreenIntent(this)}",
         )
         if (!isLockedOrScreenOff && canOverlay) {
             launchViaOverlay(intent)
