@@ -133,7 +133,7 @@ export function VoiceEnrollment() {
   }, []);
 
   return (
-    <div className="rounded-lg border border-surface-border bg-surface p-5">
+    <div className="rounded-xl border border-surface-border bg-surface p-5">
       <p className="font-semibold">내 목소리 등록</p>
       <p className="mt-1 text-sm text-muted-foreground">
         목소리를 등록하면 TV 소리나 다른 사람의 말은 대화로 인식하지 않습니다.
