@@ -552,7 +552,12 @@ export function useConversationEngine(
   const handleAudioFrame = useCallback(
     (frame: Float32Array) => {
       if (!utteranceStreamedRef.current) return;
-      streaming.sendFrame(frame);
+      // 업로드 경로(handleSpeechSegment)와 동일하게 게인을 올려 보낸다 - 이 프레임 단위
+      // 게인은 발화 전체를 보고 한 번에 계산하는 업로드 경로만큼 매끈하진 않지만(구간별로
+      // 조금씩 다르게 증폭될 수 있음), 게인을 전혀 안 올리는 것보다는 훨씬 낫다. 평소
+      // 톤으로 조용히 말하면 원음 그대로는 whisper가 못 알아듣는다는 게 이미 실측으로
+      // 확인된 문제라(normalizeGain 주석 참고) 스트리밍 경로에도 반드시 필요하다.
+      streaming.sendFrame(normalizeGain(frame));
     },
     [streaming],
   );

@@ -66,6 +66,14 @@ export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
   // 발화가 시작되기도 전에 서버 버퍼가 채워지기 시작하는 꼴이 된다. state(userSpeaking)가
   // 아니라 ref로 즉시(동기적으로) 갱신해 같은 콜백 틱 안에서도 정확히 반영되게 한다.
   const speakingActiveRef = useRef(false);
+  // vad-web 자신의 preSpeechPadMs 기본값(800ms)과 legacy 모델의 frameSamples(1536,
+  // 16kHz에서 96ms/프레임)로 계산한 프레임 수 - onSpeechEnd가 넘겨주는 최종 오디오에는
+  // "말하기 감지 직전" 이 구간이 항상 포함돼 있다(vad-web이 내부적으로 유지). 스트리밍
+  // 경로가 onSpeechStart 이후 프레임만 보내면 이 구간이 통째로 빠져 문장 맨 앞이 잘려나간다
+  // (실사용에서 확인) - 말하는 중이 아닐 때도 최근 프레임을 이만큼 계속 들고 있다가, 발화가
+  // 시작되는 순간 한꺼번에 흘려보내 vad-web의 동작과 맞춘다.
+  const PRE_SPEECH_PAD_FRAMES = 8;
+  const preRollRef = useRef<Float32Array[]>([]);
 
   const start = useCallback(async () => {
     if (vadRef.current || startingRef.current) return;
@@ -110,6 +118,13 @@ export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
             speakingActiveRef.current = true;
             preconnectBackend();
             callbacksRef.current.onSpeechStart?.();
+            // "start" 신호(위 콜백에서 보냄)가 먼저 나간 뒤에 쌓아뒀던 사전 발화 프레임을
+            // 순서대로 흘려보낸다 - 순서를 바꾸면 서버가 다음 발화의 버퍼를 리셋하기 전에
+            // 이 프레임들이 도착해 이전 발화 버퍼에 섞여 들어갈 수 있다.
+            for (const frame of preRollRef.current) {
+              callbacksRef.current.onAudioFrame?.(frame);
+            }
+            preRollRef.current = [];
           },
           onSpeechEnd: (audio) => {
             setUserSpeaking(false);
@@ -117,7 +132,11 @@ export function useVAD(callbacks: UseVADCallbacks = {}): UseVADResult {
             callbacksRef.current.onSpeechSegment?.(audio);
           },
           onFrameProcessed: (_probabilities, frame) => {
-            if (!speakingActiveRef.current) return;
+            if (!speakingActiveRef.current) {
+              preRollRef.current.push(frame);
+              if (preRollRef.current.length > PRE_SPEECH_PAD_FRAMES) preRollRef.current.shift();
+              return;
+            }
             callbacksRef.current.onAudioFrame?.(frame);
           },
           onVADMisfire: () => {

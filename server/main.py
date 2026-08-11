@@ -219,7 +219,14 @@ async def websocket_transcribe(websocket: WebSocket) -> None:
                             await websocket.send_json({"type": "final", "text": ""})
                         else:
                             try:
-                                text, _ = _run_transcription(buffer, vad_filter=False)
+                                # /transcribe(HTTP 업로드 경로)와 동일하게 vad_filter=True -
+                                # 클라이언트가 이미 VAD로 잘라 보내지만, 마이크 주변 TV 소리
+                                # 같은 잡음이 섞여 들어온 경우를 대비해 whisper 자체 VAD로 한
+                                # 번 더 거른다. partial(위 아래)만 vad_filter=False로 둔다 -
+                                # 아직 말하는 중인 짧은/불완전한 버퍼는 자체 VAD가 꼬리를
+                                # 잘라먹기 쉽지만, 여기(end)는 발화가 끝났다고 확정된 뒤라
+                                # 그 문제가 없다.
+                                text, _ = _run_transcription(buffer, vad_filter=True)
                             except Exception as exc:  # noqa: BLE001
                                 logger.exception("streaming final transcription failed")
                                 await websocket.send_json({"type": "error", "detail": str(exc)})
