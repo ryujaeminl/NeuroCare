@@ -198,6 +198,11 @@ async function buildSystemPrompt(patientId: string | null, latestUserText: strin
     prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
+  // ponytail: 진단용. 위와 같은 이유로 남긴다 - patientId는 잡혔는데 대기 중인 가족
+  // 메시지가 실제로 몇 건 조회됐는지 원격에서 확인한다. 0이면 애초에 DB에 안 쌓였거나
+  // 이미 delivered 처리된 것, 1개 이상이면 프롬프트엔 들어갔는데 AI가 안 꺼낸 것으로
+  // 원인을 좁힐 수 있다. 원인이 잡히면 지운다.
+  console.error(`[chat] patientId=${patientId} 대기 중인 가족 메시지=${pendingMessages.length}건`);
 
   // AI 자신의 과거 응답(role: assistant)은 "기억"이 아니라 그냥 대화 로그다 - 이걸
   // 참고자료로 다시 넣으면 예전(페르소나 개선 전)의 어색한 응답 패턴이 비슷한 질문에
@@ -284,6 +289,12 @@ export async function POST(request: NextRequest) {
   const session = await auth();
   const patientId = session?.user?.role === "patient" ? session.user.id : null;
   const latestUserText = [...messages].reverse().find((m) => m.role === "user")?.content ?? "";
+  // ponytail: 진단용. 보호자가 메시지를 남겼는데 환자 화면에서 전달이 안 됐다는 보고가
+  // 있어, 애초에 patientId가 안 잡혀 비로그인(익명) 경로로 빠진 건 아닌지 원격에서
+  // 바로 확인하려고 남긴다. 원인이 잡히면 지운다.
+  if (!patientId) {
+    console.error(`[chat] 비로그인 상태로 대화 진행 - 세션=${session ? "있음(role 불일치)" : "없음"}`);
+  }
 
   // 응답을 막지 않도록 기다리지 않는다 - 실패해도 대화 자체는 정상 진행돼야 한다
   // (실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다).
