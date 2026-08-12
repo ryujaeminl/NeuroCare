@@ -10,6 +10,8 @@ import type {
 declare global {
   interface Window {
     Android?: { closeApp?: () => void };
+    __neurocarePause?: () => void;
+    __neurocareResume?: () => void;
   }
 }
 
@@ -203,14 +205,43 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       }
     }
 
+    // 언마운트 정리와 네이티브 pause 둘 다 "지금 붙어있는 연결을 놓는다"는 동일 작업이라
+    // 여기 하나로 모아 재사용한다. pc.close()는 마이크 트랙을 멈추지 않는다(WebRTC 스펙) -
+    // 그대로 두면 훅이 정리된 뒤에도 브라우저 마이크 사용중 표시가 계속 떠 있는다.
+    function teardownActiveConnection() {
+      peerConnectionRef.current?.close();
+      micStreamRef.current?.getTracks().forEach((track) => track.stop());
+      audioElRef.current?.remove();
+      peerConnectionRef.current = null;
+      micStreamRef.current = null;
+      audioElRef.current = null;
+    }
+
+    // 네이티브 셸이 백그라운드 전환(화면 꺼짐/홈/전화 수신 - 완전 종료 아님) 시 부르는
+    // 훅. cancelledRef를 켜서 진행 중이던 connect()의 await 체크포인트들이 더 이상
+    // 진행하지 않게 막고, 이미 붙은 연결/마이크는 teardownActiveConnection으로 놓는다.
+    // startedRef를 다시 false로 돌려 resume 시 connect()가 재실행될 수 있게 한다 -
+    // "언마운트(다시 연결 안 함)"와 "일시정지(재연결 가능)"를 cancelledRef 하나로 같이
+    // 표현하되, resume이 호출될 때 cancelledRef를 다시 false로 되돌려 구분한다.
+    window.__neurocarePause = () => {
+      cancelledRef.current = true;
+      teardownActiveConnection();
+      startedRef.current = false;
+      setVadListening(false);
+    };
+
+    window.__neurocareResume = () => {
+      if (startedRef.current) return;
+      cancelledRef.current = false;
+      void connect();
+    };
+
     void connect();
     return () => {
       cancelledRef.current = true;
-      peerConnectionRef.current?.close();
-      // pc.close()는 마이크 트랙을 멈추지 않는다(WebRTC 스펙) - 그대로 두면 훅이 언마운트된
-      // 뒤에도 브라우저 마이크 사용중 표시가 계속 떠 있는다.
-      micStreamRef.current?.getTracks().forEach((track) => track.stop());
-      audioElRef.current?.remove();
+      teardownActiveConnection();
+      delete window.__neurocarePause;
+      delete window.__neurocareResume;
     };
   }, []);
 
