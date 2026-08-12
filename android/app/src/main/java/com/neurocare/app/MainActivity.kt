@@ -390,6 +390,12 @@ class MainActivity : AppCompatActivity() {
 
     private val calendarHttpClient = OkHttpClient()
 
+    /** onResume()과 WebAppBridge.syncCalendarNow()가 겹쳐 호출돼도 동시에 두 번 동기화가
+     *  돌지 않도록 막는 가드. 두 호출이 겹치면 같은 "미동기화" 이벤트를 둘 다 읽어 기기
+     *  캘린더에 중복 삽입할 수 있다. */
+    @Volatile
+    private var isCalendarSyncInProgress = false
+
     /**
      * 서버(app/api/calendar-events/unsynced)에서 아직 네이티브 캘린더에 반영 안 된
      * 일정을 받아 각각 CalendarContract에 삽입하고, 완료된 것만 서버에 표시한다.
@@ -402,6 +408,8 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) ==
                 PackageManager.PERMISSION_GRANTED
         if (!hasCalendarPermissions) return
+        if (isCalendarSyncInProgress) return
+        isCalendarSyncInProgress = true
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -424,6 +432,8 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "캘린더 동기화 실패", e)
+            } finally {
+                isCalendarSyncInProgress = false
             }
         }
     }
@@ -432,7 +442,12 @@ class MainActivity : AppCompatActivity() {
     private fun insertIntoDeviceCalendar(title: String, isoDate: String): Boolean {
         return try {
             val calendarId = getPrimaryCalendarId() ?: return false
+            // 종일(ALL_DAY=1) 이벤트는 Android CalendarContract 규약상 DTSTART/DTEND가
+            // UTC 자정 기준이어야 하고 EVENT_TIMEZONE도 반드시 "UTC"여야 한다. 기기 로컬
+            // 자정으로 파싱하고 로컬 타임존을 넣으면 구글 캘린더 등 클라우드 계정으로
+            // 동기화될 때 날짜가 하루 밀려 보일 수 있다.
             val startMillis = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.KOREA)
+                .apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
                 .parse(isoDate)?.time ?: return false
             val endMillis = startMillis + 24 * 60 * 60 * 1000
 
@@ -442,7 +457,7 @@ class MainActivity : AppCompatActivity() {
                 put(CalendarContract.Events.DTSTART, startMillis)
                 put(CalendarContract.Events.DTEND, endMillis)
                 put(CalendarContract.Events.ALL_DAY, 1)
-                put(CalendarContract.Events.EVENT_TIMEZONE, java.util.TimeZone.getDefault().id)
+                put(CalendarContract.Events.EVENT_TIMEZONE, "UTC")
             }
             contentResolver.insert(CalendarContract.Events.CONTENT_URI, values) != null
         } catch (e: Exception) {
