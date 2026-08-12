@@ -6,6 +6,7 @@ import type {
   ConversationPhase,
   UseConversationEngineResult,
 } from "@/hooks/useConversationEngine";
+import { useConversationPersistence } from "@/hooks/useConversationPersistence";
 
 declare global {
   interface Window {
@@ -32,6 +33,11 @@ interface RealtimeServerEvent {
 }
 
 export function useRealtimeConversation(): UseConversationEngineResult {
+  // 서버(/api/sessions, /api/turns)가 이미 requirePatientSelf()로 인증을 막고
+  // 있으므로(기존 /api/realtime/token과 동일 패턴), 여기서 role을 다시 가리지
+  // 않고 항상 켠다 - 보호자 세션이면 저장 호출이 조용히 401로 실패할 뿐 대화
+  // 자체엔 영향 없다.
+  const persistence = useConversationPersistence(true);
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -202,12 +208,16 @@ export function useRealtimeConversation(): UseConversationEngineResult {
           case "response.output_audio_transcript.delta":
             setAssistantDraft((prev) => prev + (e.delta ?? ""));
             break;
-          case "response.output_audio_transcript.done":
-            setLog((prev) => [{ id: Date.now(), role: "assistant", text: e.transcript ?? "" }, ...prev]);
+          case "response.output_audio_transcript.done": {
+            const assistantText = e.transcript ?? "";
+            setLog((prev) => [{ id: Date.now(), role: "assistant", text: assistantText }, ...prev]);
+            persistence.saveTurn("assistant", assistantText);
             break;
+          }
           case "conversation.item.input_audio_transcription.completed": {
             const transcript: string = e.transcript ?? "";
             setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
+            persistence.saveTurn("user", transcript);
             void fetch("/api/realtime/distress-check", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
