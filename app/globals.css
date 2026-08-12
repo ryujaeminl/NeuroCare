@@ -88,23 +88,54 @@ body {
   40%, 70% { opacity: 1; transform: translateY(-3px) scale(1); }
 }
 
-.dog-mascot { width: 14rem; height: 14rem; }
-.dog-mascot__stage { position: relative; width: 100%; height: 100%; }
-.dog-mascot__image { position: relative; z-index: 1; width: 100%; height: 100%; object-fit: contain; padding: 1rem; }
-.dog-mascot__shadow { position: absolute; left: 20%; right: 20%; bottom: 11%; height: 0.9rem; border-radius: 999px; background: rgb(15 23 42 / 14%); filter: blur(7px); }
-.dog-mascot__spark { position: absolute; z-index: 2; color: var(--accent); font-weight: 700; opacity: 0; }
-.dog-mascot__spark--one { top: 15%; right: 12%; animation: dog-spark 2.2s ease-in-out infinite; }
-.dog-mascot__spark--two { top: 28%; left: 10%; animation: dog-spark 2.2s 1.1s ease-in-out infinite; }
-.dog-mascot--idle { animation: dog-breathe 3.2s ease-in-out infinite; }
-.dog-mascot--listening { animation: dog-listen 1.1s ease-in-out infinite; }
-.dog-mascot--thinking { animation: dog-think 1.8s ease-in-out infinite; }
-.dog-mascot--speaking { animation: dog-speak 0.75s ease-in-out infinite; }
-.dog-mascot--speaking .dog-mascot__spark { animation-duration: 1.1s; }
+.dog-svg { width: 14rem; height: 14rem; }
+.dog-svg__scene { width: 100%; height: 100%; overflow: visible; }
+.dog-svg__shadow { fill: rgb(15 23 42 / 14%); filter: blur(6px); transform-origin: center; }
+.dog-svg__tail { fill: none; stroke: #a66b42; stroke-linecap: round; stroke-width: 13; transform-origin: 183px 151px; }
+.dog-svg__body-fill, .dog-svg__head-fill { fill: #c98b5c; stroke: #7c4d32; stroke-width: 4; }
+.dog-svg__belly, .dog-svg__muzzle { fill: #f5d7b7; }
+.dog-svg__leg { fill: none; stroke: #a66b42; stroke-linecap: round; stroke-width: 14; }
+.dog-svg__ear { fill: #9a603d; stroke: #7c4d32; stroke-width: 4; transform-origin: center; }
+.dog-svg__eyes { fill: #2b211c; transform-origin: center; }
+.dog-svg__nose { fill: #2b211c; }
+.dog-svg__mouth { fill: none; stroke: #2b211c; stroke-linecap: round; stroke-width: 3; }
+.dog-svg__mouth--open, .dog-svg__tongue { opacity: 0; }
+.dog-svg__mouth--open { fill: #542d32; stroke: #2b211c; stroke-width: 3; }
+.dog-svg__tongue { fill: #f28d9d; }
+.dog-svg__cheek { fill: #ef9b91; opacity: 0.65; }
+.dog-svg__thoughts { fill: var(--accent); opacity: 0; }
+.dog-svg--idle .dog-svg__body { animation: dog-breathe 3.2s ease-in-out infinite; transform-origin: 120px 170px; }
+.dog-svg--idle .dog-svg__tail { animation: dog-tail-wag 1.5s ease-in-out infinite; }
+.dog-svg--listening .dog-svg__head { animation: dog-listen 1.1s ease-in-out infinite; transform-origin: 120px 100px; }
+.dog-svg--listening .dog-svg__ear { animation: dog-ear-listen 0.8s ease-in-out infinite alternate; }
+.dog-svg--thinking .dog-svg__head { animation: dog-think 1.8s ease-in-out infinite; transform-origin: 120px 100px; }
+.dog-svg--thinking .dog-svg__thoughts { animation: dog-spark 1.8s ease-in-out infinite; }
+.dog-svg--speaking .dog-svg__body { animation: dog-speak 0.75s ease-in-out infinite; transform-origin: 120px 170px; }
+.dog-svg--speaking .dog-svg__mouth--closed { opacity: 0; }
+.dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { animation: dog-mouth-talk 0.32s ease-in-out infinite alternate; }
+.dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { opacity: 1; }
+
+@keyframes dog-tail-wag {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(22deg); }
+}
+
+@keyframes dog-ear-listen {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(8deg); }
+}
+
+@keyframes dog-mouth-talk {
+  from { transform: scaleY(0.65); transform-origin: center; }
+  to { transform: scaleY(1.1); transform-origin: center; }
+}
 
 @media (prefers-reduced-motion: reduce) {
-  .dog-mascot__stage,
-  .dog-mascot__spark { animation: none; }
-  .dog-mascot__spark { opacity: 0; }
+  .dog-svg * { animation: none !important; }
+  .dog-svg--speaking .dog-svg__mouth--closed { opacity: 1; }
+  .dog-svg--speaking .dog-svg__mouth--open,
+  .dog-svg--speaking .dog-svg__tongue,
+  .dog-svg__thoughts { opacity: 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {

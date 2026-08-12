@@ -81,7 +81,7 @@ export default function HomePage() {
   }, [status, router]);
 
   // 로그인한 환자 계정일 때만 대화를 서버에 저장한다(보호자는 읽기 전용).
-  const engine = useRealtimeConversation();
+  const engine = useRealtimeConversation(status === "authenticated");
 
   // 버튼도 웨이크워드도 없이, 이 화면에서 그냥 말하면 바로 대화가 이어진다.
   // 대시보드 레이아웃은 그대로 두고, 인사말 아래 안내 문구만 지금 상태를 보여주도록 바꾼다.

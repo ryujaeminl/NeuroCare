@@ -33,12 +33,12 @@ interface RealtimeServerEvent {
   error?: { message?: string };
 }
 
-export function useRealtimeConversation(): UseConversationEngineResult {
+export function useRealtimeConversation(enabled = true): UseConversationEngineResult {
   // 서버(/api/sessions, /api/turns)가 이미 requirePatientSelf()로 인증을 막고
   // 있으므로(기존 /api/realtime/token과 동일 패턴), 여기서 role을 다시 가리지
   // 않고 항상 켠다 - 보호자 세션이면 저장 호출이 조용히 401로 실패할 뿐 대화
   // 자체엔 영향 없다.
-  const persistence = useConversationPersistence(true);
+  const persistence = useConversationPersistence(enabled);
   const { saveTurn } = persistence;
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
@@ -65,6 +65,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
   // async 함수) - react-hooks/set-state-in-effect가 "effect 밖 콜백을 의존성으로 불러
   // 그 안에서 setState" 모양을 정적으로 문제 삼는다.
   useEffect(() => {
+    if (!enabled) return;
     cancelledRef.current = false;
 
     // connect()가 각 await 이후 이미 확보한 리소스(pc/mic/audioEl)를 정리할 때 쓰는
@@ -347,7 +348,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       delete window.__neurocarePause;
       delete window.__neurocareResume;
     };
-  }, [saveTurn]);
+  }, [enabled, saveTurn]);
 
   return {
     phase,
