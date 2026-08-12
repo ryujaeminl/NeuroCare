@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 export interface MusicOverlayState {
   videoId: string;
   title: string;
@@ -20,13 +22,29 @@ export function MusicOverlay({ state, onClose }: { state: MusicOverlayState; onC
           ✕
         </button>
       </div>
-      <iframe
-        key={state.videoId}
-        src={`https://www.youtube.com/embed/${state.videoId}?autoplay=1`}
-        className="aspect-video w-full"
-        allow="autoplay; encrypted-media"
-        title={state.title}
-      />
+      <VideoContent videoId={state.videoId} title={state.title} />
+    </div>
+  );
+}
+
+function VideoContent({ videoId, title }: { videoId: string; title: string }) {
+  const [hasError, setHasError] = useState(false);
+
+  return (
+    <div key={videoId}>
+      {hasError ? (
+        <div className="aspect-video w-full flex items-center justify-center">
+          <p className="text-sm">영상을 불러올 수 없어요.</p>
+        </div>
+      ) : (
+        <iframe
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+          className="aspect-video w-full"
+          allow="autoplay; encrypted-media"
+          title={title}
+          onError={() => setHasError(true)}
+        />
+      )}
     </div>
   );
 }
