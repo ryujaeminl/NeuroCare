@@ -1,10 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export interface MusicOverlayState {
   videoId: string;
   title: string;
+}
+
+interface YTPlayer {
+  setVolume: (volume: number) => void;
+  destroy: () => void;
+}
+
+interface YTPlayerOptions {
+  videoId: string;
+  playerVars?: Record<string, number>;
+  events?: {
+    onReady?: (event: { target: YTPlayer }) => void;
+    onError?: () => void;
+  };
+}
+
+declare global {
+  interface Window {
+    YT?: { Player: new (el: HTMLElement, opts: YTPlayerOptions) => YTPlayer };
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+// 여러 오버레이 마운트(곡 바뀔 때마다 VideoContent가 리마운트됨)가 같은 로드를
+// 공유하도록 모듈 스코프에 캐시한다 - 스크립트 태그를 곡마다 중복 삽입하지 않기 위함.
+let apiLoadPromise: Promise<void> | null = null;
+function loadYouTubeIframeApi(): Promise<void> {
+  if (window.YT?.Player) return Promise.resolve();
+  apiLoadPromise ??= new Promise((resolve) => {
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      previous?.();
+      resolve();
+    };
+    const script = document.createElement("script");
+    script.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(script);
+  });
+  return apiLoadPromise;
+}
+
+const FADE_IN_MS = 1500;
+const FADE_STEP_MS = 100;
+
+/** 갑자기 큰 소리로 시작하지 않도록 재생 시작 후 볼륨을 0에서 100까지 서서히 올린다
+ * (치매 환자 대상 앱이라 감각 자극 최소화). */
+function fadeInVolume(player: YTPlayer) {
+  const steps = FADE_IN_MS / FADE_STEP_MS;
+  let step = 0;
+  player.setVolume(0);
+  const interval = setInterval(() => {
+    step += 1;
+    player.setVolume(Math.min(100, Math.round((step / steps) * 100)));
+    if (step >= steps) clearInterval(interval);
+  }, FADE_STEP_MS);
 }
 
 /** 대화 화면 위에 겹쳐서 재생 중인 유튜브 영상을 보여준다. 재생목록/큐 없이
@@ -29,6 +84,28 @@ export function MusicOverlay({ state, onClose }: { state: MusicOverlayState; onC
 
 function VideoContent({ videoId, title }: { videoId: string; title: string }) {
   const [hasError, setHasError] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<YTPlayer | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    void loadYouTubeIframeApi().then(() => {
+      if (cancelled || !containerRef.current || !window.YT) return;
+      playerRef.current = new window.YT.Player(containerRef.current, {
+        videoId,
+        playerVars: { autoplay: 1, playsinline: 1 },
+        events: {
+          onReady: (event) => fadeInVolume(event.target),
+          onError: () => setHasError(true),
+        },
+      });
+    });
+    return () => {
+      cancelled = true;
+      playerRef.current?.destroy();
+      playerRef.current = null;
+    };
+  }, [videoId]);
 
   return (
     <div>
@@ -37,13 +114,7 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
           <p className="text-sm">영상을 불러올 수 없어요.</p>
         </div>
       ) : (
-        <iframe
-          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-          className="aspect-video w-full"
-          allow="autoplay; encrypted-media"
-          title={title}
-          onError={() => setHasError(true)}
-        />
+        <div ref={containerRef} className="aspect-video w-full" aria-label={title} />
       )}
     </div>
   );
