@@ -1,5 +1,4 @@
 import { NextRequest } from "next/server";
-import AnthropicFoundry from "@anthropic-ai/foundry-sdk";
 import { auth } from "@/lib/auth/authOptions";
 import { prisma } from "@/lib/db/prisma";
 import {
@@ -18,19 +17,25 @@ import { buildBasePersonaPrompt, SYSTEM_PROMPT_RULES, SYSTEM_PROMPT_EXAMPLES } f
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
 // 이 앱의 실사용자가 한국이라 클라이언트↔Vercel 구간만이라도 왕복 지연을 줄이려고
-// 리전을 icn1로 고정했다(Anthropic API 자체는 미국에 있어 Vercel↔Anthropic 구간의
-// 태평양 왕복은 리전과 무관하게 남는다). Route Segment Config의 preferredRegion
-// export는 Edge 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge
-// 불가), 실제로는 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도
-// 적용됐다 - 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
-// Upstage solar-pro4에서 교체(2026-08-12) - 대화력/추론력 우위로 선택, 사용자 요청.
-// 회사 Azure AI Foundry 구독으로 발급받은 키를 쓰므로 api.anthropic.com 직접 호출이
-// 아니라 @anthropic-ai/foundry-sdk를 통해 Azure 리소스로 호출한다 - 요청 바디는
-// 표준 Anthropic Messages API와 동일하고, resource(Foundry 리소스명)만 Azure 쪽
-// 라우팅 정보다. 키 없이 빈 생성자를 호출해도 SDK가 ANTHROPIC_FOUNDRY_API_KEY /
-// ANTHROPIC_FOUNDRY_RESOURCE 환경변수를 자동으로 읽는다.
-const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const foundryClient = new AnthropicFoundry();
+// 리전을 icn1로 고정했다(모델 자체는 미국에 있어 Vercel↔Azure 구간의 태평양 왕복은
+// 리전과 무관하게 남는다). Route Segment Config의 preferredRegion export는 Edge
+// 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge 불가), 실제로는
+// 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도 적용됐다 -
+// 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
+// claude-sonnet-5 Foundry 배포가 없어 대화가 항상 실패하던 문제로, 같은 Azure
+// 리소스(youjaemin0722-2893-resource)에 실제로 배포돼있는 gpt-5.5로 교체했다
+// (app/api/realtime/web-search/route.ts와 동일한 Azure OpenAI Responses API,
+// 모델만 다름 - 검색은 mini로 충분하지만 메인 대화는 품질이 더 중요해 mini
+// 아닌 배포를 쓴다).
+const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY;
+const CHAT_MODEL = process.env.AZURE_OPENAI_CHAT_MODEL ?? "gpt-5.5";
+
+/** Azure OpenAI Responses API 스트리밍 이벤트 중 텍스트 델타만 필요한 필드로 타입화한다. */
+interface ResponsesApiStreamEvent {
+  type: string;
+  delta?: string;
+}
 
 interface ChatMessage {
   role: "user" | "assistant" | "system";
@@ -185,9 +190,9 @@ ${recentCalendarEvents}`;
 }
 
 export async function POST(request: NextRequest) {
-  if (!process.env.ANTHROPIC_FOUNDRY_API_KEY || !process.env.ANTHROPIC_FOUNDRY_RESOURCE) {
+  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
     return new Response(
-      "ANTHROPIC_FOUNDRY_API_KEY / ANTHROPIC_FOUNDRY_RESOURCE가 설정되지 않았습니다.",
+      "AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY가 설정되지 않았습니다.",
       { status: 500 },
     );
   }
@@ -218,34 +223,61 @@ export async function POST(request: NextRequest) {
     location,
   );
 
-  // Anthropic Messages API 형식 그대로(system은 최상위 필드) - Foundry SDK가 인증/엔드포인트
-  // 라우팅만 Azure용으로 대신 처리해준다. reasoning_effort 같은 별도 스위치는 없다 - extended
-  // thinking은 요청에 thinking 파라미터를 넣을 때만 켜지므로, 안 넣으면 Upstage에서
-  // reasoning_effort:"minimal"로 끈 것과 동일하게 기본이 꺼진 상태다.
   const encoder = new TextEncoder();
-  let anthropicStream;
+  let azureResponse: Response;
   try {
-    anthropicStream = foundryClient.messages.stream({
-      model: CLAUDE_MODEL,
-      system: systemPrompt,
-      messages,
-      temperature: 0.7,
-      max_tokens: 200,
+    azureResponse = await fetch(`${AZURE_OPENAI_ENDPOINT.replace(/\/$/, "")}/openai/v1/responses`, {
+      method: "POST",
+      headers: { "api-key": AZURE_OPENAI_API_KEY, "content-type": "application/json" },
+      body: JSON.stringify({
+        model: CHAT_MODEL,
+        instructions: systemPrompt,
+        input: messages.map((m) => ({ role: m.role, content: m.content })),
+        stream: true,
+        temperature: 0.7,
+        max_output_tokens: 200,
+      }),
     });
   } catch (error: unknown) {
     const detail = error instanceof Error ? error.message : String(error);
-    return new Response(`Anthropic(Foundry) 요청 실패: ${detail}`, { status: 502 });
+    return new Response(`Azure OpenAI 요청 실패: ${detail}`, { status: 502 });
+  }
+
+  if (!azureResponse.ok || !azureResponse.body) {
+    const detail = await azureResponse.text().catch(() => "");
+    return new Response(`Azure OpenAI 요청 실패 (${azureResponse.status}): ${detail}`, { status: 502 });
   }
 
   const stream = new ReadableStream({
     async start(controller) {
+      const reader = azureResponse.body!.getReader();
+      const decoder = new TextDecoder();
+      // SSE 프레임이 청크 경계에서 잘려 올 수 있어 줄 단위로 버퍼링한다 - "data: {...}"
+      // 한 줄이 완성될 때만 파싱한다.
+      let buffer = "";
       try {
-        for await (const event of anthropicStream) {
-          // content_block_delta + text_delta만 실제 답변 텍스트다. 나머지 이벤트
-          // 타입(message_start/content_block_start/message_delta/message_stop)은
-          // 텍스트가 없다.
-          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
-            controller.enqueue(encoder.encode(event.delta.text));
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+
+          const lines = buffer.split("\n");
+          buffer = lines.pop() ?? "";
+          for (const line of lines) {
+            const payload = line.startsWith("data: ") ? line.slice(6).trim() : "";
+            if (!payload || payload === "[DONE]") continue;
+            let event: ResponsesApiStreamEvent;
+            try {
+              event = JSON.parse(payload) as ResponsesApiStreamEvent;
+            } catch {
+              continue;
+            }
+            // response.output_text.delta만 실제 답변 텍스트 조각이다. 나머지 이벤트
+            // 타입(response.created/response.output_item.added/response.completed 등)은
+            // 텍스트가 없다.
+            if (event.type === "response.output_text.delta" && event.delta) {
+              controller.enqueue(encoder.encode(event.delta));
+            }
           }
         }
         controller.close();
