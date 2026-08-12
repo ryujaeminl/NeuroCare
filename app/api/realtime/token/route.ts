@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth/authOptions";
 import { prisma } from "@/lib/db/prisma";
 import { buildFamilyRoster } from "@/lib/memory/familyContext";
 import { buildRecentCalendarEvents } from "@/lib/calendar/calendarEvents";
+import { buildPreviousSessionContext } from "@/lib/memory/previousSession";
 import { buildBasePersonaPrompt } from "@/lib/persona";
 import type { DementiaStage } from "@/lib/db/types";
 
@@ -32,10 +33,11 @@ export async function GET() {
   }
   const patientId = session.user.id;
 
-  const [roster, patientRecord, recentCalendarEvents] = await Promise.all([
+  const [roster, patientRecord, recentCalendarEvents, previousSessionContext] = await Promise.all([
     buildFamilyRoster(patientId),
     prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
     buildRecentCalendarEvents(patientId),
+    buildPreviousSessionContext(patientId),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
 
@@ -63,6 +65,15 @@ ${recentCalendarEvents}`;
 [일정 등록]
 대화 중 환자가 일정을 언급하면 자연스럽게 한 번 물어보세요(예: "그거 일정에 추가해드릴까요?").
 강요하지 마세요. 사용자가 명확히 동의했을 때만 add_calendar_event를 호출하세요.`;
+
+  if (previousSessionContext) {
+    instructions += `
+
+[전날 대화]
+가장 최근에 나눈 대화의 일부입니다. 자연스럽게 이어갈 수 있으면 참고하세요.
+억지로 언급하거나 그대로 반복하지 마세요.
+${previousSessionContext}`;
+  }
 
   if (!REALTIME_TRANSCRIPTION_DEPLOYMENT) {
     console.error(
