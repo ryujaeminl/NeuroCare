@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1786449737.466065,
-    "ast_hash": "a7daa0b9af8ce00fc1b73a58e91fc963",
+    "mtime": 1786518516.2944813,
+    "ast_hash": "00199bd545d8ab90e9d7af777b6a97e5",
     "semantic_hash": ""
   },
   "app/signup/page.tsx": {
@@ -1280,13 +1280,13 @@
     "semantic_hash": ""
   },
   "app/api/realtime/token/route.ts": {
-    "mtime": 1786516280.3293915,
-    "ast_hash": "682f285134dadfbcef56e76e177390f2",
+    "mtime": 1786518971.6607957,
+    "ast_hash": "fee09b396cd9d8c7c8c60eb05437353b",
     "semantic_hash": ""
   },
   "hooks/useRealtimeConversation.ts": {
-    "mtime": 1786518176.510337,
-    "ast_hash": "69f254435de4ca0f836e70623e906ea0",
+    "mtime": 1786519010.9605954,
+    "ast_hash": "1d213a53c206bb3a088a749356316b4c",
     "semantic_hash": ""
   },
   "lib/calendar/calendarEvents.ts": {

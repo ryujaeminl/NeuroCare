@@ -1,16 +1,16 @@
 # Graph Report - Neurocare  (2026-08-12)
 
 ## Corpus Check
-- 246 files · ~154,166 words
+- 246 files · ~154,375 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1413 nodes · 2376 edges · 110 communities (87 shown, 23 thin omitted)
+- 1413 nodes · 2376 edges · 108 communities (86 shown, 22 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 2 edges (avg confidence: 0.65)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `6f30de28`
+- Built from commit: `78a6abac`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -34,7 +34,6 @@
 - [memberId]/page.tsx
 - app/layout.tsx
 - turnDetector.ts
-- useConversationEngine
 - .continue/skills/caveman-compress/scripts/compress.py
 - encodeWav
 - app/page.tsx
@@ -98,7 +97,6 @@
 - fit
 - register/route.ts
 - package.json
-- useStreamingStt.ts
 - .agents/skills/caveman-compress/scripts/__init__.py
 - CLAUDE.md
 - .continue/skills/caveman-compress/scripts/__init__.py
@@ -125,9 +123,9 @@
 4. `WakeWordService` - 27 edges
 5. `requirePatientAccess()` - 22 edges
 6. `MainActivity` - 21 edges
-7. `useConversationEngine()` - 20 edges
-8. `requirePatientSelf()` - 20 edges
-9. `requireSession()` - 19 edges
+7. `requirePatientSelf()` - 20 edges
+8. `requireSession()` - 19 edges
+9. `useConversationEngine()` - 18 edges
 10. `compilerOptions` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -145,7 +143,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (110 total, 23 thin omitted)
+## Communities (108 total, 22 thin omitted)
 
 ### Community 0 - "requireGuardianAccess"
 Cohesion: 0.13
@@ -204,8 +202,8 @@ Cohesion: 0.10
 Nodes (33): main(), print_usage(), backup_dir_for(), build_compress_prompt(), build_fix_prompt(), call_claude(), compress_file(), first_nonblank_line() (+25 more)
 
 ### Community 14 - "useConversationEngine.ts"
-Cohesion: 0.15
-Nodes (14): useBargeIn(), UseBargeInOptions, ConversationLogEntry, ConversationPhase, STREAMING_WS_URL, UseConversationEngineOptions, UseConversationEngineResult, RealtimeServerEvent (+6 more)
+Cohesion: 0.14
+Nodes (21): useBargeIn(), UseBargeInOptions, computeDbfs(), decomposeHangul(), editDistance(), isWakeWordOnly(), reportToServer(), STREAMING_WS_URL (+13 more)
 
 ### Community 15 - "requirePatientSelf"
 Cohesion: 0.18
@@ -223,10 +221,6 @@ Nodes (6): geistMono, geistSans, metadata, ClientDiagnostics(), Providers(), Pro
 Cohesion: 0.24
 Nodes (8): useSpeechCalibration(), UseSpeechCalibrationResult, COMPLETE_SILENCE_MS, COMPLETE_SUFFIXES, DEFAULT_INCOMPLETE_SILENCE_MS, INCOMPLETE_SUFFIXES, INCOMPLETE_WORDS, isUtteranceComplete()
 
-### Community 19 - "useConversationEngine"
-Cohesion: 0.31
-Nodes (9): computeDbfs(), decomposeHangul(), editDistance(), isWakeWordOnly(), reportToServer(), stripWakeWordPrefix(), transcribeSegment(), trimHistory() (+1 more)
-
 ### Community 20 - ".continue/skills/caveman-compress/scripts/compress.py"
 Cohesion: 0.10
 Nodes (33): main(), print_usage(), backup_dir_for(), build_compress_prompt(), build_fix_prompt(), call_claude(), compress_file(), first_nonblank_line() (+25 more)
@@ -236,8 +230,8 @@ Cohesion: 0.39
 Nodes (4): Status, VoiceEnrollment(), encodeWav(), writeString()
 
 ### Community 22 - "app/page.tsx"
-Cohesion: 0.32
-Nodes (5): DashboardCardProps, DashboardSummary, formatPlanDate(), HomePage(), EmergencyButton()
+Cohesion: 0.19
+Nodes (10): DashboardCardProps, DashboardSummary, formatPlanDate(), HomePage(), EmergencyButton(), ConversationLogEntry, ConversationPhase, RealtimeServerEvent (+2 more)
 
 ### Community 24 - "copy-vad-assets.mjs"
 Cohesion: 0.33
@@ -466,7 +460,7 @@ Nodes (4): isActive(), isEndingSoon(), MedicationSummaryCard(), SELECTED_PATIENT
 ## Knowledge Gaps
 - **455 isolated node(s):** `foundryClient`, `ChatMessage`, `PhotoToShow`, `SystemPromptResult`, `PATIENT_TRIGGER_TYPES` (+450 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **23 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **22 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_

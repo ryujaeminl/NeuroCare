@@ -5183,7 +5183,7 @@
       "label": "GET()",
       "file_type": "code",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L17",
+      "source_location": "L20",
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_token_route_get",
@@ -7157,8 +7157,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_conversationlogentry",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "conversationlogentry"
     },
     {
@@ -7170,8 +7170,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_conversationphase",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "conversationphase"
     },
     {
@@ -7195,8 +7195,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_computedbfs",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "computedbfs()"
     },
     {
@@ -7207,8 +7207,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_reporttoserver",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "reporttoserver()"
     },
     {
@@ -7230,8 +7230,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_transcribesegment",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "transcribesegment()"
     },
     {
@@ -7242,8 +7242,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_decomposehangul",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "decomposehangul()"
     },
     {
@@ -7254,8 +7254,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_editdistance",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "editdistance()"
     },
     {
@@ -7266,8 +7266,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_iswakewordonly",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "iswakewordonly()"
     },
     {
@@ -7278,8 +7278,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_stripwakewordprefix",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "stripwakewordprefix()"
     },
     {
@@ -7290,8 +7290,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_trimhistory",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "trimhistory()"
     },
     {
@@ -7315,8 +7315,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_useconversationengine",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "useconversationengine()"
     },
     {
@@ -7409,8 +7409,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_userealtimeconversation",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "userealtimeconversation.ts"
     },
     {
@@ -7422,33 +7422,33 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_window",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "window"
     },
     {
       "label": "RealtimeServerEvent",
       "file_type": "code",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L22",
+      "source_location": "L24",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_realtimeserverevent",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "realtimeserverevent"
     },
     {
       "label": "useRealtimeConversation()",
       "file_type": "code",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L29",
+      "source_location": "L31",
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_userealtimeconversation",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "userealtimeconversation()"
     },
     {
@@ -7494,8 +7494,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usestreamingstt",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingstt.ts"
     },
     {
@@ -7507,8 +7507,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_usestreamingstt_usestreamingsttresult",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingsttresult"
     },
     {
@@ -7519,8 +7519,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_usestreamingstt_usestreamingstt",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingstt()"
     },
     {
@@ -29111,7 +29111,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L17",
+      "source_location": "L20",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29232,7 +29232,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L32",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -29244,7 +29244,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L37",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -31152,7 +31152,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page",
-      "target": "hooks_useconversationengine",
+      "target": "hooks_userealtimeconversation",
       "confidence_score": 1.0
     },
     {
@@ -31164,7 +31164,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page",
-      "target": "hooks_useconversationengine_useconversationengine",
+      "target": "hooks_userealtimeconversation_userealtimeconversation",
       "confidence_score": 1.0
     },
     {
@@ -31189,7 +31189,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page_homepage",
-      "target": "hooks_useconversationengine_useconversationengine"
+      "target": "hooks_userealtimeconversation_userealtimeconversation"
     },
     {
       "relation": "contains",
@@ -33751,7 +33751,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L22",
+      "source_location": "L24",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_userealtimeconversation",
@@ -33762,7 +33762,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L29",
+      "source_location": "L31",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_userealtimeconversation",
@@ -43758,5 +43758,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6f30de28e5e58f3143cba88e2e536e2fc9d60684"
+  "built_at_commit": "78a6abac906e65036182f521e405f747bee5b3b3"
 }
