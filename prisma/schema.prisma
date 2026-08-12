@@ -306,7 +306,9 @@ model PlayedSong {
   id        String   @id @default(cuid())
   patientId String
   title     String
-  videoId   String
+  /// 더 이상 서버에서 특정 영상을 검색해 확정하지 않는다(유튜브 검색모드 재생으로
+  /// 전환 - hooks/useRealtimeConversation.ts 참고) - 새 레코드는 항상 null.
+  videoId   String?
   playedAt  DateTime @default(now())
 
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)

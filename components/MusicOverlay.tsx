@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 
 export interface MusicOverlayState {
-  videoId: string;
+  /** 검색어 그대로 - 서버에서 특정 영상을 미리 찾지 않는다. YouTube IFrame
+   * Player의 검색모드(listType: "search")가 첫 검색 결과를 바로 재생한다. */
+  query: string;
   title: string;
 }
 
@@ -13,8 +15,7 @@ interface YTPlayer {
 }
 
 interface YTPlayerOptions {
-  videoId: string;
-  playerVars?: Record<string, number>;
+  playerVars?: Record<string, number | string>;
   events?: {
     onReady?: (event: { target: YTPlayer }) => void;
     onError?: () => void;
@@ -78,12 +79,12 @@ export function MusicOverlay({ state, onClose }: { state: MusicOverlayState; onC
           ✕
         </button>
       </div>
-      <VideoContent key={state.videoId} videoId={state.videoId} title={state.title} />
+      <VideoContent key={state.query} query={state.query} title={state.title} />
     </div>
   );
 }
 
-function VideoContent({ videoId, title }: { videoId: string; title: string }) {
+function VideoContent({ query, title }: { query: string; title: string }) {
   const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
@@ -94,8 +95,10 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
     void loadYouTubeIframeApi().then(() => {
       if (cancelled || !containerRef.current || !window.YT) return;
       playerRef.current = new window.YT.Player(containerRef.current, {
-        videoId,
-        playerVars: { autoplay: 1, playsinline: 1 },
+        // 특정 영상을 미리 찾지 않고, 유튜브 검색모드로 첫 검색 결과를 바로 재생한다
+        // (서버 검색 왕복이 없어져 재생 시작이 훨씬 빠르고, yt-search 스크레이핑에
+        // 기대지 않는다).
+        playerVars: { listType: "search", list: query, autoplay: 1, playsinline: 1 },
         events: {
           onReady: (event) => {
             fadeCleanupRef.current?.();
@@ -118,7 +121,7 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
       playerRef.current?.destroy();
       playerRef.current = null;
     };
-  }, [videoId]);
+  }, [query]);
 
   return (
     <div>

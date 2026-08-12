@@ -213,33 +213,25 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "play_song" && e.call_id) {
-          void (async () => {
-            let query = "";
-            try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
-            const callId = e.call_id as string;
-            let output = "그 노래를 못 찾았어요.";
-            if (query) {
-              // 타임아웃 없이 무한 대기하면 function_call_output을 영영 못 보내서
-              // 대화가 "생각 중"에서 멈춘 채로 굳는다 - 10초로 끊는다.
-              const searchRes = await fetch("/api/music/search", {
-                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
-                signal: AbortSignal.timeout(10000),
-              }).catch(() => null);
-              const payload = (await searchRes?.json().catch(() => ({}))) as { videoId?: string | null; title?: string } | undefined;
-              if (payload?.videoId && payload.title) {
-                setMusicOverlay({ videoId: payload.videoId, title: payload.title });
-                void fetch("/api/music/history", {
-                  method: "POST", headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ title: payload.title, videoId: payload.videoId }),
-                }).catch(() => {});
-                output = `"${payload.title}"을(를) 재생을 시작했어요.`;
-              }
-            }
-            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
-              type: "function_call_output", call_id: callId, output,
-            }}));
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
-          })();
+          let query = "";
+          try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
+          const callId = e.call_id as string;
+          let output = "그 노래를 못 찾았어요.";
+          // 서버에서 특정 영상을 미리 찾지 않는다 - 유튜브 검색모드(MusicOverlay 참고)로
+          // 클라이언트가 바로 재생을 시작한다. 검색 왕복이 없어서 재생이 거의 즉시
+          // 시작되고, 예전처럼 검색이 안 끝나서 대화가 "생각 중"에 멈추는 일도 없다.
+          if (query) {
+            setMusicOverlay({ query, title: query });
+            void fetch("/api/music/history", {
+              method: "POST", headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ title: query }),
+            }).catch(() => {});
+            output = `"${query}"을(를) 재생을 시작했어요.`;
+          }
+          dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+            type: "function_call_output", call_id: callId, output,
+          }}));
+          dataChannel.send(JSON.stringify({ type: "response.create" }));
           return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "stop_song" && e.call_id) {

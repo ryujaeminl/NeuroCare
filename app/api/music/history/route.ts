@@ -12,16 +12,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as { title?: string; videoId?: string } | null;
+  const body = (await request.json().catch(() => null)) as { title?: string } | null;
   const title = body?.title?.trim();
-  const videoId = body?.videoId?.trim();
-  if (!title || !videoId) {
-    return NextResponse.json({ error: "title과 videoId가 필요합니다." }, { status: 400 });
+  if (!title) {
+    return NextResponse.json({ error: "title이 필요합니다." }, { status: 400 });
   }
 
   try {
     await prisma.playedSong.create({
-      data: { patientId: session.user.id, title, videoId },
+      data: { patientId: session.user.id, title },
     });
   } catch {
     return NextResponse.json({ error: "이력 저장에 실패했습니다." }, { status: 500 });
