@@ -283,6 +283,10 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           }
           case "error":
             setErrorMsg(e.error?.message ?? "오류가 발생했습니다.");
+            // 에러가 나면 응답이 영영 안 올 수 있다(예: 이전 응답이 아직 안 끝난
+            // 상태에서 response.create를 보내 거부된 경우) - phase를 안 풀어주면
+            // "생각 중"에 화면이 멈춘 채로 굳는다. 다시 말할 수 있게 리스닝으로 돌린다.
+            setPhase("listening");
             break;
         }
       });
