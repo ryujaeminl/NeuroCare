@@ -1,9 +1,24 @@
-import AnthropicFoundry from "@anthropic-ai/foundry-sdk";
 import { isMood, MOOD_VALUES, type Mood } from "@/lib/db/types";
 
-// Azure AI Foundry 구독 키 사용 - app/api/chat/route.ts와 동일한 클라이언트 설정.
-const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const foundryClient = new AnthropicFoundry();
+// claude-sonnet-5 Foundry 배포가 없어 기분 분석이 항상 404로 실패하던 문제로,
+// 실제로 배포돼있는 Azure OpenAI Responses API(app/api/realtime/web-search/route.ts와
+// 동일 리소스/모델)로 교체했다.
+const AZURE_OPENAI_ENDPOINT = process.env.AZURE_OPENAI_ENDPOINT;
+const AZURE_OPENAI_API_KEY = process.env.AZURE_OPENAI_API_KEY;
+const RESPONSES_MODEL = process.env.AZURE_OPENAI_RESPONSES_MODEL ?? "gpt-5.4-mini";
+
+/** Azure OpenAI Responses API 원본 JSON 응답 중 텍스트 추출에 필요한 필드만 타입화한다. */
+interface ResponsesApiOutputTextPart {
+  type: "output_text";
+  text: string;
+}
+interface ResponsesApiMessageItem {
+  type: "message";
+  content?: Array<ResponsesApiOutputTextPart | { type: string }>;
+}
+interface ResponsesApiResult {
+  output?: Array<ResponsesApiMessageItem | { type: string }>;
+}
 
 export interface MoodResult {
   mood: Mood;
@@ -85,35 +100,44 @@ function toMoodResult(parsed: unknown): MoodResult {
 }
 
 export async function analyzeMood(turns: AnalyzableTurn[], patientName: string): Promise<MoodResult> {
-  if (!process.env.ANTHROPIC_FOUNDRY_API_KEY) {
-    throw new Error("ANTHROPIC_FOUNDRY_API_KEY가 설정되지 않았습니다.");
+  if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY) {
+    throw new Error("AZURE_OPENAI_ENDPOINT / AZURE_OPENAI_API_KEY가 설정되지 않았습니다.");
   }
 
   const transcript = turns
     .map((turn) => `${turn.role === "assistant" ? "AI" : "환자"}: ${turn.text}`)
     .join("\n");
 
-  let response;
-  try {
-    response = await foundryClient.messages.create({
-      model: CLAUDE_MODEL,
-      system: SYSTEM_PROMPT,
-      messages: [
-        {
-          role: "user",
-          content: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다.\n\n${transcript}`,
-        },
-      ],
-      // Anthropic API엔 Upstage의 response_format:"json_object" 같은 강제 옵션이 없다 -
-      // 프롬프트 지시 + 아래 extractJson의 코드펜스/이스케이프 복구 폴백으로 대신한다.
+  const response = await fetch(`${AZURE_OPENAI_ENDPOINT.replace(/\/$/, "")}/openai/v1/responses`, {
+    method: "POST",
+    headers: { "api-key": AZURE_OPENAI_API_KEY, "content-type": "application/json" },
+    body: JSON.stringify({
+      model: RESPONSES_MODEL,
+      instructions: SYSTEM_PROMPT,
+      input: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다.\n\n${transcript}`,
+      // 프롬프트 지시만으로는 코드펜스/여분 텍스트가 섞여 올 때가 있어 JSON 모드로 강제한다 -
+      // 그래도 실패하면 아래 extractJson의 코드펜스/이스케이프 복구 폴백이 받는다.
+      text: { format: { type: "json_object" } },
       temperature: 0.2,
-      max_tokens: 600,
-    });
-  } catch (error: unknown) {
+      max_output_tokens: 600,
+    }),
+  }).catch((error: unknown) => {
     const detail = error instanceof Error ? error.message : String(error);
     throw new Error(`기분 분석 실패: ${detail}`);
+  });
+
+  const raw = await response.text();
+  if (!response.ok) {
+    throw new Error(`기분 분석 실패: ${response.status} ${raw}`);
   }
 
-  const content = response.content.find((block) => block.type === "text")?.text ?? "";
+  const data = JSON.parse(raw) as ResponsesApiResult;
+  const content = (data.output ?? [])
+    .filter((item): item is ResponsesApiMessageItem => item.type === "message")
+    .flatMap((item) => item.content ?? [])
+    .filter((part): part is ResponsesApiOutputTextPart => part.type === "output_text")
+    .map((part) => part.text)
+    .join("");
+
   return toMoodResult(extractJson(content));
 }
