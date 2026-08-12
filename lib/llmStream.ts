@@ -18,6 +18,8 @@ export interface StreamChatOptions {
   onPhoto?: (photo: ChatPhoto) => void;
   /** 날씨 질문에 실제로 답하기 위한 대략적 위치. 못 구했으면 생략 - 없어도 대화는 그대로 된다. */
   location?: { lat: number; lon: number };
+  /** 서버가 방금 일정을 확인·저장했으면(X-Calendar-Sync 헤더) 호출된다. */
+  onCalendarSync?: () => void;
   signal?: AbortSignal;
 }
 
@@ -47,6 +49,10 @@ export async function streamChat(
       url: decodeURIComponent(photoUrl),
       caption: caption ? decodeURIComponent(caption) : null,
     });
+  }
+
+  if (response.headers.get("X-Calendar-Sync")) {
+    options.onCalendarSync?.();
   }
 
   const reader = response.body.getReader();

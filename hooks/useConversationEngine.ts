@@ -390,6 +390,9 @@ export function useConversationEngine(
           },
           onSentence: (sentence) => queueSentence(sentence, controller.signal),
           onPhoto: (p) => setPhoto(p),
+          onCalendarSync: () => {
+            (window as unknown as { Android?: { syncCalendarNow?: () => void } }).Android?.syncCalendarNow?.();
+          },
         });
 
         messagesRef.current = trimHistory([
