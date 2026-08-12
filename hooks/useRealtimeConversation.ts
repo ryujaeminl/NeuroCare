@@ -165,8 +165,12 @@ export function useRealtimeConversation(): UseConversationEngineResult {
                   body: JSON.stringify({ title, date }),
                 });
               // 네트워크/일시적 DB 오류 대비 1회 재시도 - 그 이상은 모델이 대화로 재시도를 유도한다.
+              // 짧은 대기 후 재요청(설계 스펙) - 즉시 재시도는 같은 순간의 장애를 다시 맞기 쉽다.
               let res = await post().catch(() => null);
-              if (!res || !res.ok) res = await post().catch(() => null);
+              if (!res || !res.ok) {
+                await new Promise((resolve) => setTimeout(resolve, 300));
+                res = await post().catch(() => null);
+              }
               if (res && res.ok) {
                 output = `"${title}"을(를) ${date} 일정에 추가했어요.`;
                 window.Android?.syncCalendarNow?.();
