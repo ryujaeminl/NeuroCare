@@ -42,6 +42,7 @@ model User {
   familyTasks     FamilyTask[]
   calendarEvents          CalendarEvent[]
   pendingCalendarProposal PendingCalendarProposal?
+  playedSongs              PlayedSong[]
 
   // 보호자 계정 전용
   preference        GuardianPreference?
@@ -296,6 +297,21 @@ model PendingCalendarProposal {
   createdAt DateTime @default(now())
 
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+}
+
+/// 재생된 곡의 이력. 취향 추론(모델이 직접 제목 목록을 보고 추론)의 원본
+/// 데이터다. 가수/장르 구조화 집계는 하지 않는다 - lib/music/recentPlays.ts가
+/// 원문 제목을 그대로 프롬프트에 넣는다.
+model PlayedSong {
+  id        String   @id @default(cuid())
+  patientId String
+  title     String
+  videoId   String
+  playedAt  DateTime @default(now())
+
+  patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId, playedAt])
 }
 
 /// 보호자끼리 조율하는 할 일 목록 - 환자 대화와는 무관하고 보호자 화면에서만 보인다.
