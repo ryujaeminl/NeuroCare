@@ -13,6 +13,9 @@ import type { DementiaStage } from "@/lib/db/types";
 const AZURE_RESOURCE = process.env.ANTHROPIC_FOUNDRY_RESOURCE;
 const AZURE_API_KEY = process.env.ANTHROPIC_FOUNDRY_API_KEY;
 const REALTIME_DEPLOYMENT = process.env.REALTIME_DEPLOYMENT || "gpt-realtime";
+// Azure Foundry에 아직 트랜스크립션 모델이 배포되지 않아 기본값을 주지 않는다 - 배포 후
+// 이 배포 이름을 env에 채워 넣으면 자동으로 입력 트랜스크립션이 활성화된다.
+const REALTIME_TRANSCRIPTION_DEPLOYMENT = process.env.REALTIME_TRANSCRIPTION_DEPLOYMENT;
 
 export async function GET() {
   if (!AZURE_RESOURCE || !AZURE_API_KEY) {
@@ -44,6 +47,19 @@ export async function GET() {
 ${roster}`;
   }
 
+  if (!REALTIME_TRANSCRIPTION_DEPLOYMENT) {
+    console.error(
+      "REALTIME_TRANSCRIPTION_DEPLOYMENT가 설정되지 않아 입력 트랜스크립션이 비활성화됩니다 - 응급감지/음성 기반 대화종료 기능이 동작하지 않습니다. Azure Foundry에 트랜스크립션 모델을 배포한 뒤 env를 설정하세요.",
+    );
+  }
+
+  const audio = REALTIME_TRANSCRIPTION_DEPLOYMENT
+    ? {
+        output: { voice: "marin" },
+        input: { transcription: { model: REALTIME_TRANSCRIPTION_DEPLOYMENT } },
+      }
+    : { output: { voice: "marin" } };
+
   const azureRes = await fetch(
     `https://${AZURE_RESOURCE}.openai.azure.com/openai/v1/realtime/client_secrets`,
     {
@@ -54,7 +70,7 @@ ${roster}`;
           type: "realtime",
           model: REALTIME_DEPLOYMENT,
           instructions,
-          audio: { output: { voice: "marin" } },
+          audio,
         },
       }),
     },
