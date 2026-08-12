@@ -2,6 +2,7 @@
 
 import { Component, Suspense, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Bounds } from "@react-three/drei";
 import type { ConversationPhase } from "@/hooks/useConversationEngine";
 import { DogMascotModel } from "@/components/DogMascotModel";
 
@@ -78,7 +79,9 @@ export function DogMascot({ phase, userSpeaking, speakingLevel }: DogMascotProps
         <directionalLight position={[2, 4, 3]} intensity={1.1} />
         <Suspense fallback={null}>
           <ModelErrorBoundary onError={() => setLoadFailed(true)}>
-            <DogMascotModel phase={phase} userSpeaking={userSpeaking} speakingLevel={speakingLevel} />
+            <Bounds fit clip margin={1.2}>
+              <DogMascotModel phase={phase} userSpeaking={userSpeaking} speakingLevel={speakingLevel} />
+            </Bounds>
           </ModelErrorBoundary>
         </Suspense>
       </Canvas>
