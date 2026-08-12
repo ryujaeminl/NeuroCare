@@ -12,6 +12,12 @@ export function isAffirmativeReply(text: string): boolean {
   return AFFIRMATIVE_REPLY.test(trimmed);
 }
 
+/** 명백한 거부("아니", "됐어" 등)만 true - 애매하거나 무관한 대답은 false로 남겨서
+ * 호출부가 "거부 확정"과 "아직 모름"을 구분할 수 있게 한다(lib/calendar/calendarEvents.ts 참고). */
+export function isNegativeReply(text: string): boolean {
+  return NEGATIVE_REPLY.test(text.trim());
+}
+
 /**
  * 아직 AI가 존재를 언급한 적 없는(offeredAt이 null인) 사진이 있으면, 그 자리에서
  * offeredAt을 채우고(FamilyMessage와 같은 "한 번만 물어본다" 패턴) 시스템 프롬프트에

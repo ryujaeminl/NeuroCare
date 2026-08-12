@@ -315,18 +315,38 @@ git commit -m "feat: 대화에서 일정 의도를 감지하는 LLM 호출 추�
 - Test: Task 5에서 API 라우트로 간접 검증(별도 유닛 테스트 없음 - 이 프로젝트 관례)
 
 **Interfaces:**
-- Consumes: `detectCalendarIntent` (Task 2), `isAffirmativeReply` from
-  `@/lib/memory/photoContext`, `prisma` from `@/lib/db/prisma`
+- Consumes: `detectCalendarIntent` (Task 2), `isAffirmativeReply`/`isNegativeReply`
+  from `@/lib/memory/photoContext`, `prisma` from `@/lib/db/prisma`
 - Produces:
   - `handleCalendarTurn(patientId: string, latestUserText: string): Promise<{
     promptBlock: string; justConfirmed: boolean }>` - Task 4가 호출
   - `buildRecentCalendarEvents(patientId: string): Promise<string>` - Task 4가 호출
 
+> **수정 이력:** 최초 버전은 "명백한 거부"와 "새 제안이 대기 중이던 걸 덮어쓴다"는
+> Global Constraint를 코드로 구현 안 하고 있었다(태스크 리뷰에서 발견 - 거부해도
+> pending이 안 지워져서 매 턴 다시 물어보고, pending이 있으면 새 의도 감지 자체를
+> 안 함). 아래는 그 수정을 반영한 최종 버전이다. `isNegativeReply`는 이 태스크에서
+> `lib/memory/photoContext.ts`에 새로 추가한다(기존 `isAffirmativeReply`와 같은
+> `NEGATIVE_REPLY` 정규식을 재사용, 옆에 나란히 export).
+
+- [ ] **Step 0: photoContext.ts에 isNegativeReply 추가**
+
+`lib/memory/photoContext.ts`에서 `export function isAffirmativeReply(...) { ... }`
+블록 바로 다음에 추가:
+
+```typescript
+/** 명백한 거부("아니", "됐어" 등)만 true - 애매하거나 무관한 대답은 false로 남겨서
+ * 호출부가 "거부 확정"과 "아직 모름"을 구분할 수 있게 한다(lib/calendar/calendarEvents.ts 참고). */
+export function isNegativeReply(text: string): boolean {
+  return NEGATIVE_REPLY.test(text.trim());
+}
+```
+
 - [ ] **Step 1: 함수 작성**
 
 ```typescript
 import { prisma } from "@/lib/db/prisma";
-import { isAffirmativeReply } from "@/lib/memory/photoContext";
+import { isAffirmativeReply, isNegativeReply } from "@/lib/memory/photoContext";
 import { detectCalendarIntent } from "@/lib/calendar/detectCalendarIntent";
 
 function formatDateLabel(date: Date): string {
@@ -334,10 +354,12 @@ function formatDateLabel(date: Date): string {
 }
 
 /**
- * 매 턴 항상 호출한다(chat/route.ts). 대기 중인 제안이 있으면 이번 발화가 확인인지
- * 판단하고, 없으면 이번 발화에서 새로 일정 의도를 찾는다. 프롬프트에 끼워 넣을
- * 블록 문자열과, "방금 확인돼서 저장까지 끝났는가"(응답 헤더로 클라이언트에 동기화
- * 트리거를 알려줄지 chat/route.ts가 판단하는 데 씀)를 함께 돌려준다.
+ * 매 턴 항상 호출한다(chat/route.ts). 대기 중인 제안이 있으면 이번 발화가 확인/거부인지
+ * 먼저 판단하고, 아니면(주제 전환 포함) 이번 발화 자체에 새 일정 의도가 있는지 다시
+ * 살핀다 - pending 존재 여부와 무관하게 항상 검사해서, 새로운 일정이 감지되면 upsert가
+ * 기존 대기 중이던 제안을 그대로 덮어쓴다. 프롬프트에 끼워 넣을 블록 문자열과, "방금
+ * 확인돼서 저장까지 끝났는가"(응답 헤더로 클라이언트에 동기화 트리거를 알려줄지
+ * chat/route.ts가 판단하는 데 씀)를 함께 돌려준다.
  */
 export async function handleCalendarTurn(
   patientId: string,
@@ -345,48 +367,56 @@ export async function handleCalendarTurn(
 ): Promise<{ promptBlock: string; justConfirmed: boolean }> {
   const pending = await prisma.pendingCalendarProposal.findUnique({ where: { patientId } });
 
+  if (pending && isAffirmativeReply(latestUserText)) {
+    await prisma.$transaction([
+      prisma.calendarEvent.create({
+        data: {
+          patientId,
+          title: pending.title,
+          date: pending.date,
+          source: "patient_voice",
+        },
+      }),
+      prisma.pendingCalendarProposal.delete({ where: { patientId } }),
+    ]);
+    return {
+      promptBlock: `\n\n[방금 일정 추가함]\n"${pending.title}"을(를) ${formatDateLabel(pending.date)} 일정에 추가했다고 짧게 확인해주세요.`,
+      justConfirmed: true,
+    };
+  }
+
+  // 명백한 거부("아니", "됐어" 등)면 바로 지운다 - 애매한 대답과 달리 계속 들고 있으면
+  // 이미 거절한 걸 다음 턴에 또 물어보게 돼 치매 환자 대화에서 혼란을 준다.
+  if (pending && isNegativeReply(latestUserText)) {
+    await prisma.pendingCalendarProposal.delete({ where: { patientId } });
+    return { promptBlock: "", justConfirmed: false };
+  }
+
+  const detected = await detectCalendarIntent(latestUserText);
+  if (detected) {
+    const date = new Date(detected.date);
+    await prisma.pendingCalendarProposal.upsert({
+      where: { patientId },
+      create: { patientId, title: detected.title, date },
+      update: { title: detected.title, date, createdAt: new Date() },
+    });
+    return {
+      promptBlock: `\n\n[제안할 일정]\n"${detected.title}"을(를) ${formatDateLabel(date)} 일정에 추가할지 자연스럽게 한 번 물어보세요(예: "${detected.title} 일정에 추가해드릴까요?"). 강요하지 마세요.`,
+      justConfirmed: false,
+    };
+  }
+
+  // 새 의도도 없고 기존 pending도 있으면(예: 무관한 잡담) 대기 상태를 계속 유지한다 -
+  // 조용히 사라지는 제안이 없는 쪽이, 이미 확인을 물어봤는데 다시 안내하지 않아
+  // 사용자가 잊혀졌다고 느끼는 것보다 낫다.
   if (pending) {
-    if (isAffirmativeReply(latestUserText)) {
-      await prisma.$transaction([
-        prisma.calendarEvent.create({
-          data: {
-            patientId,
-            title: pending.title,
-            date: pending.date,
-            source: "patient_voice",
-          },
-        }),
-        prisma.pendingCalendarProposal.delete({ where: { patientId } }),
-      ]);
-      return {
-        promptBlock: `\n\n[방금 일정 추가함]\n"${pending.title}"을(를) ${formatDateLabel(pending.date)} 일정에 추가했다고 짧게 확인해주세요.`,
-        justConfirmed: true,
-      };
-    }
-    // 확인도 명백한 거부도 아니면(다른 화제로 넘어감 등) 대기 상태를 계속 유지한다 -
-    // 다음 턴에 다시 판단한다. 명백히 무관한 대답이 계속 반복될 위험보다, 조용히
-    // 사라지는 제안이 없는 쪽이 낫다(이미 확인을 한 번 물어봤으니 프롬프트에 다시
-    // 안내하지 않으면 사용자는 잊혀졌다고 느낄 수 있어 계속 들고 있는다).
     return {
       promptBlock: `\n\n[확인 대기 중인 일정]\n"${pending.title}" (${formatDateLabel(pending.date)})을(를) 일정에 추가할지 아직 답을 못 들었습니다. 자연스러우면 다시 한번 짧게 확인해주세요.`,
       justConfirmed: false,
     };
   }
 
-  const detected = await detectCalendarIntent(latestUserText);
-  if (!detected) return { promptBlock: "", justConfirmed: false };
-
-  const date = new Date(detected.date);
-  await prisma.pendingCalendarProposal.upsert({
-    where: { patientId },
-    create: { patientId, title: detected.title, date },
-    update: { title: detected.title, date, createdAt: new Date() },
-  });
-
-  return {
-    promptBlock: `\n\n[제안할 일정]\n"${detected.title}"을(를) ${formatDateLabel(date)} 일정에 추가할지 자연스럽게 한 번 물어보세요(예: "${detected.title} 일정에 추가해드릴까요?"). 강요하지 마세요.`,
-    justConfirmed: false,
-  };
+  return { promptBlock: "", justConfirmed: false };
 }
 
 /**
@@ -418,7 +448,7 @@ export async function buildRecentCalendarEvents(patientId: string): Promise<stri
 ```bash
 cd "C:\Users\youja\Desktop\Neurocare"
 npx tsc --noEmit -p tsconfig.json
-npx eslint lib/calendar/calendarEvents.ts
+npx eslint lib/calendar/calendarEvents.ts lib/memory/photoContext.ts
 ```
 
 Expected: 둘 다 출력 없음.
@@ -426,7 +456,7 @@ Expected: 둘 다 출력 없음.
 - [ ] **Step 3: 커밋**
 
 ```bash
-git add lib/calendar/calendarEvents.ts
+git add lib/calendar/calendarEvents.ts lib/memory/photoContext.ts
 git commit -m "feat: 일정 제안/확인/저장 및 최근 일정 조회 로직 추가"
 ```
 
