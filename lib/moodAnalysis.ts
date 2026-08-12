@@ -1,9 +1,9 @@
+import AnthropicFoundry from "@anthropic-ai/foundry-sdk";
 import { isMood, MOOD_VALUES, type Mood } from "@/lib/db/types";
 
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const ANTHROPIC_API_VERSION = "2023-06-01";
-const MESSAGES_ENDPOINT = "https://api.anthropic.com/v1/messages";
+// Azure AI Foundry 구독 키 사용 - app/api/chat/route.ts와 동일한 클라이언트 설정.
+const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const foundryClient = new AnthropicFoundry();
 
 export interface MoodResult {
   mood: Mood;
@@ -85,23 +85,18 @@ function toMoodResult(parsed: unknown): MoodResult {
 }
 
 export async function analyzeMood(turns: AnalyzableTurn[], patientName: string): Promise<MoodResult> {
-  if (!ANTHROPIC_API_KEY) {
-    throw new Error("ANTHROPIC_API_KEY가 설정되지 않았습니다.");
+  if (!process.env.ANTHROPIC_FOUNDRY_API_KEY) {
+    throw new Error("ANTHROPIC_FOUNDRY_API_KEY가 설정되지 않았습니다.");
   }
 
   const transcript = turns
     .map((turn) => `${turn.role === "assistant" ? "AI" : "환자"}: ${turn.text}`)
     .join("\n");
 
-  const response = await fetch(MESSAGES_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": ANTHROPIC_API_VERSION,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
+  let response;
+  try {
+    response = await foundryClient.messages.create({
+      model: CLAUDE_MODEL,
       system: SYSTEM_PROMPT,
       messages: [
         {
@@ -113,17 +108,12 @@ export async function analyzeMood(turns: AnalyzableTurn[], patientName: string):
       // 프롬프트 지시 + 아래 extractJson의 코드펜스/이스케이프 복구 폴백으로 대신한다.
       temperature: 0.2,
       max_tokens: 600,
-    }),
-  });
-
-  if (!response.ok) {
-    const detail = await response.text().catch(() => "");
-    throw new Error(`기분 분석 실패 (${response.status}): ${detail}`);
+    });
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : String(error);
+    throw new Error(`기분 분석 실패: ${detail}`);
   }
 
-  const data = (await response.json()) as {
-    content?: Array<{ type?: string; text?: string }>;
-  };
-  const content = data.content?.find((block) => block.type === "text")?.text ?? "";
+  const content = response.content.find((block) => block.type === "text")?.text ?? "";
   return toMoodResult(extractJson(content));
 }

@@ -1,6 +1,9 @@
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const ANTHROPIC_API_VERSION = "2023-06-01";
+import AnthropicFoundry from "@anthropic-ai/foundry-sdk";
+
+// Azure AI Foundry 구독 키 사용 - ANTHROPIC_FOUNDRY_API_KEY / ANTHROPIC_FOUNDRY_RESOURCE
+// 환경변수를 SDK가 자동으로 읽는다 (app/api/chat/route.ts와 동일한 클라이언트 설정).
+const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const foundryClient = new AnthropicFoundry();
 
 /**
  * 환자의 발화에 "일정으로 등록해달라"는 의도가 있는지 별도의 짧은 LLM 호출로
@@ -11,19 +14,13 @@ const ANTHROPIC_API_VERSION = "2023-06-01";
 export async function detectCalendarIntent(
   latestUserText: string,
 ): Promise<{ title: string; date: string } | null> {
-  if (!ANTHROPIC_API_KEY || !latestUserText.trim()) return null;
+  if (!process.env.ANTHROPIC_FOUNDRY_API_KEY || !latestUserText.trim()) return null;
 
   const today = new Date().toISOString().slice(0, 10);
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": ANTHROPIC_API_VERSION,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: ANTHROPIC_MODEL,
+    const response = await foundryClient.messages.create(
+      {
+        model: CLAUDE_MODEL,
         system:
           `오늘 날짜는 ${today}입니다. 아래 사용자 발화에 "일정으로 등록해달라"는 ` +
           `의도가 있으면(예: "다음 주 화요일에 병원 가야해", "모레 손녀 온다고 ` +
@@ -33,15 +30,12 @@ export async function detectCalendarIntent(
         messages: [{ role: "user", content: latestUserText }],
         temperature: 0,
         max_tokens: 100,
-      }),
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!response.ok) return null;
+      },
+      { timeout: 5000 },
+    );
 
-    const data = await response.json();
-    const text = (
-      (data.content?.[0]?.type === "text" ? data.content[0].text : "") ?? ""
-    ).trim();
+    const block = response.content.find((b) => b.type === "text");
+    const text = (block?.type === "text" ? block.text : "").trim();
     if (!text || text === "NONE") return null;
 
     const parsed = JSON.parse(text);

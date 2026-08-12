@@ -12,6 +12,7 @@
     "start:lan": "node scripts/serve-lan.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/foundry-sdk": "^0.4.1",
     "@libsql/client": "^0.17.4",
     "@pinecone-database/pinecone": "^8.1.0",
     "@prisma/adapter-better-sqlite3": "^7.9.1",

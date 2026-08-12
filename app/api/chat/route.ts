@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import AnthropicFoundry from "@anthropic-ai/foundry-sdk";
 import { auth } from "@/lib/auth/authOptions";
 import { prisma } from "@/lib/db/prisma";
 import {
@@ -21,10 +22,14 @@ import type { DementiaStage } from "@/lib/db/types";
 // export는 Edge 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge
 // 불가), 실제로는 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도
 // 적용됐다 - 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
-const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 // Upstage solar-pro4에서 교체(2026-08-12) - 대화력/추론력 우위로 선택, 사용자 요청.
-const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
-const ANTHROPIC_API_VERSION = "2023-06-01";
+// 회사 Azure AI Foundry 구독으로 발급받은 키를 쓰므로 api.anthropic.com 직접 호출이
+// 아니라 @anthropic-ai/foundry-sdk를 통해 Azure 리소스로 호출한다 - 요청 바디는
+// 표준 Anthropic Messages API와 동일하고, resource(Foundry 리소스명)만 Azure 쪽
+// 라우팅 정보다. 키 없이 빈 생성자를 호출해도 SDK가 ANTHROPIC_FOUNDRY_API_KEY /
+// ANTHROPIC_FOUNDRY_RESOURCE 환경변수를 자동으로 읽는다.
+const CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const foundryClient = new AnthropicFoundry();
 
 const SYSTEM_PROMPT_RULES = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
 설문이 아니라 실제 사람 사이의 대화입니다 - 상대가 방금 한 말/질문의 내용과 의도를
@@ -330,8 +335,11 @@ ${recentCalendarEvents}`;
 }
 
 export async function POST(request: NextRequest) {
-  if (!ANTHROPIC_API_KEY) {
-    return new Response("ANTHROPIC_API_KEY가 설정되지 않았습니다.", { status: 500 });
+  if (!process.env.ANTHROPIC_FOUNDRY_API_KEY || !process.env.ANTHROPIC_FOUNDRY_RESOURCE) {
+    return new Response(
+      "ANTHROPIC_FOUNDRY_API_KEY / ANTHROPIC_FOUNDRY_RESOURCE가 설정되지 않았습니다.",
+      { status: 500 },
+    );
   }
 
   const { messages, location } = (await request.json()) as {
@@ -360,69 +368,40 @@ export async function POST(request: NextRequest) {
     location,
   );
 
-  // Anthropic Messages API는 Upstage(OpenAI 호환)와 형식이 다르다: system은 messages
-  // 배열이 아니라 최상위 필드로 분리하고, 인증은 Authorization 헤더가 아니라 x-api-key +
-  // anthropic-version 헤더를 쓴다. reasoning_effort 같은 별도 스위치도 없다 - extended
+  // Anthropic Messages API 형식 그대로(system은 최상위 필드) - Foundry SDK가 인증/엔드포인트
+  // 라우팅만 Azure용으로 대신 처리해준다. reasoning_effort 같은 별도 스위치는 없다 - extended
   // thinking은 요청에 thinking 파라미터를 넣을 때만 켜지므로, 안 넣으면 Upstage에서
   // reasoning_effort:"minimal"로 끈 것과 동일하게 기본이 꺼진 상태다.
-  const upstream = await fetch("https://api.anthropic.com/v1/messages", {
-    method: "POST",
-    headers: {
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": ANTHROPIC_API_VERSION,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: ANTHROPIC_MODEL,
+  const encoder = new TextEncoder();
+  let anthropicStream;
+  try {
+    anthropicStream = foundryClient.messages.stream({
+      model: CLAUDE_MODEL,
       system: systemPrompt,
       messages,
-      stream: true,
       temperature: 0.7,
       max_tokens: 200,
-    }),
-  });
-
-  if (!upstream.ok || !upstream.body) {
-    const detail = await upstream.text().catch(() => "");
-    return new Response(`Anthropic 요청 실패 (${upstream.status}): ${detail}`, { status: 502 });
+    });
+  } catch (error: unknown) {
+    const detail = error instanceof Error ? error.message : String(error);
+    return new Response(`Anthropic(Foundry) 요청 실패: ${detail}`, { status: 502 });
   }
-
-  const decoder = new TextDecoder();
-  const encoder = new TextEncoder();
 
   const stream = new ReadableStream({
     async start(controller) {
-      const reader = upstream.body!.getReader();
-      let buffer = "";
       try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split("\n");
-          buffer = lines.pop() ?? "";
-
-          for (const line of lines) {
-            const trimmed = line.trim();
-            if (!trimmed.startsWith("data:")) continue;
-            const data = trimmed.slice(5).trim();
-            try {
-              const json = JSON.parse(data);
-              // content_block_delta + text_delta만 실제 답변 텍스트다. message_start/
-              // content_block_start/message_delta/message_stop 등 나머지 이벤트 타입은
-              // 텍스트가 없으므로 delta가 undefined면 그냥 건너뛴다.
-              const delta: string | undefined =
-                json.type === "content_block_delta" && json.delta?.type === "text_delta"
-                  ? json.delta.text
-                  : undefined;
-              if (delta) controller.enqueue(encoder.encode(delta));
-            } catch {
-              // 조각난 채로 도착한 JSON은 건너뛴다 (다음 청크와 합쳐지길 기대)
-            }
+        for await (const event of anthropicStream) {
+          // content_block_delta + text_delta만 실제 답변 텍스트다. 나머지 이벤트
+          // 타입(message_start/content_block_start/message_delta/message_stop)은
+          // 텍스트가 없다.
+          if (event.type === "content_block_delta" && event.delta.type === "text_delta") {
+            controller.enqueue(encoder.encode(event.delta.text));
           }
         }
-      } finally {
         controller.close();
+      } catch (error: unknown) {
+        // close()를 또 부르면 "이미 error/close된 컨트롤러" 예외가 나므로 error()만 부른다.
+        controller.error(error);
       }
     },
   });
