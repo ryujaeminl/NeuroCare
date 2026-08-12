@@ -116,7 +116,7 @@ export async function deleteFamilyMemory(memoryId: string): Promise<void> {
   const index = getIndex();
   if (!index) return;
   try {
-    await index.deleteMany([memoryId]);
+    await index.deleteMany({ ids: [memoryId] });
   } catch {
     // 벡터 삭제 실패가 DB 삭제까지 막지 않도록 조용히 넘어간다.
   }
@@ -126,8 +126,14 @@ export async function deleteFamilyMemory(memoryId: string): Promise<void> {
  * 제일 덜 다른 3개를 돌려준다는 뜻이다. 그걸 그대로 "참고할 과거 대화/기억"이라고
  * 프롬프트에 박아 넣으면, 특히 reasoning_effort를 낮춰 둔 상태에서는 모델이 무관한
  * 옛날 얘기를 억지로 끌어와 지금 대화와 안 맞는 방향으로 흘러가는 원인이 된다.
- * 진짜 관련 있다고 볼 최소 유사도 밑이면 아예 후보에서 뺀다. */
-const MIN_MEMORY_RELEVANCE = Number(process.env.MEMORY_RELEVANCE_THRESHOLD ?? 0.5);
+ * 진짜 관련 있다고 볼 최소 유사도 밑이면 아예 후보에서 뺀다.
+ *
+ * 임베딩을 Upstage에서 text-embedding-3-large로 교체하며 실측 재보정했다 -
+ * OpenAI 임베딩의 코사인 유사도 분포는 훨씬 좁아서(관련 있는 문장 쌍도 보통
+ * 0.4~0.5대), 기존 0.5 기준이면 진짜 관련 있는 기억까지 다 걸러진다. 실제
+ * 관련 쌍(예: "강아지 이름은 초코" ↔ "반려동물 이름이 뭐였지?")은 ~0.44,
+ * 무관한 쌍은 ~0.2 근처로 나뉘어서 0.3으로 낮췄다. */
+const MIN_MEMORY_RELEVANCE = Number(process.env.MEMORY_RELEVANCE_THRESHOLD ?? 0.3);
 
 /**
  * 과거 대화 중 지금 발화와 의미가 비슷한 것을 찾는다.
@@ -170,7 +176,7 @@ export async function deleteMemories(turnIds: string[]): Promise<void> {
   const index = getIndex();
   if (!index || turnIds.length === 0) return;
   try {
-    await index.deleteMany(turnIds);
+    await index.deleteMany({ ids: turnIds });
   } catch {
     // 벡터 삭제 실패가 SQLite 삭제까지 막지 않도록 조용히 넘어간다.
   }
