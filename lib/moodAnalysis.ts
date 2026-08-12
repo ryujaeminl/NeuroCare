@@ -114,7 +114,10 @@ export async function analyzeMood(turns: AnalyzableTurn[], patientName: string):
     body: JSON.stringify({
       model: RESPONSES_MODEL,
       instructions: SYSTEM_PROMPT,
-      input: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다.\n\n${transcript}`,
+      // Azure OpenAI가 text.format:"json_object"를 쓰려면 instructions가 아니라
+      // input 자체에 "json"이라는 단어가 있어야 한다("Response input messages must
+      // contain the word 'json'") - instructions에만 있으면 400으로 거부된다.
+      input: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다. 위 지시대로 JSON으로 답하세요.\n\n${transcript}`,
       // 프롬프트 지시만으로는 코드펜스/여분 텍스트가 섞여 올 때가 있어 JSON 모드로 강제한다 -
       // 그래도 실패하면 아래 extractJson의 코드펜스/이스케이프 복구 폴백이 받는다.
       text: { format: { type: "json_object" } },
