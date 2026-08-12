@@ -83,9 +83,69 @@ body {
   75% { transform: translateY(-3px) scale(1.03); }
 }
 
+@keyframes dog-spark {
+  0%, 100% { opacity: 0; transform: translateY(4px) scale(0.7); }
+  40%, 70% { opacity: 1; transform: translateY(-3px) scale(1); }
+}
+
 .dog-character { width: 18rem; height: 18rem; }
-.dog-character canvas { border-radius: 0.75rem; }
-.dog-character__fallback { width: 100%; height: 100%; object-fit: contain; }
+.dog-character__rig { position: relative; width: 100%; height: 100%; isolation: isolate; }
+.dog-character__base { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; transform-origin: 50% 82%; will-change: transform; }
+.dog-character__mouth { display: none; position: absolute; left: 50%; top: 56%; width: 8%; height: 5%; border: 2px solid #3d2a25; border-radius: 50%; background: #5c3134; transform-origin: center; }
+.dog-character--speaking .dog-character__mouth:not(.dog-character__mouth--sil) { display: block; }
+.dog-character__mouth--PP, .dog-character__mouth--FF { height: 2%; width: 7%; }
+.dog-character__mouth--E, .dog-character__mouth--I { height: 3%; width: 10%; }
+.dog-character__mouth--aa { height: 7%; width: 10%; }
+.dog-character__mouth--O, .dog-character__mouth--U { height: 6%; width: 7%; }
+.dog-character__thought { position: absolute; right: 14%; top: 10%; border-radius: 50%; background: var(--accent); opacity: 0; }
+.dog-character__thought--small { width: .45rem; height: .45rem; right: 23%; top: 20%; }
+.dog-character__thought--large { width: .8rem; height: .8rem; }
+.dog-character--thinking .dog-character__thought { animation: dog-spark 1.8s ease-in-out infinite; }
+.dog-character--idle .dog-character__base { animation: dog-character-breathe 3.4s ease-in-out infinite; }
+.dog-character--listening .dog-character__base { animation: dog-character-listen 1.8s ease-in-out infinite; }
+.dog-character--thinking .dog-character__base { animation: dog-character-think 2.4s ease-in-out infinite; }
+.dog-character--speaking .dog-character__base { animation: dog-character-speak 1s ease-in-out infinite; }
+
+@keyframes dog-tail-wag {
+  0%, 100% { transform: rotate(-12deg); }
+  50% { transform: rotate(22deg); }
+}
+
+@keyframes dog-arm-breathe {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-2px); }
+}
+
+@keyframes dog-character-breathe { 0%, 100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-1px) scale(1.008); } }
+@keyframes dog-character-listen { 0%, 100% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-2px) rotate(-1.2deg); } 70% { transform: translateY(0) rotate(0.6deg); } }
+@keyframes dog-character-think { 0%, 100% { transform: translateY(0) rotate(0); } 50% { transform: translateY(-2px) rotate(1deg); } }
+@keyframes dog-character-speak { 0%, 100% { transform: translateY(0) scale(1); } 35% { transform: translateY(-2px) scale(1.012); } 70% { transform: translateY(0) scale(0.998); } }
+
+@keyframes dog-listen-paw {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(12deg) translateY(-2px); }
+}
+
+@keyframes dog-think-paw {
+  0%, 100% { transform: rotate(0deg); }
+  50% { transform: rotate(18deg) translate(2px, -4px); }
+}
+
+@keyframes dog-talk-paw {
+  0%, 100% { transform: rotate(0deg) translateY(0); }
+  45% { transform: rotate(12deg) translateY(-4px); }
+  70% { transform: rotate(-8deg) translateY(1px); }
+}
+
+@keyframes dog-ear-listen {
+  from { transform: rotate(-5deg); }
+  to { transform: rotate(8deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dog-character * { animation: none !important; }
+  .dog-character__mouth, .dog-character__thought { display: none !important; opacity: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .animate-card-rise {
