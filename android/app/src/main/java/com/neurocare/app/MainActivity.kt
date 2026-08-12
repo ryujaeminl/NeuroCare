@@ -390,11 +390,11 @@ class MainActivity : AppCompatActivity() {
 
     private val calendarHttpClient = OkHttpClient()
 
-    /** onResume()과 WebAppBridge.syncCalendarNow()가 겹쳐 호출돼도 동시에 두 번 동기화가
-     *  돌지 않도록 막는 가드. 두 호출이 겹치면 같은 "미동기화" 이벤트를 둘 다 읽어 기기
-     *  캘린더에 중복 삽입할 수 있다. */
-    @Volatile
-    private var isCalendarSyncInProgress = false
+    /** onResume()(UI 스레드)과 WebAppBridge.syncCalendarNow()(WebView JS 브릿지 스레드 -
+     *  closeApp()의 runOnUiThread 처리에서 보듯 UI 스레드가 아니다)가 겹쳐 호출될 수 있다.
+     *  두 스레드가 동시에 건드리므로 단순 @Volatile 불리언의 확인-후-설정은 원자적이지
+     *  않아 경합을 못 막는다 - AtomicBoolean.compareAndSet으로 진짜 원자적으로 막는다. */
+    private val isCalendarSyncInProgress = java.util.concurrent.atomic.AtomicBoolean(false)
 
     /**
      * 서버(app/api/calendar-events/unsynced)에서 아직 네이티브 캘린더에 반영 안 된
@@ -408,8 +408,9 @@ class MainActivity : AppCompatActivity() {
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) ==
                 PackageManager.PERMISSION_GRANTED
         if (!hasCalendarPermissions) return
-        if (isCalendarSyncInProgress) return
-        isCalendarSyncInProgress = true
+        // compareAndSet(false, true)는 "읽고 비교하고 쓰기"가 한 원자적 연산이라, 두 스레드가
+        // 동시에 불러도 정확히 하나만 true로 바꾸는 데 성공한다 - 나머지는 false를 받고 리턴.
+        if (!isCalendarSyncInProgress.compareAndSet(false, true)) return
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -433,7 +434,7 @@ class MainActivity : AppCompatActivity() {
             } catch (e: Exception) {
                 Log.e(TAG, "캘린더 동기화 실패", e)
             } finally {
-                isCalendarSyncInProgress = false
+                isCalendarSyncInProgress.set(false)
             }
         }
     }
