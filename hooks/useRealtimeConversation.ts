@@ -7,6 +7,7 @@ import type {
   UseConversationEngineResult,
 } from "@/hooks/useConversationEngine";
 import { useConversationPersistence } from "@/hooks/useConversationPersistence";
+import type { MusicOverlayState } from "@/components/MusicOverlay";
 import { Lipsync } from "wawa-lipsync";
 
 declare global {
@@ -53,6 +54,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const [vadListening, setVadListening] = useState(false);
   const [vadUserSpeaking, setVadUserSpeaking] = useState(false);
   const [vadError, setVadError] = useState<string | null>(null);
+  const [musicOverlay, setMusicOverlay] = useState<MusicOverlayState | null>(null);
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
@@ -215,39 +217,43 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "play_song" && e.call_id) {
-          let query = "";
-          try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
-          const callId = e.call_id as string;
-          let output = "그 노래를 못 찾았어요.";
-          // 앱 안에서 재생을 붙들고 있지 않는다 - iframe 임베드가 환경별로 재생 실패를
-          // 반복해 원인 특정이 어려웠다. 대신 유튜브 앱/사이트를 직접 열어 검색 결과를
-          // 보여준다 - 유튜브 자체 재생 경로라 우리 쪽 임베드 문제와 무관하게 항상 된다.
-          // 네이티브 앱(WebAppBridge.openYoutubeSearch)이 있으면 그걸 쓰고, 일반
-          // 브라우저(웹으로 테스트할 때)에선 새 탭으로 연다.
-          if (query) {
-            const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
-            if (window.Android?.openYoutubeSearch) {
-              window.Android.openYoutubeSearch(query);
-            } else {
-              window.open(searchUrl, "_blank");
+          void (async () => {
+            let query = "";
+            try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
+            const callId = e.call_id as string;
+            let output = "그 노래를 못 찾았어요.";
+            // "그만"/"다른 곡"을 음성으로 제어하려면 재생을 앱 안(임베드)에 붙들고
+            // 있어야 한다 - 유튜브 앱으로 완전히 넘기면 편하지만 우리가 멈추거나
+            // 바꿀 방법이 없다(사용자 확인). 임베드가 실패하는 영상도 있어서
+            // (MusicOverlay.tsx의 onError에서 서버로 에러 코드를 올림 - 흔한 원인은
+            // 업로더가 임베드 재생 자체를 막아둔 경우) 실패하면 그 자리에서 유튜브로
+            // 폴백하되, 우선은 임베드로 시도해 음성 제어가 되게 한다.
+            if (query) {
+              const searchRes = await fetch("/api/music/search", {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
+                signal: AbortSignal.timeout(10000),
+              }).catch(() => null);
+              const payload = (await searchRes?.json().catch(() => ({}))) as { videoId?: string | null; title?: string } | undefined;
+              if (payload?.videoId && payload.title) {
+                setMusicOverlay({ videoId: payload.videoId, title: payload.title });
+                void fetch("/api/music/history", {
+                  method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ title: payload.title, videoId: payload.videoId }),
+                }).catch(() => {});
+                output = `"${payload.title}"을(를) 재생을 시작했어요.`;
+              }
             }
-            void fetch("/api/music/history", {
-              method: "POST", headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ title: query }),
-            }).catch(() => {});
-            output = `"${query}"을(를) 유튜브에서 찾아 열었어요.`;
-          }
-          dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
-            type: "function_call_output", call_id: callId, output,
-          }}));
-          dataChannel.send(JSON.stringify({ type: "response.create" }));
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output,
+            }}));
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          })();
           return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "stop_song" && e.call_id) {
-          // 재생이 유튜브 앱/탭에서 따로 이뤄지므로 여기서 직접 멈출 방법이 없다 -
-          // 안내만 자연스럽게 한다.
+          setMusicOverlay(null);
           dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
-            type: "function_call_output", call_id: e.call_id, output: "유튜브 화면에서 직접 멈춰달라고 안내해주세요.",
+            type: "function_call_output", call_id: e.call_id, output: "재생을 멈췄어요.",
           }}));
           dataChannel.send(JSON.stringify({ type: "response.create" }));
           return;
@@ -399,10 +405,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     vadError,
     photo: null,
     dismissPhoto: () => {},
-    // 재생을 유튜브 앱/탭에 완전히 넘겼다(위 play_song 분기 참고) - 이 훅 안에 더는
-    // 오버레이 상태가 없다. photo/dismissPhoto와 같은 이유로 인터페이스 호환을 위해
-    // 스텁만 남긴다.
-    musicOverlay: null,
-    dismissMusicOverlay: () => {},
+    musicOverlay,
+    dismissMusicOverlay: () => setMusicOverlay(null),
   };
 }
