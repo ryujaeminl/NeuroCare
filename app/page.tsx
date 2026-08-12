@@ -146,7 +146,11 @@ export default function HomePage() {
         <section className="flex flex-col items-center gap-4 text-center">
           <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-white">
             <div className={`absolute inset-0 rounded-xl blur-xl transition ${mascotGlow}`} aria-hidden />
-            <DogMascot phase={engine.phase} userSpeaking={engine.vadUserSpeaking} />
+            <DogMascot
+              phase={engine.phase}
+              userSpeaking={engine.vadUserSpeaking}
+              speakingLevel={engine.speakingLevel}
+            />
           </div>
 
           <div>

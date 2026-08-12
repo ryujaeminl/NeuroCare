@@ -5,6 +5,7 @@ import type { ConversationPhase } from "@/hooks/useConversationEngine";
 interface DogMascotProps {
   phase: ConversationPhase;
   userSpeaking: boolean;
+  speakingLevel: number;
 }
 
 function getMotion(phase: ConversationPhase, userSpeaking: boolean): string {
@@ -21,7 +22,9 @@ function getLabel(phase: ConversationPhase, userSpeaking: boolean): string {
   return "대화할 준비가 되어 있어요";
 }
 
-export function DogMascot({ phase, userSpeaking }: DogMascotProps) {
+export function DogMascot({ phase, userSpeaking, speakingLevel }: DogMascotProps) {
+  const mouthScale = 0.45 + Math.max(0, Math.min(1, speakingLevel)) * 1.25;
+
   return (
     <div className="dog-svg" aria-label={getLabel(phase, userSpeaking)} role="img">
       <svg viewBox="0 0 240 220" className={`dog-svg__scene ${getMotion(phase, userSpeaking)}`} aria-hidden="true">
@@ -43,7 +46,14 @@ export function DogMascot({ phase, userSpeaking }: DogMascotProps) {
           </g>
           <path className="dog-svg__nose" d="M112 106 Q120 100 128 106 Q127 116 120 118 Q113 116 112 106Z" />
           <path className="dog-svg__mouth dog-svg__mouth--closed" d="M120 117v8M120 125q-9 8-17 0M120 125q9 8 17 0" />
-          <ellipse className="dog-svg__mouth dog-svg__mouth--open" cx="120" cy="132" rx="15" ry="12" />
+          <ellipse
+            className="dog-svg__mouth dog-svg__mouth--open"
+            cx="120"
+            cy="132"
+            rx="15"
+            ry="12"
+            style={{ transform: `translate(120px 132px) scaleY(${mouthScale}) translate(-120px -132px)` }}
+          />
           <path className="dog-svg__tongue" d="M113 133q7 14 14 0" />
           <circle className="dog-svg__cheek dog-svg__cheek--left" cx="79" cy="117" r="7" />
           <circle className="dog-svg__cheek dog-svg__cheek--right" cx="161" cy="117" r="7" />

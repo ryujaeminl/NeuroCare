@@ -42,6 +42,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const { saveTurn } = persistence;
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
+  const [speakingLevel, setSpeakingLevel] = useState(0);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [log, setLog] = useState<ConversationLogEntry[]>([]);
   const [vadListening, setVadListening] = useState(false);
@@ -52,6 +53,9 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const audioAnalyserRef = useRef<AnalyserNode | null>(null);
+  const audioFrameRef = useRef<number | null>(null);
   const startedRef = useRef(false);
   // effect cleanup가 set(true)하는 취소 플래그. connect()는 await 뒤마다 이 값을 확인해
   // 언마운트가 getUserMedia/offer/answer 대기 중에 끼어든 경우 이미 닫힌 pc를 계속
@@ -117,6 +121,27 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       audioElRef.current = audioEl;
       pc.ontrack = (event) => {
         audioEl.srcObject = event.streams[0];
+        const audioContext = new AudioContext();
+        const analyser = audioContext.createAnalyser();
+        analyser.fftSize = 256;
+        const source = audioContext.createMediaStreamSource(event.streams[0]);
+        source.connect(analyser);
+        audioContextRef.current = audioContext;
+        audioAnalyserRef.current = analyser;
+        const samples = new Uint8Array(analyser.fftSize);
+        const updateSpeakingLevel = () => {
+          analyser.getByteTimeDomainData(samples);
+          let sum = 0;
+          for (const sample of samples) {
+            const normalized = (sample - 128) / 128;
+            sum += normalized * normalized;
+          }
+          const rms = Math.sqrt(sum / samples.length);
+          setSpeakingLevel(Math.min(1, Math.max(0, (rms - 0.01) / 0.08)));
+          audioFrameRef.current = requestAnimationFrame(updateSpeakingLevel);
+        };
+        void audioContext.resume();
+        updateSpeakingLevel();
       };
 
       let mic: MediaStream;
@@ -314,6 +339,12 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     // 여기 하나로 모아 재사용한다. pc.close()는 마이크 트랙을 멈추지 않는다(WebRTC 스펙) -
     // 그대로 두면 훅이 정리된 뒤에도 브라우저 마이크 사용중 표시가 계속 떠 있는다.
     function teardownActiveConnection() {
+      if (audioFrameRef.current !== null) cancelAnimationFrame(audioFrameRef.current);
+      audioFrameRef.current = null;
+      audioAnalyserRef.current = null;
+      void audioContextRef.current?.close();
+      audioContextRef.current = null;
+      setSpeakingLevel(0);
       peerConnectionRef.current?.close();
       micStreamRef.current?.getTracks().forEach((track) => track.stop());
       audioElRef.current?.remove();
@@ -354,6 +385,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     phase,
     interimText: "",
     assistantDraft,
+    speakingLevel,
     errorMsg,
     log,
     vadListening,

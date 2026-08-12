@@ -100,7 +100,7 @@ body {
 .dog-svg__nose { fill: #2b211c; }
 .dog-svg__mouth { fill: none; stroke: #2b211c; stroke-linecap: round; stroke-width: 3; }
 .dog-svg__mouth--open, .dog-svg__tongue { opacity: 0; }
-.dog-svg__mouth--open { fill: #542d32; stroke: #2b211c; stroke-width: 3; }
+.dog-svg__mouth--open { fill: #542d32; stroke: #2b211c; stroke-width: 3; transition: transform 40ms linear; }
 .dog-svg__tongue { fill: #f28d9d; }
 .dog-svg__cheek { fill: #ef9b91; opacity: 0.65; }
 .dog-svg__thoughts { fill: var(--accent); opacity: 0; }
@@ -112,7 +112,6 @@ body {
 .dog-svg--thinking .dog-svg__thoughts { animation: dog-spark 1.8s ease-in-out infinite; }
 .dog-svg--speaking .dog-svg__body { animation: dog-speak 0.75s ease-in-out infinite; transform-origin: 120px 170px; }
 .dog-svg--speaking .dog-svg__mouth--closed { opacity: 0; }
-.dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { animation: dog-mouth-talk 0.32s ease-in-out infinite alternate; }
 .dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { opacity: 1; }
 
 @keyframes dog-tail-wag {
@@ -123,11 +122,6 @@ body {
 @keyframes dog-ear-listen {
   from { transform: rotate(-5deg); }
   to { transform: rotate(8deg); }
-}
-
-@keyframes dog-mouth-talk {
-  from { transform: scaleY(0.65); transform-origin: center; }
-  to { transform: scaleY(1.1); transform-origin: center; }
 }
 
 @media (prefers-reduced-motion: reduce) {
