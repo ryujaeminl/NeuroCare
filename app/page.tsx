@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { useRealtimeConversation } from "@/hooks/useRealtimeConversation";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { TodayMoodCard } from "@/components/TodayMoodCard";
+import { MusicOverlay } from "@/components/MusicOverlay";
 
 interface DashboardCardProps {
   icon: string;
@@ -173,6 +174,10 @@ export default function HomePage() {
             <img src={engine.photo.url} alt={engine.photo.caption ?? "가족 사진"} className="w-full rounded-xl object-cover" />
             {engine.photo.caption && <p className="text-center text-sm text-muted-foreground">{engine.photo.caption}</p>}
           </div>
+        )}
+
+        {engine.musicOverlay && (
+          <MusicOverlay state={engine.musicOverlay} onClose={engine.dismissMusicOverlay} />
         )}
 
         {!medsDismissed && dashboard?.dueMedication && (

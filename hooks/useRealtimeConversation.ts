@@ -7,6 +7,7 @@ import type {
   UseConversationEngineResult,
 } from "@/hooks/useConversationEngine";
 import { useConversationPersistence } from "@/hooks/useConversationPersistence";
+import type { MusicOverlayState } from "@/components/MusicOverlay";
 
 declare global {
   interface Window {
@@ -45,6 +46,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
   const [vadListening, setVadListening] = useState(false);
   const [vadUserSpeaking, setVadUserSpeaking] = useState(false);
   const [vadError, setVadError] = useState<string | null>(null);
+  const [musicOverlay, setMusicOverlay] = useState<MusicOverlayState | null>(null);
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
@@ -189,6 +191,41 @@ export function useRealtimeConversation(): UseConversationEngineResult {
           })();
           return;
         }
+        if (e.type === "response.function_call_arguments.done" && e.name === "play_song" && e.call_id) {
+          void (async () => {
+            let query = "";
+            try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
+            const callId = e.call_id as string;
+            let output = "그 노래를 못 찾았어요.";
+            if (query) {
+              const searchRes = await fetch("/api/music/search", {
+                method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
+              }).catch(() => null);
+              const payload = (await searchRes?.json().catch(() => ({}))) as { videoId?: string | null; title?: string } | undefined;
+              if (payload?.videoId && payload.title) {
+                setMusicOverlay({ videoId: payload.videoId, title: payload.title });
+                void fetch("/api/music/history", {
+                  method: "POST", headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ title: payload.title, videoId: payload.videoId }),
+                });
+                output = `"${payload.title}"을(를) 재생을 시작했어요.`;
+              }
+            }
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output,
+            }}));
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          })();
+          return;
+        }
+        if (e.type === "response.function_call_arguments.done" && e.name === "stop_song" && e.call_id) {
+          setMusicOverlay(null);
+          dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+            type: "function_call_output", call_id: e.call_id, output: "재생을 멈췄어요.",
+          }}));
+          dataChannel.send(JSON.stringify({ type: "response.create" }));
+          return;
+        }
         switch (e.type) {
           case "input_audio_buffer.speech_started":
             setPhase("transcribing");
@@ -322,5 +359,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
     vadError,
     photo: null,
     dismissPhoto: () => {},
+    musicOverlay,
+    dismissMusicOverlay: () => setMusicOverlay(null),
   };
 }
