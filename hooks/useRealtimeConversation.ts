@@ -9,7 +9,7 @@ import type {
 
 declare global {
   interface Window {
-    Android?: { closeApp?: () => void };
+    Android?: { closeApp?: () => void; syncCalendarNow?: () => void };
     __neurocarePause?: () => void;
     __neurocareResume?: () => void;
   }
@@ -23,6 +23,9 @@ const END_CONVERSATION_PATTERN =
 /** Azure Realtime data channel이 보내는 서버 이벤트 중 이 훅이 실제로 쓰는 필드만 타입화한다. */
 interface RealtimeServerEvent {
   type: string;
+  call_id?: string;
+  name?: string;
+  arguments?: string;
   delta?: string;
   transcript?: string;
   error?: { message?: string };
@@ -127,6 +130,55 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       const dataChannel = pc.createDataChannel("realtime-channel");
       dataChannel.addEventListener("message", (event) => {
         const e = JSON.parse(event.data as string) as RealtimeServerEvent;
+        if (e.type === "response.function_call_arguments.done" && e.name === "web_search" && e.call_id) {
+          void (async () => {
+            let query = "";
+            try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
+            if (!query) return;
+            const result = await fetch("/api/realtime/web-search", {
+              method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
+            });
+            const payload = (await result.json().catch(() => ({}))) as { result?: string; error?: string };
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: e.call_id, output: payload.result ?? payload.error ?? "검색 실패",
+            }}));
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          })();
+          return;
+        }
+        if (e.type === "response.function_call_arguments.done" && e.name === "add_calendar_event" && e.call_id) {
+          void (async () => {
+            let title = "";
+            let date = "";
+            try {
+              const args = JSON.parse(e.arguments ?? "{}") as { title?: string; date?: string };
+              title = args.title?.trim() ?? "";
+              date = args.date?.trim() ?? "";
+            } catch {}
+            const callId = e.call_id as string;
+            let output = "일정을 저장하지 못했어요. 다시 한번 말씀해주시겠어요?";
+            if (title && date) {
+              const post = () =>
+                fetch("/api/realtime/calendar-event", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ title, date }),
+                });
+              // 네트워크/일시적 DB 오류 대비 1회 재시도 - 그 이상은 모델이 대화로 재시도를 유도한다.
+              let res = await post().catch(() => null);
+              if (!res || !res.ok) res = await post().catch(() => null);
+              if (res && res.ok) {
+                output = `"${title}"을(를) ${date} 일정에 추가했어요.`;
+                window.Android?.syncCalendarNow?.();
+              }
+            }
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output,
+            }}));
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          })();
+          return;
+        }
         switch (e.type) {
           case "input_audio_buffer.speech_started":
             setPhase("transcribing");
