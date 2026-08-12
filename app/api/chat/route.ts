@@ -11,6 +11,7 @@ import { maybeTriggerVoiceDistress } from "@/lib/guardian/emergencyDispatcher";
 import { searchMemories } from "@/lib/memory/pineconeClient";
 import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoContext";
 import { buildWeatherContext } from "@/lib/weather";
+import { buildRecentCalendarEvents, handleCalendarTurn } from "@/lib/calendar/calendarEvents";
 import type { DementiaStage } from "@/lib/db/types";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
@@ -188,6 +189,8 @@ interface SystemPromptResult {
   prompt: string;
   /** 이번 턴에 환자 화면에 띄울 사진(동의 후, 또는 회상 중 자연스럽게). 없으면 null. */
   photo: PhotoToShow | null;
+  /** 이번 턴에 방금 일정이 확인·저장됐으면 true - 클라이언트에 동기화를 트리거해야 한다. */
+  calendarJustConfirmed: boolean;
 }
 
 /**
@@ -205,15 +208,32 @@ async function buildSystemPrompt(
   const weather = await buildWeatherContext(location);
   const weatherBlock = weather ? `\n\n[현재 날씨]\n${weather}` : "";
 
-  if (!patientId) return { prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES + weatherBlock, photo: null };
+  if (!patientId) {
+    return {
+      prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES + weatherBlock,
+      photo: null,
+      calendarJustConfirmed: false,
+    };
+  }
 
-  const [roster, rawMemories, pendingMessages, upcomingPlans, unofferedPhotoPrompt, patientRecord] = await Promise.all([
+  const [
+    roster,
+    rawMemories,
+    pendingMessages,
+    upcomingPlans,
+    unofferedPhotoPrompt,
+    patientRecord,
+    calendarTurn,
+    recentCalendarEvents,
+  ] = await Promise.all([
     buildFamilyRoster(patientId),
     latestUserText ? searchMemories(patientId, latestUserText, 3) : Promise.resolve([]),
     takePendingFamilyMessages(patientId),
     buildUpcomingFamilyPlans(patientId),
     getUnofferedPhotoPrompt(patientId),
     prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
+    handleCalendarTurn(patientId, latestUserText),
+    buildRecentCalendarEvents(patientId),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
   // ponytail: 진단용. 위와 같은 이유로 남긴다 - patientId는 잡혔는데 대기 중인 가족
@@ -291,9 +311,20 @@ ${list}`;
 ${upcomingPlans}`;
   }
 
+  if (recentCalendarEvents) {
+    prompt += `
+
+[등록된 일정]
+과거 60일부터 앞으로 14일 사이에 등록된 일정입니다. "그날 뭐였지" 같은 질문에
+관련 있을 때만 이 정보로 답하세요. 없는 내용을 지어내지 마세요.
+${recentCalendarEvents}`;
+  }
+
+  prompt += calendarTurn.promptBlock;
+
   prompt += unofferedPhotoPrompt + weatherBlock;
 
-  return { prompt, photo };
+  return { prompt, photo, calendarJustConfirmed: calendarTurn.justConfirmed };
 }
 
 export async function POST(request: NextRequest) {
@@ -321,7 +352,11 @@ export async function POST(request: NextRequest) {
   // (실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다).
   if (patientId) void maybeTriggerVoiceDistress(patientId, latestUserText);
 
-  const { prompt: systemPrompt, photo } = await buildSystemPrompt(patientId, latestUserText, location);
+  const { prompt: systemPrompt, photo, calendarJustConfirmed } = await buildSystemPrompt(
+    patientId,
+    latestUserText,
+    location,
+  );
 
   const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {
     method: "POST",
@@ -393,6 +428,7 @@ export async function POST(request: NextRequest) {
     headers["X-Photo-Url"] = encodeURIComponent(photo.url);
     if (photo.caption) headers["X-Photo-Caption"] = encodeURIComponent(photo.caption);
   }
+  if (calendarJustConfirmed) headers["X-Calendar-Sync"] = "1";
 
   return new Response(stream, { headers });
 }
