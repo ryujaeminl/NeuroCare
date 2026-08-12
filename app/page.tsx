@@ -150,6 +150,7 @@ export default function HomePage() {
               phase={engine.phase}
               userSpeaking={engine.vadUserSpeaking}
               speakingLevel={engine.speakingLevel}
+              viseme={engine.viseme}
             />
           </div>
 

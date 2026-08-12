@@ -29,6 +29,7 @@ export interface UseConversationEngineResult {
   assistantDraft: string;
   /** AI 음성의 실시간 음량(0~1). 캐릭터 입 모양 동기화에 사용한다. */
   speakingLevel: number;
+  viseme: string;
   errorMsg: string | null;
   log: ConversationLogEntry[];
   vadListening: boolean;
@@ -702,6 +703,7 @@ export function useConversationEngine(
     interimText,
     assistantDraft,
     speakingLevel: 0,
+    viseme: "viseme_sil",
     errorMsg,
     log,
     vadListening: vad.listening,

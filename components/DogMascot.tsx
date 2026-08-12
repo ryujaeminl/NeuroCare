@@ -6,6 +6,7 @@ interface DogMascotProps {
   phase: ConversationPhase;
   userSpeaking: boolean;
   speakingLevel: number;
+  viseme: string;
 }
 
 function getMotion(phase: ConversationPhase, userSpeaking: boolean): string {
@@ -22,8 +23,9 @@ function getLabel(phase: ConversationPhase, userSpeaking: boolean): string {
   return "대화할 준비가 되어 있어요";
 }
 
-export function DogMascot({ phase, userSpeaking, speakingLevel }: DogMascotProps) {
+export function DogMascot({ phase, userSpeaking, speakingLevel, viseme }: DogMascotProps) {
   const mouthScale = 0.45 + Math.max(0, Math.min(1, speakingLevel)) * 1.25;
+  const mouthClass = `dog-svg__mouth-shape dog-svg__mouth-shape--${viseme.replace("viseme_", "")}`;
 
   return (
     <div className="dog-svg" aria-label={getLabel(phase, userSpeaking)} role="img">
@@ -54,6 +56,7 @@ export function DogMascot({ phase, userSpeaking, speakingLevel }: DogMascotProps
             ry="12"
             style={{ transform: `translate(120px 132px) scaleY(${mouthScale}) translate(-120px -132px)` }}
           />
+          <ellipse className={mouthClass} cx="120" cy="132" rx="15" ry="12" />
           <path className="dog-svg__tongue" d="M113 133q7 14 14 0" />
           <circle className="dog-svg__cheek dog-svg__cheek--left" cx="79" cy="117" r="7" />
           <circle className="dog-svg__cheek dog-svg__cheek--right" cx="161" cy="117" r="7" />

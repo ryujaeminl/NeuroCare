@@ -101,6 +101,13 @@ body {
 .dog-svg__mouth { fill: none; stroke: #2b211c; stroke-linecap: round; stroke-width: 3; }
 .dog-svg__mouth--open, .dog-svg__tongue { opacity: 0; }
 .dog-svg__mouth--open { fill: #542d32; stroke: #2b211c; stroke-width: 3; transition: transform 40ms linear; }
+.dog-svg__mouth-shape { display: none; fill: #542d32; stroke: #2b211c; stroke-width: 3; transform-origin: center; }
+.dog-svg--speaking .dog-svg__mouth-shape { display: block; }
+.dog-svg__mouth-shape--sil { display: none !important; }
+.dog-svg__mouth-shape--PP, .dog-svg__mouth-shape--FF { transform: scaleY(0.35) scaleX(0.8); }
+.dog-svg__mouth-shape--aa { transform: scaleY(1.2) scaleX(1.15); }
+.dog-svg__mouth-shape--E, .dog-svg__mouth-shape--I { transform: scaleY(0.55) scaleX(1.25); }
+.dog-svg__mouth-shape--O, .dog-svg__mouth-shape--U { transform: scaleY(1.05) scaleX(0.8); }
 .dog-svg__tongue { fill: #f28d9d; }
 .dog-svg__cheek { fill: #ef9b91; opacity: 0.65; }
 .dog-svg__thoughts { fill: var(--accent); opacity: 0; }
@@ -112,7 +119,7 @@ body {
 .dog-svg--thinking .dog-svg__thoughts { animation: dog-spark 1.8s ease-in-out infinite; }
 .dog-svg--speaking .dog-svg__body { animation: dog-speak 0.75s ease-in-out infinite; transform-origin: 120px 170px; }
 .dog-svg--speaking .dog-svg__mouth--closed { opacity: 0; }
-.dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { opacity: 1; }
+.dog-svg--speaking .dog-svg__mouth--open, .dog-svg--speaking .dog-svg__tongue { opacity: 0; }
 
 @keyframes dog-tail-wag {
   0%, 100% { transform: rotate(-12deg); }

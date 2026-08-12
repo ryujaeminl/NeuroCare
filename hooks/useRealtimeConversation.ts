@@ -8,6 +8,7 @@ import type {
 } from "@/hooks/useConversationEngine";
 import { useConversationPersistence } from "@/hooks/useConversationPersistence";
 import type { MusicOverlayState } from "@/components/MusicOverlay";
+import { Lipsync } from "wawa-lipsync";
 
 declare global {
   interface Window {
@@ -43,6 +44,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
   const [speakingLevel, setSpeakingLevel] = useState(0);
+  const [viseme, setViseme] = useState("viseme_sil");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [log, setLog] = useState<ConversationLogEntry[]>([]);
   const [vadListening, setVadListening] = useState(false);
@@ -56,6 +58,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioAnalyserRef = useRef<AnalyserNode | null>(null);
   const audioFrameRef = useRef<number | null>(null);
+  const lipsyncRef = useRef<Lipsync | null>(null);
   const startedRef = useRef(false);
   // effect cleanup가 set(true)하는 취소 플래그. connect()는 await 뒤마다 이 값을 확인해
   // 언마운트가 getUserMedia/offer/answer 대기 중에 끼어든 경우 이미 닫힌 pc를 계속
@@ -120,27 +123,18 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       document.body.appendChild(audioEl);
       audioElRef.current = audioEl;
       pc.ontrack = (event) => {
+        audioEl.src = "about:blank";
         audioEl.srcObject = event.streams[0];
-        const audioContext = new AudioContext();
-        const analyser = audioContext.createAnalyser();
-        analyser.fftSize = 256;
-        const source = audioContext.createMediaStreamSource(event.streams[0]);
-        source.connect(analyser);
-        audioContextRef.current = audioContext;
-        audioAnalyserRef.current = analyser;
-        const samples = new Uint8Array(analyser.fftSize);
+        const lipsync = new Lipsync({ fftSize: 1024, historySize: 8 });
+        lipsync.connectAudio(audioEl);
+        lipsyncRef.current = lipsync;
         const updateSpeakingLevel = () => {
-          analyser.getByteTimeDomainData(samples);
-          let sum = 0;
-          for (const sample of samples) {
-            const normalized = (sample - 128) / 128;
-            sum += normalized * normalized;
-          }
-          const rms = Math.sqrt(sum / samples.length);
-          setSpeakingLevel(Math.min(1, Math.max(0, (rms - 0.01) / 0.08)));
+          lipsync.processAudio();
+          const features = lipsync.features;
+          setSpeakingLevel(features?.volume ?? 0);
+          setViseme(lipsync.viseme);
           audioFrameRef.current = requestAnimationFrame(updateSpeakingLevel);
         };
-        void audioContext.resume();
         updateSpeakingLevel();
       };
 
@@ -342,9 +336,11 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       if (audioFrameRef.current !== null) cancelAnimationFrame(audioFrameRef.current);
       audioFrameRef.current = null;
       audioAnalyserRef.current = null;
+      lipsyncRef.current = null;
       void audioContextRef.current?.close();
       audioContextRef.current = null;
       setSpeakingLevel(0);
+      setViseme("viseme_sil");
       peerConnectionRef.current?.close();
       micStreamRef.current?.getTracks().forEach((track) => track.stop());
       audioElRef.current?.remove();
@@ -386,6 +382,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     interimText: "",
     assistantDraft,
     speakingLevel,
+    viseme,
     errorMsg,
     log,
     vadListening,
