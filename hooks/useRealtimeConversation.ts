@@ -219,8 +219,11 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             const callId = e.call_id as string;
             let output = "그 노래를 못 찾았어요.";
             if (query) {
+              // 타임아웃 없이 무한 대기하면 function_call_output을 영영 못 보내서
+              // 대화가 "생각 중"에서 멈춘 채로 굳는다 - 10초로 끊는다.
               const searchRes = await fetch("/api/music/search", {
                 method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ query }),
+                signal: AbortSignal.timeout(10000),
               }).catch(() => null);
               const payload = (await searchRes?.json().catch(() => ({}))) as { videoId?: string | null; title?: string } | undefined;
               if (payload?.videoId && payload.title) {

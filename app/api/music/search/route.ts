@@ -20,8 +20,17 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "query가 필요합니다." }, { status: 400 });
   }
 
+  // yt-search 자체에 타임아웃이 없다 - 응답이 없으면 이 요청이 영원히 대기하고,
+  // 그러면 Realtime 쪽 play_song 호출도 function_call_output을 영영 못 받아서
+  // 대화가 "생각 중"에서 멈춘 채로 굳는다. 8초로 끊어서 항상 응답을 돌려준다.
+  const SEARCH_TIMEOUT_MS = 8000;
   try {
-    const result = await yts(query);
+    const result = await Promise.race([
+      yts(query),
+      new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("검색 타임아웃")), SEARCH_TIMEOUT_MS),
+      ),
+    ]);
     const video = result.videos[0];
     if (!video) {
       return NextResponse.json({ videoId: null });
