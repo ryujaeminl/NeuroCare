@@ -60,6 +60,7 @@ function fadeInVolume(player: YTPlayer) {
     player.setVolume(Math.min(100, Math.round((step / steps) * 100)));
     if (step >= steps) clearInterval(interval);
   }, FADE_STEP_MS);
+  return () => clearInterval(interval);
 }
 
 /** 대화 화면 위에 겹쳐서 재생 중인 유튜브 영상을 보여준다. 재생목록/큐 없이
@@ -86,6 +87,7 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
   const [hasError, setHasError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<YTPlayer | null>(null);
+  const fadeCleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,13 +97,24 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
         videoId,
         playerVars: { autoplay: 1, playsinline: 1 },
         events: {
-          onReady: (event) => fadeInVolume(event.target),
-          onError: () => setHasError(true),
+          onReady: (event) => {
+            fadeCleanupRef.current?.();
+            fadeCleanupRef.current = fadeInVolume(event.target);
+          },
+          onError: () => {
+            fadeCleanupRef.current?.();
+            fadeCleanupRef.current = null;
+            playerRef.current?.destroy();
+            playerRef.current = null;
+            setHasError(true);
+          },
         },
       });
     });
     return () => {
       cancelled = true;
+      fadeCleanupRef.current?.();
+      fadeCleanupRef.current = null;
       playerRef.current?.destroy();
       playerRef.current = null;
     };
