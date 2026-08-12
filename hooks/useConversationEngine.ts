@@ -13,7 +13,6 @@ import { normalizeGain } from "@/lib/audio/normalizeGain";
 import { streamChat, type ChatMessage, type ChatPhoto } from "@/lib/llmStream";
 import { ttsProvider } from "@/lib/tts/ttsClient";
 import { speechQueue } from "@/lib/speechQueue";
-import type { MusicOverlayState } from "@/components/MusicOverlay";
 
 export interface ConversationLogEntry {
   id: number;
@@ -38,7 +37,9 @@ export interface UseConversationEngineResult {
   /** 이번 턴에 서버가 골라준 사진(동의 후 또는 회상 매칭). 다음 턴이 시작되면 자동으로 지워진다. */
   photo: ChatPhoto | null;
   dismissPhoto: () => void;
-  musicOverlay: MusicOverlayState | null;
+  /** 음악 재생은 유튜브 앱/탭으로 완전히 넘겼다(hooks/useRealtimeConversation.ts 참고) -
+   * 이 훅엔 오버레이 상태가 없어 항상 null이다. */
+  musicOverlay: null;
   dismissMusicOverlay: () => void;
 }
 

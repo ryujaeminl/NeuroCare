@@ -124,6 +124,29 @@ class MainActivity : AppCompatActivity() {
         fun syncCalendarNow() {
             syncUnsyncedCalendarEvents()
         }
+
+        /**
+         * 노래 재생을 앱 안(iframe 임베드)에서 붙들지 않고 유튜브 앱/브라우저로 완전히
+         * 넘긴다 - 임베드 재생이 환경별로 조용히 실패해 원인 특정이 어려웠던 문제를
+         * 유튜브 자체 재생 경로로 우회한다. 유튜브 앱이 깔려있으면 검색 결과 화면이
+         * 앱으로 바로 뜨고, 없으면 기본 브라우저로 열린다.
+         */
+        @JavascriptInterface
+        fun openYoutubeSearch(query: String) {
+            runOnUiThread {
+                val searchUrl = "https://www.youtube.com/results?search_query=" +
+                    Uri.encode(query)
+                try {
+                    startActivity(
+                        Intent(Intent.ACTION_VIEW, Uri.parse(searchUrl)).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        },
+                    )
+                } catch (e: Exception) {
+                    Log.e(TAG, "유튜브 검색 열기 실패: ${e.message}")
+                }
+            }
+        }
     }
 
     /** WebView가 마이크를 요청했는데 안드로이드 권한이 없을 때, 권한 응답을 기다리는 요청. */

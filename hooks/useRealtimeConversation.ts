@@ -7,12 +7,15 @@ import type {
   UseConversationEngineResult,
 } from "@/hooks/useConversationEngine";
 import { useConversationPersistence } from "@/hooks/useConversationPersistence";
-import type { MusicOverlayState } from "@/components/MusicOverlay";
 import { Lipsync } from "wawa-lipsync";
 
 declare global {
   interface Window {
-    Android?: { closeApp?: () => void; syncCalendarNow?: () => void };
+    Android?: {
+      closeApp?: () => void;
+      syncCalendarNow?: () => void;
+      openYoutubeSearch?: (query: string) => void;
+    };
     __neurocarePause?: () => void;
     __neurocareResume?: () => void;
   }
@@ -50,7 +53,6 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const [vadListening, setVadListening] = useState(false);
   const [vadUserSpeaking, setVadUserSpeaking] = useState(false);
   const [vadError, setVadError] = useState<string | null>(null);
-  const [musicOverlay, setMusicOverlay] = useState<MusicOverlayState | null>(null);
 
   const peerConnectionRef = useRef<RTCPeerConnection | null>(null);
   const micStreamRef = useRef<MediaStream | null>(null);
@@ -217,16 +219,23 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           try { query = (JSON.parse(e.arguments ?? "{}") as { query?: string }).query?.trim() ?? ""; } catch {}
           const callId = e.call_id as string;
           let output = "그 노래를 못 찾았어요.";
-          // 서버에서 특정 영상을 미리 찾지 않는다 - 유튜브 검색모드(MusicOverlay 참고)로
-          // 클라이언트가 바로 재생을 시작한다. 검색 왕복이 없어서 재생이 거의 즉시
-          // 시작되고, 예전처럼 검색이 안 끝나서 대화가 "생각 중"에 멈추는 일도 없다.
+          // 앱 안에서 재생을 붙들고 있지 않는다 - iframe 임베드가 환경별로 재생 실패를
+          // 반복해 원인 특정이 어려웠다. 대신 유튜브 앱/사이트를 직접 열어 검색 결과를
+          // 보여준다 - 유튜브 자체 재생 경로라 우리 쪽 임베드 문제와 무관하게 항상 된다.
+          // 네이티브 앱(WebAppBridge.openYoutubeSearch)이 있으면 그걸 쓰고, 일반
+          // 브라우저(웹으로 테스트할 때)에선 새 탭으로 연다.
           if (query) {
-            setMusicOverlay({ query, title: query });
+            const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+            if (window.Android?.openYoutubeSearch) {
+              window.Android.openYoutubeSearch(query);
+            } else {
+              window.open(searchUrl, "_blank");
+            }
             void fetch("/api/music/history", {
               method: "POST", headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ title: query }),
             }).catch(() => {});
-            output = `"${query}"을(를) 재생을 시작했어요.`;
+            output = `"${query}"을(를) 유튜브에서 찾아 열었어요.`;
           }
           dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
             type: "function_call_output", call_id: callId, output,
@@ -235,9 +244,10 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "stop_song" && e.call_id) {
-          setMusicOverlay(null);
+          // 재생이 유튜브 앱/탭에서 따로 이뤄지므로 여기서 직접 멈출 방법이 없다 -
+          // 안내만 자연스럽게 한다.
           dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
-            type: "function_call_output", call_id: e.call_id, output: "재생을 멈췄어요.",
+            type: "function_call_output", call_id: e.call_id, output: "유튜브 화면에서 직접 멈춰달라고 안내해주세요.",
           }}));
           dataChannel.send(JSON.stringify({ type: "response.create" }));
           return;
@@ -389,7 +399,10 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     vadError,
     photo: null,
     dismissPhoto: () => {},
-    musicOverlay,
-    dismissMusicOverlay: () => setMusicOverlay(null),
+    // 재생을 유튜브 앱/탭에 완전히 넘겼다(위 play_song 분기 참고) - 이 훅 안에 더는
+    // 오버레이 상태가 없다. photo/dismissPhoto와 같은 이유로 인터페이스 호환을 위해
+    // 스텁만 남긴다.
+    musicOverlay: null,
+    dismissMusicOverlay: () => {},
   };
 }

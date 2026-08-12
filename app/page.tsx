@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import { useRealtimeConversation } from "@/hooks/useRealtimeConversation";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { TodayMoodCard } from "@/components/TodayMoodCard";
-import { MusicOverlay } from "@/components/MusicOverlay";
 import { DogMascot } from "@/components/DogMascot";
 
 interface DashboardCardProps {
@@ -181,11 +180,7 @@ export default function HomePage() {
           </div>
         )}
 
-        {engine.musicOverlay && (
-          <MusicOverlay state={engine.musicOverlay} onClose={engine.dismissMusicOverlay} />
-        )}
-
-        {!medsDismissed && dashboard?.dueMedication && (
+{!medsDismissed && dashboard?.dueMedication && (
           <div className="flex items-center justify-between gap-4 rounded-xl border-2 border-rose-400/60 bg-danger-bg px-5 py-4">
             <div className="flex items-center gap-3 text-left">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-rose-500 text-lg">
