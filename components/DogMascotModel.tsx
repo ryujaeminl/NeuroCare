@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import { useAnimations, useGLTF } from "@react-three/drei";
-import type * as THREE from "three";
+import * as THREE from "three";
 import type { ConversationPhase } from "@/hooks/useConversationEngine";
 
 const MODEL_PATH = "/models/dog.glb";
@@ -48,7 +48,11 @@ export function DogMascotModel({ phase, userSpeaking, speakingLevel }: DogMascot
       : undefined;
     const nextAction = actions[name];
     prevAction?.fadeOut(CROSSFADE_SECONDS);
-    nextAction?.reset().fadeIn(CROSSFADE_SECONDS).play();
+    nextAction?.reset();
+    if (SPEAKING_CLIPS.includes(name as (typeof SPEAKING_CLIPS)[number])) {
+      nextAction?.setLoop(THREE.LoopOnce, 1);
+    }
+    nextAction?.fadeIn(CROSSFADE_SECONDS).play();
     currentClipRef.current = name;
   };
 
@@ -65,7 +69,11 @@ export function DogMascotModel({ phase, userSpeaking, speakingLevel }: DogMascot
       if (actions[finishedName] !== event.action) return;
       speakingIndexRef.current = (speakingIndexRef.current + 1) % SPEAKING_CLIPS.length;
       const nextName = SPEAKING_CLIPS[speakingIndexRef.current];
-      actions[nextName]?.reset().fadeIn(SPEAKING_CROSSFADE_SECONDS).play();
+      actions[nextName]
+        ?.reset()
+        .setLoop(THREE.LoopOnce, 1)
+        .fadeIn(SPEAKING_CROSSFADE_SECONDS)
+        .play();
       currentClipRef.current = nextName;
     };
     mixer.addEventListener("finished", handleFinished);
