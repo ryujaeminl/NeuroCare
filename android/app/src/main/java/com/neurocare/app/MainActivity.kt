@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.CalendarContract
 import android.provider.Settings
+import android.webkit.CookieManager
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
 import android.webkit.PermissionRequest
@@ -414,10 +415,10 @@ class MainActivity : AppCompatActivity() {
 
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val listRequest = Request.Builder()
+                val listRequestBuilder = Request.Builder()
                     .url("${BuildConfig.WEBAPP_BASE_URL}/api/calendar-events/unsynced")
-                    .build()
-                val listResponse: Response = calendarHttpClient.newCall(listRequest).execute()
+                webSessionCookie()?.let { listRequestBuilder.addHeader("Cookie", it) }
+                val listResponse: Response = calendarHttpClient.newCall(listRequestBuilder.build()).execute()
                 val body = listResponse.body?.string().orEmpty()
                 listResponse.close()
                 if (!listResponse.isSuccessful || body.isBlank()) return@launch
@@ -467,23 +468,50 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /** 기기의 기본(첫 번째) 캘린더 ID를 찾는다. 계정이 여러 개면 그중 첫 번째를 쓴다. */
+    /**
+     * 쓰기 가능한 캘린더 중 하나를 고른다. 그냥 첫 번째 행을 쓰면 "공휴일"/"생일" 같은
+     * 읽기 전용 캘린더가 잡혀 삽입이 실패하거나 엉뚱한 곳에 들어갈 수 있다 -
+     * CALENDAR_ACCESS_LEVEL이 CONTRIBUTOR 이상(직접 쓰기 가능)인 것만 고르고,
+     * 그중 IS_PRIMARY가 있으면 그걸 우선한다.
+     */
     private fun getPrimaryCalendarId(): Long? {
-        val projection = arrayOf(CalendarContract.Calendars._ID)
-        contentResolver.query(CalendarContract.Calendars.CONTENT_URI, projection, null, null, null)
+        val projection = arrayOf(
+            CalendarContract.Calendars._ID,
+            CalendarContract.Calendars.IS_PRIMARY,
+        )
+        val selection = "${CalendarContract.Calendars.CALENDAR_ACCESS_LEVEL} >= ?"
+        val selectionArgs = arrayOf(CalendarContract.Calendars.CAL_ACCESS_CONTRIBUTOR.toString())
+        contentResolver.query(CalendarContract.Calendars.CONTENT_URI, projection, selection, selectionArgs, null)
             ?.use { cursor ->
-                if (cursor.moveToFirst()) return cursor.getLong(0)
+                var fallbackId: Long? = null
+                while (cursor.moveToNext()) {
+                    val id = cursor.getLong(0)
+                    val isPrimary = cursor.getInt(1) != 0
+                    if (isPrimary) return id
+                    if (fallbackId == null) fallbackId = id
+                }
+                return fallbackId
             }
         return null
     }
 
+    /**
+     * WebView(CookieManager)에 이미 있는 로그인 세션 쿠키를 그대로 읽어 OkHttp 요청에
+     * 실어 보낸다. 별도 OkHttpClient(calendarHttpClient)는 WebView의 쿠키 저장소와
+     * 완전히 분리돼 있어, 이걸 안 붙이면 캘린더 동기화 API가 요구하는 로그인 세션이
+     * 없어 매번 403을 받는다(웨이크워드 쪽이 세션 없는 백그라운드 서비스에서 API를
+     * 직접 못 불러 웹 레이어가 대신 값을 넘겨주는 것과 같은 종류의 제약 - 여기서는
+     * 반대로 WebView가 이미 가진 쿠키를 네이티브가 빌려 쓰는 방식으로 푼다).
+     */
+    private fun webSessionCookie(): String? = CookieManager.getInstance().getCookie(BuildConfig.WEBAPP_BASE_URL)
+
     private fun markSyncedOnServer(eventId: String) {
         try {
-            val request = Request.Builder()
+            val requestBuilder = Request.Builder()
                 .url("${BuildConfig.WEBAPP_BASE_URL}/api/calendar-events/$eventId/synced")
                 .post("".toRequestBody(null))
-                .build()
-            calendarHttpClient.newCall(request).execute().close()
+            webSessionCookie()?.let { requestBuilder.addHeader("Cookie", it) }
+            calendarHttpClient.newCall(requestBuilder.build()).execute().close()
         } catch (e: Exception) {
             Log.e(TAG, "동기화 완료 표시 실패: $eventId", e)
         }
