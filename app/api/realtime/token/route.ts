@@ -4,6 +4,7 @@ import { prisma } from "@/lib/db/prisma";
 import { buildFamilyRoster } from "@/lib/memory/familyContext";
 import { buildRecentCalendarEvents } from "@/lib/calendar/calendarEvents";
 import { buildPreviousSessionContext } from "@/lib/memory/previousSession";
+import { buildRecentPlaysContext } from "@/lib/music/recentPlays";
 import { buildBasePersonaPrompt } from "@/lib/persona";
 import type { DementiaStage } from "@/lib/db/types";
 
@@ -33,11 +34,12 @@ export async function GET() {
   }
   const patientId = session.user.id;
 
-  const [roster, patientRecord, recentCalendarEvents, previousSessionContext] = await Promise.all([
+  const [roster, patientRecord, recentCalendarEvents, previousSessionContext, recentPlays] = await Promise.all([
     buildFamilyRoster(patientId),
     prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
     buildRecentCalendarEvents(patientId),
     buildPreviousSessionContext(patientId),
+    buildRecentPlaysContext(patientId),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
 
@@ -74,6 +76,23 @@ ${recentCalendarEvents}`;
 억지로 언급하거나 그대로 반복하지 마세요.
 ${previousSessionContext}`;
   }
+
+  if (recentPlays) {
+    instructions += `
+
+[최근 들은 노래]
+최근에 재생한 곡 목록입니다. 취향을 참고해서 곡을 제안할 때 쓰세요.
+없는 곡을 지어내지 마세요.
+${recentPlays}`;
+  }
+
+  instructions += `
+
+[음악 재생]
+환자가 노래를 요청하면(곡명을 말했든 그냥 "노래 틀어줘"든) 자연스럽게 확인하세요.
+곡명이 없으면 위 취향을 참고해 구체적인 곡 하나를 추천하고 동의를 구하세요.
+동의하면 play_song을 호출하세요. "그만"/"다른 곡" 요청 시 stop_song을 호출한
+다음, 다른 곡 요청이면 이어서 play_song을 다시 호출하세요.`;
 
   if (!REALTIME_TRANSCRIPTION_DEPLOYMENT) {
     console.error(
@@ -120,6 +139,20 @@ ${previousSessionContext}`;
               },
               required: ["title", "date"],
             },
+          }, {
+            type: "function",
+            name: "play_song",
+            description: "사용자가 동의한 노래를 검색해서 재생합니다.",
+            parameters: {
+              type: "object",
+              properties: { query: { type: "string", description: "검색할 곡명(가수 포함 가능)" } },
+              required: ["query"],
+            },
+          }, {
+            type: "function",
+            name: "stop_song",
+            description: "재생 중인 노래를 멈춥니다.",
+            parameters: { type: "object", properties: {} },
           }],
         },
       }),
