@@ -1,6 +1,9 @@
 "use client";
 
+import { Component, Suspense, useEffect, useState, type ReactNode } from "react";
+import { Canvas } from "@react-three/fiber";
 import type { ConversationPhase } from "@/hooks/useConversationEngine";
+import { DogMascotModel } from "@/components/DogMascotModel";
 
 interface DogMascotProps {
   phase: ConversationPhase;
@@ -9,11 +12,19 @@ interface DogMascotProps {
   viseme: string;
 }
 
-function getMotion(phase: ConversationPhase, userSpeaking: boolean): string {
-  if (userSpeaking) return "dog-character--listening";
-  if (phase === "thinking") return "dog-character--thinking";
-  if (phase === "speaking") return "dog-character--speaking";
-  return "dog-character--idle";
+interface ModelErrorBoundaryProps {
+  onError: () => void;
+  children: ReactNode;
+}
+
+class ModelErrorBoundary extends Component<ModelErrorBoundaryProps> {
+  componentDidCatch(): void {
+    this.props.onError();
+  }
+
+  render() {
+    return this.props.children;
+  }
 }
 
 function getLabel(phase: ConversationPhase, userSpeaking: boolean): string {
@@ -23,18 +34,45 @@ function getLabel(phase: ConversationPhase, userSpeaking: boolean): string {
   return "준비 중인 뉴로케어 강아지";
 }
 
-export function DogMascot({ phase, userSpeaking, speakingLevel, viseme }: DogMascotProps) {
-  const mouthScale = 0.7 + Math.max(0, Math.min(1, speakingLevel)) * 1.1;
-  const mouthClass = `dog-character__mouth dog-character__mouth--${viseme.replace("viseme_", "")}`;
+function useStaticFallbackPreferred(loadFailed: boolean): boolean {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading matchMedia's current value is a one-time sync from a browser API (unavailable during SSR/on the server) into React state; there is no external-system "subscribe" callback for the initial read, only for later changes.
+    setPrefersReducedMotion(query.matches);
+    const handleChange = (event: MediaQueryListEvent) => setPrefersReducedMotion(event.matches);
+    query.addEventListener("change", handleChange);
+    return () => query.removeEventListener("change", handleChange);
+  }, []);
+
+  return loadFailed || prefersReducedMotion;
+}
+
+export function DogMascot({ phase, userSpeaking, speakingLevel }: DogMascotProps) {
+  const [loadFailed, setLoadFailed] = useState(false);
+  const showStaticFallback = useStaticFallbackPreferred(loadFailed);
+  const label = getLabel(phase, userSpeaking);
+
+  if (showStaticFallback) {
+    return (
+      <div className="dog-character" aria-label={label} role="img">
+        <img className="dog-character__fallback" src="/mascot-dog.png" alt="" aria-hidden="true" />
+      </div>
+    );
+  }
 
   return (
-    <div className="dog-character" aria-label={getLabel(phase, userSpeaking)} role="img">
-      <div className={`dog-character__rig ${getMotion(phase, userSpeaking)}`}>
-        <img className="dog-character__base" src="/mascot-dog.png" alt="" aria-hidden="true" />
-        <span className={mouthClass} style={{ transform: `translate(-50%, -50%) scaleY(${mouthScale})` }} aria-hidden="true" />
-        <span className="dog-character__thought dog-character__thought--small" aria-hidden="true" />
-        <span className="dog-character__thought dog-character__thought--large" aria-hidden="true" />
-      </div>
+    <div className="dog-character" aria-label={label} role="img">
+      <Canvas camera={{ position: [0, 1, 3], fov: 35 }} dpr={[1, 1.5]}>
+        <ambientLight intensity={0.9} />
+        <directionalLight position={[2, 4, 3]} intensity={1.1} />
+        <Suspense fallback={null}>
+          <ModelErrorBoundary onError={() => setLoadFailed(true)}>
+            <DogMascotModel phase={phase} userSpeaking={userSpeaking} speakingLevel={speakingLevel} />
+          </ModelErrorBoundary>
+        </Suspense>
+      </Canvas>
     </div>
   );
 }
