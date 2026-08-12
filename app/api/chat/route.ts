@@ -15,17 +15,16 @@ import { buildRecentCalendarEvents, handleCalendarTurn } from "@/lib/calendar/ca
 import type { DementiaStage } from "@/lib/db/types";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
-// Upstage API도, 이 앱의 실사용자도 한국이라 태평양을 두 번(요청+응답) 건너는 왕복이
-// 그대로 지연으로 쌓인다. Route Segment Config의 preferredRegion export는 Edge
-// 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge 불가), 실제로는
-// 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도 적용됐다 -
-// 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
-const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
-// solar-pro4로 교체 전 이 페르소나 프롬프트로 실측 비교함(같은 4개 발화, pro3 대비):
-// 응답 속도 비슷~더 빠름(500~750ms대), 토큰 사용량 비슷~더 적음, 날씨처럼 확인 불가능한
-// 정보를 지어내지 말라는 규칙 13도 더 잘 지켰다. 무료/대폭 할인 프로모션 기간(~9/10)이라
-// 비용 부담도 없다.
-const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-pro4";
+// 이 앱의 실사용자가 한국이라 클라이언트↔Vercel 구간만이라도 왕복 지연을 줄이려고
+// 리전을 icn1로 고정했다(Anthropic API 자체는 미국에 있어 Vercel↔Anthropic 구간의
+// 태평양 왕복은 리전과 무관하게 남는다). Route Segment Config의 preferredRegion
+// export는 Edge 런타임 전용이라 안 먹혔고(이 라우트는 Prisma/next-auth 때문에 Edge
+// 불가), 실제로는 프로젝트 루트 vercel.json의 최상위 regions 필드가 Node 런타임에도
+// 적용됐다 - 배포 후 X-Vercel-Id가 icn1::icn1::...로 바뀐 것으로 확인.
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+// Upstage solar-pro4에서 교체(2026-08-12) - 대화력/추론력 우위로 선택, 사용자 요청.
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const ANTHROPIC_API_VERSION = "2023-06-01";
 
 const SYSTEM_PROMPT_RULES = `당신은 알츠하이머 환자와 진짜로 대화하는 따뜻한 이웃입니다. 이건 정해진 각본이나
 설문이 아니라 실제 사람 사이의 대화입니다 - 상대가 방금 한 말/질문의 내용과 의도를
@@ -331,8 +330,8 @@ ${recentCalendarEvents}`;
 }
 
 export async function POST(request: NextRequest) {
-  if (!UPSTAGE_API_KEY) {
-    return new Response("UPSTAGE_API_KEY가 설정되지 않았습니다.", { status: 500 });
+  if (!ANTHROPIC_API_KEY) {
+    return new Response("ANTHROPIC_API_KEY가 설정되지 않았습니다.", { status: 500 });
   }
 
   const { messages, location } = (await request.json()) as {
@@ -361,32 +360,31 @@ export async function POST(request: NextRequest) {
     location,
   );
 
-  const upstream = await fetch("https://api.upstage.ai/v1/chat/completions", {
+  // Anthropic Messages API는 Upstage(OpenAI 호환)와 형식이 다르다: system은 messages
+  // 배열이 아니라 최상위 필드로 분리하고, 인증은 Authorization 헤더가 아니라 x-api-key +
+  // anthropic-version 헤더를 쓴다. reasoning_effort 같은 별도 스위치도 없다 - extended
+  // thinking은 요청에 thinking 파라미터를 넣을 때만 켜지므로, 안 넣으면 Upstage에서
+  // reasoning_effort:"minimal"로 끈 것과 동일하게 기본이 꺼진 상태다.
+  const upstream = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${UPSTAGE_API_KEY}`,
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": ANTHROPIC_API_VERSION,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: UPSTAGE_MODEL,
-      messages: [{ role: "system", content: systemPrompt }, ...messages],
+      model: ANTHROPIC_MODEL,
+      system: systemPrompt,
+      messages,
       stream: true,
       temperature: 0.7,
       max_tokens: 200,
-      // reasoning 모델이라 이걸 명시하지 않으면 "생각 과정"에 토큰을 다 쓰고 실제
-      // 답변이 안 나올 수 있다 - 짧은 1~2문장 대화에는 추론이 필요 없으므로 완전히 끈다.
-      // 주의: pro3와 pro4는 같은 값이 반대로 동작한다. pro3는 "low"가 추론을 끄는 값이고
-      // "minimal"은 pro2 전용이라 pro3엔 없는 값(인식 못 해 조용히 "medium"으로 대체됨).
-      // 반면 pro4는 "low"가 오히려 추론을 켜는 값이고(실측: max_tokens=200에서 응답이
-      // 통째로 비었다 - reasoning 필드에 영어로 사고 과정만 200토큰 넘게 채우고 끝남),
-      // "minimal"이 추론을 완전히 끄는 값이다 - 모델 바꿀 때 이 값도 반드시 같이 바꿀 것.
-      reasoning_effort: "minimal",
     }),
   });
 
   if (!upstream.ok || !upstream.body) {
     const detail = await upstream.text().catch(() => "");
-    return new Response(`Upstage 요청 실패 (${upstream.status}): ${detail}`, { status: 502 });
+    return new Response(`Anthropic 요청 실패 (${upstream.status}): ${detail}`, { status: 502 });
   }
 
   const decoder = new TextDecoder();
@@ -408,10 +406,15 @@ export async function POST(request: NextRequest) {
             const trimmed = line.trim();
             if (!trimmed.startsWith("data:")) continue;
             const data = trimmed.slice(5).trim();
-            if (data === "[DONE]") continue;
             try {
               const json = JSON.parse(data);
-              const delta: string | undefined = json.choices?.[0]?.delta?.content;
+              // content_block_delta + text_delta만 실제 답변 텍스트다. message_start/
+              // content_block_start/message_delta/message_stop 등 나머지 이벤트 타입은
+              // 텍스트가 없으므로 delta가 undefined면 그냥 건너뛴다.
+              const delta: string | undefined =
+                json.type === "content_block_delta" && json.delta?.type === "text_delta"
+                  ? json.delta.text
+                  : undefined;
               if (delta) controller.enqueue(encoder.encode(delta));
             } catch {
               // 조각난 채로 도착한 JSON은 건너뛴다 (다음 청크와 합쳐지길 기대)

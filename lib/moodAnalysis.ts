@@ -1,8 +1,9 @@
 import { isMood, MOOD_VALUES, type Mood } from "@/lib/db/types";
 
-const UPSTAGE_API_KEY = process.env.UPSTAGE_API_KEY;
-const UPSTAGE_MODEL = process.env.UPSTAGE_MODEL || "solar-mini";
-const CHAT_ENDPOINT = "https://api.upstage.ai/v1/chat/completions";
+const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
+const ANTHROPIC_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5";
+const ANTHROPIC_API_VERSION = "2023-06-01";
+const MESSAGES_ENDPOINT = "https://api.anthropic.com/v1/messages";
 
 export interface MoodResult {
   mood: Mood;
@@ -84,36 +85,34 @@ function toMoodResult(parsed: unknown): MoodResult {
 }
 
 export async function analyzeMood(turns: AnalyzableTurn[], patientName: string): Promise<MoodResult> {
-  if (!UPSTAGE_API_KEY) {
-    throw new Error("UPSTAGE_API_KEY가 설정되지 않았습니다.");
+  if (!ANTHROPIC_API_KEY) {
+    throw new Error("ANTHROPIC_API_KEY가 설정되지 않았습니다.");
   }
 
   const transcript = turns
     .map((turn) => `${turn.role === "assistant" ? "AI" : "환자"}: ${turn.text}`)
     .join("\n");
 
-  const response = await fetch(CHAT_ENDPOINT, {
+  const response = await fetch(MESSAGES_ENDPOINT, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${UPSTAGE_API_KEY}`,
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": ANTHROPIC_API_VERSION,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: UPSTAGE_MODEL,
+      model: ANTHROPIC_MODEL,
+      system: SYSTEM_PROMPT,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
         {
           role: "user",
           content: `환자 이름: ${patientName}\n\n아래는 오늘의 대화 기록입니다.\n\n${transcript}`,
         },
       ],
-      // 모델이 설명을 덧붙이거나 깨진 JSON을 내놓지 않도록 형식을 강제한다.
-      response_format: { type: "json_object" },
+      // Anthropic API엔 Upstage의 response_format:"json_object" 같은 강제 옵션이 없다 -
+      // 프롬프트 지시 + 아래 extractJson의 코드펜스/이스케이프 복구 폴백으로 대신한다.
       temperature: 0.2,
       max_tokens: 600,
-      // solar-pro3는 reasoning 모델이라 명시하지 않으면 "생각 과정"이 JSON 앞뒤에
-      // 섞여 나와 파싱이 깨질 수 있다 - app/api/chat/route.ts와 동일하게 최소로 고정.
-      reasoning_effort: "minimal",
     }),
   });
 
@@ -123,8 +122,8 @@ export async function analyzeMood(turns: AnalyzableTurn[], patientName: string):
   }
 
   const data = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
+    content?: Array<{ type?: string; text?: string }>;
   };
-  const content = data.choices?.[0]?.message?.content ?? "";
+  const content = data.content?.find((block) => block.type === "text")?.text ?? "";
   return toMoodResult(extractJson(content));
 }

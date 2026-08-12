@@ -1,0 +1,797 @@
+{
+  ".claude/launch.json": {
+    "mtime": 1785262736.6815014,
+    "ast_hash": "5650392c8ec8399d17a506aaa945fa8e",
+    "semantic_hash": "5650392c8ec8399d17a506aaa945fa8e"
+  },
+  ".claude/settings.json": {
+    "mtime": 1786366133.0361247,
+    "ast_hash": "66264e91bd2ee6221a80a1400152d418",
+    "semantic_hash": "66264e91bd2ee6221a80a1400152d418"
+  },
+  ".claude/settings.local.json": {
+    "mtime": 1785345416.6516612,
+    "ast_hash": "12b66bea35f23f40276643a3d753bc6c",
+    "semantic_hash": "12b66bea35f23f40276643a3d753bc6c"
+  },
+  "android/app/build.gradle.kts": {
+    "mtime": 1786335451.3687198,
+    "ast_hash": "cf3d138295bd9da433f75f66999e0382",
+    "semantic_hash": "cf3d138295bd9da433f75f66999e0382"
+  },
+  "android/app/src/main/java/com/neurocare/app/BootReceiver.kt": {
+    "mtime": 1785143303.317242,
+    "ast_hash": "139df06d71b98f7447557bbad67fad61",
+    "semantic_hash": "139df06d71b98f7447557bbad67fad61"
+  },
+  "android/app/src/main/java/com/neurocare/app/MainActivity.kt": {
+    "mtime": 1786335338.0454495,
+    "ast_hash": "84dca286c4105b5df182de7eadc2f8e8",
+    "semantic_hash": "84dca286c4105b5df182de7eadc2f8e8"
+  },
+  "android/app/src/main/java/com/neurocare/app/emergency/EmergencyAlertActivity.kt": {
+    "mtime": 1785176795.6382594,
+    "ast_hash": "dd593dde1679903e8dd331e06f392264",
+    "semantic_hash": "dd593dde1679903e8dd331e06f392264"
+  },
+  "android/app/src/main/java/com/neurocare/app/emergency/EmergencyNotifier.kt": {
+    "mtime": 1785176809.9537315,
+    "ast_hash": "3550fa8676bdc87d6618065c1a77575b",
+    "semantic_hash": "3550fa8676bdc87d6618065c1a77575b"
+  },
+  "android/app/src/main/java/com/neurocare/app/wakeword/AudioCapture.kt": {
+    "mtime": 1785350218.9722364,
+    "ast_hash": "33ebe2a85cdd6640de5017ceeb7d5e0a",
+    "semantic_hash": "33ebe2a85cdd6640de5017ceeb7d5e0a"
+  },
+  "android/app/src/main/java/com/neurocare/app/wakeword/SileroVad.kt": {
+    "mtime": 1785143229.423617,
+    "ast_hash": "8ce9c32e19780e0b2b956ad6a6ff5be0",
+    "semantic_hash": "8ce9c32e19780e0b2b956ad6a6ff5be0"
+  },
+  "android/app/src/main/java/com/neurocare/app/wakeword/SpeechSegmenter.kt": {
+    "mtime": 1785143254.7179797,
+    "ast_hash": "68b0e59c9efa7132b46c61d4fd02dcaa",
+    "semantic_hash": "68b0e59c9efa7132b46c61d4fd02dcaa"
+  },
+  "android/app/src/main/java/com/neurocare/app/wakeword/WakeWordService.kt": {
+    "mtime": 1786353544.5324314,
+    "ast_hash": "7934c0d127c419b7a29a3eb61589a6cd",
+    "semantic_hash": "7934c0d127c419b7a29a3eb61589a6cd"
+  },
+  "android/app/src/main/java/com/neurocare/app/wakeword/WhisperClient.kt": {
+    "mtime": 1785378650.6046498,
+    "ast_hash": "40e095b926e5d2ad469a868164a6c160",
+    "semantic_hash": "40e095b926e5d2ad469a868164a6c160"
+  },
+  "android/build.gradle.kts": {
+    "mtime": 1785142922.4998112,
+    "ast_hash": "174479f3a94f003051235744c2985cdb",
+    "semantic_hash": "174479f3a94f003051235744c2985cdb"
+  },
+  "android/gradlew": {
+    "mtime": 1785142829.423014,
+    "ast_hash": "266606e78242737ef3da02a80ea0564d",
+    "semantic_hash": "266606e78242737ef3da02a80ea0564d"
+  },
+  "android/settings.gradle.kts": {
+    "mtime": 1785142912.799544,
+    "ast_hash": "8bb244285e1c40c245bd7ce615b8a387",
+    "semantic_hash": "8bb244285e1c40c245bd7ce615b8a387"
+  },
+  "app/account/page.tsx": {
+    "mtime": 1786352515.1308289,
+    "ast_hash": "b5436846b29d923e347b0f378cbd0af0",
+    "semantic_hash": "b5436846b29d923e347b0f378cbd0af0"
+  },
+  "app/api/auth/[...nextauth]/route.ts": {
+    "mtime": 1785166743.2471492,
+    "ast_hash": "88fddb66fd6df30368cd187753fbe088",
+    "semantic_hash": "88fddb66fd6df30368cd187753fbe088"
+  },
+  "app/api/auth/invite/route.ts": {
+    "mtime": 1785166777.823717,
+    "ast_hash": "3b0c4abd5bbc05c31639f7880ef729e9",
+    "semantic_hash": "3b0c4abd5bbc05c31639f7880ef729e9"
+  },
+  "app/api/auth/register/route.ts": {
+    "mtime": 1785825544.0453925,
+    "ast_hash": "cc887dab999307f7d6a654c5f603d594",
+    "semantic_hash": "cc887dab999307f7d6a654c5f603d594"
+  },
+  "app/api/chat/route.ts": {
+    "mtime": 1786363923.492829,
+    "ast_hash": "c31c9a50902c43aa987eaa34d3e77d5d",
+    "semantic_hash": "c31c9a50902c43aa987eaa34d3e77d5d"
+  },
+  "app/api/client-log/route.ts": {
+    "mtime": 1785258399.8824522,
+    "ast_hash": "58607c0da91e6219489584fc1995e6bc",
+    "semantic_hash": "58607c0da91e6219489584fc1995e6bc"
+  },
+  "app/api/cron/medication-reminders/route.ts": {
+    "mtime": 1785415194.6566758,
+    "ast_hash": "0af8c9f3416f80e447a143d7e99848e0",
+    "semantic_hash": "0af8c9f3416f80e447a143d7e99848e0"
+  },
+  "app/api/emergency/[eventId]/route.ts": {
+    "mtime": 1785176437.446771,
+    "ast_hash": "3389c9fa51f295f1870ae559794296da",
+    "semantic_hash": "3389c9fa51f295f1870ae559794296da"
+  },
+  "app/api/emergency/route.ts": {
+    "mtime": 1785176428.5384715,
+    "ast_hash": "f0668da507f20aa955e13399195e0eb0",
+    "semantic_hash": "f0668da507f20aa955e13399195e0eb0"
+  },
+  "app/api/enroll/route.ts": {
+    "mtime": 1785168269.8107283,
+    "ast_hash": "4c07a4fe873628353c13ccceb2d87f57",
+    "semantic_hash": "4c07a4fe873628353c13ccceb2d87f57"
+  },
+  "app/api/guardian/family/[memberId]/route.ts": {
+    "mtime": 1785257695.053729,
+    "ast_hash": "2b82612d4666cfbee643c6b0b888cb47",
+    "semantic_hash": "2b82612d4666cfbee643c6b0b888cb47"
+  },
+  "app/api/guardian/family/route.ts": {
+    "mtime": 1785175724.8956041,
+    "ast_hash": "34e5f8045ae11f5df7758504eb300203",
+    "semantic_hash": "34e5f8045ae11f5df7758504eb300203"
+  },
+  "app/api/guardian/medications/[id]/route.ts": {
+    "mtime": 1785415217.9194376,
+    "ast_hash": "2c0404ff3e93a73636cac798946a8327",
+    "semantic_hash": "2c0404ff3e93a73636cac798946a8327"
+  },
+  "app/api/guardian/medications/route.ts": {
+    "mtime": 1785415208.3551247,
+    "ast_hash": "7fd2198c87a274675ef3b8a5dbb14ce3",
+    "semantic_hash": "7fd2198c87a274675ef3b8a5dbb14ce3"
+  },
+  "app/api/guardian/memories/[id]/route.ts": {
+    "mtime": 1785175756.002046,
+    "ast_hash": "4f61396d8847664b3b3dd2537bb37057",
+    "semantic_hash": "4f61396d8847664b3b3dd2537bb37057"
+  },
+  "app/api/guardian/memories/route.ts": {
+    "mtime": 1785257943.7655356,
+    "ast_hash": "06d54dbff77697a4a1b13b789f4833cf",
+    "semantic_hash": "06d54dbff77697a4a1b13b789f4833cf"
+  },
+  "app/api/guardian/messages/[id]/route.ts": {
+    "mtime": 1785472233.1405568,
+    "ast_hash": "f3cfe286fdb29508cf10cab3f71f3531",
+    "semantic_hash": "f3cfe286fdb29508cf10cab3f71f3531"
+  },
+  "app/api/guardian/messages/route.ts": {
+    "mtime": 1785472227.54146,
+    "ast_hash": "12e50630630ad14e1bafff138062b353",
+    "semantic_hash": "12e50630630ad14e1bafff138062b353"
+  },
+  "app/api/guardian/patients/[patientId]/route.ts": {
+    "mtime": 1786354412.8997498,
+    "ast_hash": "9c86a5dae6325fe67a4d69d77bb61c04",
+    "semantic_hash": "9c86a5dae6325fe67a4d69d77bb61c04"
+  },
+  "app/api/guardian/patients/route.ts": {
+    "mtime": 1786354424.7253408,
+    "ast_hash": "8b42985327fb08ce8dbe9af69e5a7068",
+    "semantic_hash": "8b42985327fb08ce8dbe9af69e5a7068"
+  },
+  "app/api/guardian/photos/[id]/route.ts": {
+    "mtime": 1785175862.050526,
+    "ast_hash": "f0aad8a07c688805885f3369fbb9930a",
+    "semantic_hash": "f0aad8a07c688805885f3369fbb9930a"
+  },
+  "app/api/guardian/photos/route.ts": {
+    "mtime": 1785175854.414979,
+    "ast_hash": "e1ded1b94e1829122e80116515af7055",
+    "semantic_hash": "e1ded1b94e1829122e80116515af7055"
+  },
+  "app/api/guardian/plans/[id]/route.ts": {
+    "mtime": 1785472250.482203,
+    "ast_hash": "e1ff2cd115c0d05ab37daf6fb9c05026",
+    "semantic_hash": "e1ff2cd115c0d05ab37daf6fb9c05026"
+  },
+  "app/api/guardian/plans/route.ts": {
+    "mtime": 1785472241.2634933,
+    "ast_hash": "6238e7854929075f705483e96bd1a75f",
+    "semantic_hash": "6238e7854929075f705483e96bd1a75f"
+  },
+  "app/api/guardian/preferences/route.ts": {
+    "mtime": 1785176517.3927362,
+    "ast_hash": "f294f78bda42317b2be7e05dfdf05a78",
+    "semantic_hash": "f294f78bda42317b2be7e05dfdf05a78"
+  },
+  "app/api/guardian/push-subscriptions/route.ts": {
+    "mtime": 1785176208.1649787,
+    "ast_hash": "cc784b099e445c79e2a800e8534dc028",
+    "semantic_hash": "cc784b099e445c79e2a800e8534dc028"
+  },
+  "app/api/guardian/tasks/[id]/route.ts": {
+    "mtime": 1785472266.7496293,
+    "ast_hash": "0df2b128ec25d604fa8abe1277ac707a",
+    "semantic_hash": "0df2b128ec25d604fa8abe1277ac707a"
+  },
+  "app/api/guardian/tasks/route.ts": {
+    "mtime": 1785472258.873343,
+    "ast_hash": "dad819edfea877a340096b524cdb3deb",
+    "semantic_hash": "dad819edfea877a340096b524cdb3deb"
+  },
+  "app/api/history/route.ts": {
+    "mtime": 1785167034.0747721,
+    "ast_hash": "c7e8ece1776fa42cd61312a2ad4bfa47",
+    "semantic_hash": "c7e8ece1776fa42cd61312a2ad4bfa47"
+  },
+  "app/api/mood/route.ts": {
+    "mtime": 1785349888.8566103,
+    "ast_hash": "52848bfbf5f771540bc258fc63ea6ea9",
+    "semantic_hash": "52848bfbf5f771540bc258fc63ea6ea9"
+  },
+  "app/api/patient/dashboard/route.ts": {
+    "mtime": 1786352726.0873644,
+    "ast_hash": "e10fa290f66c8a5dec14c0e71279b547",
+    "semantic_hash": "e10fa290f66c8a5dec14c0e71279b547"
+  },
+  "app/api/patient/memories/route.ts": {
+    "mtime": 1786364622.171559,
+    "ast_hash": "2d64695b79b35e5dc667f7a42135d8d7",
+    "semantic_hash": "2d64695b79b35e5dc667f7a42135d8d7"
+  },
+  "app/api/patient/wake-word/route.ts": {
+    "mtime": 1785732435.6707313,
+    "ast_hash": "8bc90b76369aa5cb0cc0ec0b5aa8d4b9",
+    "semantic_hash": "8bc90b76369aa5cb0cc0ec0b5aa8d4b9"
+  },
+  "app/api/sessions/route.ts": {
+    "mtime": 1786331164.7389877,
+    "ast_hash": "bee9723a659b804e58de575bb1045cf4",
+    "semantic_hash": "bee9723a659b804e58de575bb1045cf4"
+  },
+  "app/api/stt/route.ts": {
+    "mtime": 1785733216.8724244,
+    "ast_hash": "1396215668d805ac724f7744b2301ebf",
+    "semantic_hash": "1396215668d805ac724f7744b2301ebf"
+  },
+  "app/api/tts/route.ts": {
+    "mtime": 1785402109.3913052,
+    "ast_hash": "76eaef8f3944ce5b9ac9e45f90d2edc1",
+    "semantic_hash": "76eaef8f3944ce5b9ac9e45f90d2edc1"
+  },
+  "app/api/turns/route.ts": {
+    "mtime": 1785166973.9749284,
+    "ast_hash": "3b9435976394f10e3a8b1166d84e2607",
+    "semantic_hash": "3b9435976394f10e3a8b1166d84e2607"
+  },
+  "app/guardian/emergency/[eventId]/page.tsx": {
+    "mtime": 1785177834.9496155,
+    "ast_hash": "30adb22244ceabfa2f5afb91bbae183b",
+    "semantic_hash": "30adb22244ceabfa2f5afb91bbae183b"
+  },
+  "app/guardian/family/[memberId]/page.tsx": {
+    "mtime": 1785177784.0650315,
+    "ast_hash": "3958e87ac64333074fb92107de8d3a58",
+    "semantic_hash": "3958e87ac64333074fb92107de8d3a58"
+  },
+  "app/guardian/family/page.tsx": {
+    "mtime": 1785472394.1825557,
+    "ast_hash": "3344436f86ab63ea9eacfa7322e09e0b",
+    "semantic_hash": "3344436f86ab63ea9eacfa7322e09e0b"
+  },
+  "app/guardian/layout.tsx": {
+    "mtime": 1785176608.5324597,
+    "ast_hash": "82a1926028fba2138e91f6b877eb3938",
+    "semantic_hash": "82a1926028fba2138e91f6b877eb3938"
+  },
+  "app/guardian/link/page.tsx": {
+    "mtime": 1785422074.6872933,
+    "ast_hash": "f44ad940b2019259d23cf06c0598a472",
+    "semantic_hash": "f44ad940b2019259d23cf06c0598a472"
+  },
+  "app/guardian/medications/page.tsx": {
+    "mtime": 1785177753.880533,
+    "ast_hash": "c17381e3986b371de65f2ef015bb9335",
+    "semantic_hash": "c17381e3986b371de65f2ef015bb9335"
+  },
+  "app/guardian/page.tsx": {
+    "mtime": 1785176108.0349264,
+    "ast_hash": "a3968e29f4357cd1182bebd9c7c10399",
+    "semantic_hash": "a3968e29f4357cd1182bebd9c7c10399"
+  },
+  "app/guardian/photos/page.tsx": {
+    "mtime": 1785177800.1455605,
+    "ast_hash": "7bf53b17eefb31581056361e0d617304",
+    "semantic_hash": "7bf53b17eefb31581056361e0d617304"
+  },
+  "app/guardian/settings/page.tsx": {
+    "mtime": 1786354464.6571126,
+    "ast_hash": "a57b270cbaef87a8aee95274ca6b708c",
+    "semantic_hash": "a57b270cbaef87a8aee95274ca6b708c"
+  },
+  "app/history/page.tsx": {
+    "mtime": 1785167264.8862336,
+    "ast_hash": "3f42216713bdd88d51d714ab22c826db",
+    "semantic_hash": "3f42216713bdd88d51d714ab22c826db"
+  },
+  "app/layout.tsx": {
+    "mtime": 1785258399.883451,
+    "ast_hash": "b6830dcc79dab79f6a18140227dfab53",
+    "semantic_hash": "b6830dcc79dab79f6a18140227dfab53"
+  },
+  "app/login/page.tsx": {
+    "mtime": 1785825533.774394,
+    "ast_hash": "86e1af132aa5e1a15467b9d14c7a6592",
+    "semantic_hash": "86e1af132aa5e1a15467b9d14c7a6592"
+  },
+  "app/memories/page.tsx": {
+    "mtime": 1786364653.8234904,
+    "ast_hash": "617b913eee36c2edbf1e6d3dac033631",
+    "semantic_hash": "617b913eee36c2edbf1e6d3dac033631"
+  },
+  "app/page.tsx": {
+    "mtime": 1786364674.7928102,
+    "ast_hash": "3e0cdf7c76ede0b96651af545db4760f",
+    "semantic_hash": "3e0cdf7c76ede0b96651af545db4760f"
+  },
+  "app/signup/page.tsx": {
+    "mtime": 1785825522.9864025,
+    "ast_hash": "6705a163b5c05026c715d2e7f2b1ed56",
+    "semantic_hash": "6705a163b5c05026c715d2e7f2b1ed56"
+  },
+  "components/ClientDiagnostics.tsx": {
+    "mtime": 1785258399.883451,
+    "ast_hash": "7d2b9164fac40171c0c9862646185bdd",
+    "semantic_hash": "7d2b9164fac40171c0c9862646185bdd"
+  },
+  "components/EmergencyButton.tsx": {
+    "mtime": 1785176461.6841023,
+    "ast_hash": "e2999943a567df3c7dc2eb6589be58e0",
+    "semantic_hash": "e2999943a567df3c7dc2eb6589be58e0"
+  },
+  "components/HistoryTimeline.tsx": {
+    "mtime": 1785167220.3464391,
+    "ast_hash": "291435922803afda4cc1306fe0b338c7",
+    "semantic_hash": "291435922803afda4cc1306fe0b338c7"
+  },
+  "components/HistoryView.tsx": {
+    "mtime": 1785167476.3071916,
+    "ast_hash": "dc13076c3d31f190ba41963387b6e096",
+    "semantic_hash": "dc13076c3d31f190ba41963387b6e096"
+  },
+  "components/MoodChart.tsx": {
+    "mtime": 1785167205.882893,
+    "ast_hash": "9adc6db2200073942899dd56e48cbc24",
+    "semantic_hash": "9adc6db2200073942899dd56e48cbc24"
+  },
+  "components/ProgressRing.tsx": {
+    "mtime": 1785134129.8274822,
+    "ast_hash": "d69a319930c4fcba73833a1a20553c82",
+    "semantic_hash": "d69a319930c4fcba73833a1a20553c82"
+  },
+  "components/Providers.tsx": {
+    "mtime": 1785166796.3570058,
+    "ast_hash": "7569840a55f5219cde3ee7438e2a6a8d",
+    "semantic_hash": "7569840a55f5219cde3ee7438e2a6a8d"
+  },
+  "components/TodayMoodCard.tsx": {
+    "mtime": 1785258399.8844535,
+    "ast_hash": "b1f5e38fb8a3d1c74112593093cef9aa",
+    "semantic_hash": "b1f5e38fb8a3d1c74112593093cef9aa"
+  },
+  "components/VoiceEnrollment.tsx": {
+    "mtime": 1785168299.0265987,
+    "ast_hash": "8ae73725c0283859429084d2d95674d9",
+    "semantic_hash": "8ae73725c0283859429084d2d95674d9"
+  },
+  "components/guardian/DashboardLayoutEditor.tsx": {
+    "mtime": 1785176020.9749897,
+    "ast_hash": "09d2defd17e753c7185eabf3634c8650",
+    "semantic_hash": "09d2defd17e753c7185eabf3634c8650"
+  },
+  "components/guardian/DementiaStageSettings.tsx": {
+    "mtime": 1786354456.4180636,
+    "ast_hash": "253850c71b6b563ec10314606003ff45",
+    "semantic_hash": "253850c71b6b563ec10314606003ff45"
+  },
+  "components/guardian/EmergencyBanner.tsx": {
+    "mtime": 1785176600.2511632,
+    "ast_hash": "96e603c7695893a3419bc7e66066a133",
+    "semantic_hash": "96e603c7695893a3419bc7e66066a133"
+  },
+  "components/guardian/FamilyMemberCard.tsx": {
+    "mtime": 1785175762.840748,
+    "ast_hash": "19d35f650a274cbb53e38df367e20f3d",
+    "semantic_hash": "19d35f650a274cbb53e38df367e20f3d"
+  },
+  "components/guardian/FamilyMessageBoard.tsx": {
+    "mtime": 1785472473.8843024,
+    "ast_hash": "b469457468f2989c255f0a543e6e1a74",
+    "semantic_hash": "b469457468f2989c255f0a543e6e1a74"
+  },
+  "components/guardian/FamilyPlanList.tsx": {
+    "mtime": 1785472484.065992,
+    "ast_hash": "b30e39f1df9f53d5d7b7d576f3ed5d6c",
+    "semantic_hash": "b30e39f1df9f53d5d7b7d576f3ed5d6c"
+  },
+  "components/guardian/FamilySummaryCard.tsx": {
+    "mtime": 1785176074.0212708,
+    "ast_hash": "ca7e5a0b7f3355879788f23b9772048f",
+    "semantic_hash": "ca7e5a0b7f3355879788f23b9772048f"
+  },
+  "components/guardian/FamilyTaskChecklist.tsx": {
+    "mtime": 1785472493.3685663,
+    "ast_hash": "18208e7e66a9e0d08739a55b70e702ca",
+    "semantic_hash": "18208e7e66a9e0d08739a55b70e702ca"
+  },
+  "components/guardian/MedicationForm.tsx": {
+    "mtime": 1785415264.5911887,
+    "ast_hash": "294b7baa13835f4bcf56006bd9cf96cb",
+    "semantic_hash": "294b7baa13835f4bcf56006bd9cf96cb"
+  },
+  "components/guardian/MedicationSummaryCard.tsx": {
+    "mtime": 1785176067.3325932,
+    "ast_hash": "63ab769896975e30fa10af3ef1ec4798",
+    "semantic_hash": "63ab769896975e30fa10af3ef1ec4798"
+  },
+  "components/guardian/MemoryForm.tsx": {
+    "mtime": 1785175787.9980776,
+    "ast_hash": "a628cd1be5470cf6ac50ee42e5f513b6",
+    "semantic_hash": "a628cd1be5470cf6ac50ee42e5f513b6"
+  },
+  "components/guardian/MoodSummaryCard.tsx": {
+    "mtime": 1785176059.6190894,
+    "ast_hash": "9e76b7ee4c87f50907953c9bb18e6b4c",
+    "semantic_hash": "9e76b7ee4c87f50907953c9bb18e6b4c"
+  },
+  "components/guardian/PatientSelector.tsx": {
+    "mtime": 1785175639.5303717,
+    "ast_hash": "4cff376533a57f440b64b4fec246cf29",
+    "semantic_hash": "4cff376533a57f440b64b4fec246cf29"
+  },
+  "components/guardian/PhotoUploader.tsx": {
+    "mtime": 1785175877.4131851,
+    "ast_hash": "353d73dc52da67e7a234ecd663cb9281",
+    "semantic_hash": "353d73dc52da67e7a234ecd663cb9281"
+  },
+  "components/guardian/PushOptIn.tsx": {
+    "mtime": 1785177870.1213288,
+    "ast_hash": "88b82be34beda7141f3ad8743f40f347",
+    "semantic_hash": "88b82be34beda7141f3ad8743f40f347"
+  },
+  "components/guardian/WakeWordSettings.tsx": {
+    "mtime": 1786352520.2241886,
+    "ast_hash": "1b8692ff5fa71aebe44b3e6279b35d50",
+    "semantic_hash": "1b8692ff5fa71aebe44b3e6279b35d50"
+  },
+  "eslint.config.mjs": {
+    "mtime": 1785167406.438323,
+    "ast_hash": "599aa51ab810f66f1ac5e800aff3f8df",
+    "semantic_hash": "599aa51ab810f66f1ac5e800aff3f8df"
+  },
+  "hooks/useAudioQueue.ts": {
+    "mtime": 1785310107.9985619,
+    "ast_hash": "6bf2353c4242e1211f5bd3328d6d45f0",
+    "semantic_hash": "6bf2353c4242e1211f5bd3328d6d45f0"
+  },
+  "hooks/useBargeIn.ts": {
+    "mtime": 1785477332.607136,
+    "ast_hash": "c845750db886e585d610d6160418ea03",
+    "semantic_hash": "c845750db886e585d610d6160418ea03"
+  },
+  "hooks/useConversationEngine.ts": {
+    "mtime": 1786353377.7614777,
+    "ast_hash": "aa2d1faff8157d5d51212bb65ffd1ab4",
+    "semantic_hash": "aa2d1faff8157d5d51212bb65ffd1ab4"
+  },
+  "hooks/useConversationPersistence.ts": {
+    "mtime": 1785258399.8844535,
+    "ast_hash": "b838a7d40016e5a3421c686f25ed604f",
+    "semantic_hash": "b838a7d40016e5a3421c686f25ed604f"
+  },
+  "hooks/useLinkedPatients.ts": {
+    "mtime": 1786354435.3137524,
+    "ast_hash": "cc4651fa8315c7b02c84c15a1de050c2",
+    "semantic_hash": "cc4651fa8315c7b02c84c15a1de050c2"
+  },
+  "hooks/useSpeechCalibration.ts": {
+    "mtime": 1785406660.41135,
+    "ast_hash": "2d7cd81c5862f56cb6c091145491f7d1",
+    "semantic_hash": "2d7cd81c5862f56cb6c091145491f7d1"
+  },
+  "hooks/useVAD.ts": {
+    "mtime": 1785406645.2223423,
+    "ast_hash": "fb17bf921bbc6f0d652c2fd32bfd9a21",
+    "semantic_hash": "fb17bf921bbc6f0d652c2fd32bfd9a21"
+  },
+  "lib/audio/encodeWav.ts": {
+    "mtime": 1785129793.5476985,
+    "ast_hash": "c63b1c77df5b4c13a6957b4c22fa43ff",
+    "semantic_hash": "c63b1c77df5b4c13a6957b4c22fa43ff"
+  },
+  "lib/audio/normalizeGain.ts": {
+    "mtime": 1785348042.0283666,
+    "ast_hash": "785b5f460ed3b86d2d42df5b2bcd1c20",
+    "semantic_hash": "785b5f460ed3b86d2d42df5b2bcd1c20"
+  },
+  "lib/auth/authOptions.ts": {
+    "mtime": 1785166720.2825975,
+    "ast_hash": "c2cfbccf719d370bd002d0c61aaecf75",
+    "semantic_hash": "c2cfbccf719d370bd002d0c61aaecf75"
+  },
+  "lib/auth/permissions.ts": {
+    "mtime": 1785175520.8025005,
+    "ast_hash": "45f75dbd2bb88d4ab6f1302fdabc4738",
+    "semantic_hash": "45f75dbd2bb88d4ab6f1302fdabc4738"
+  },
+  "lib/db/prisma.ts": {
+    "mtime": 1785422007.5983388,
+    "ast_hash": "f0e070071f99a69512ae697902a066c9",
+    "semantic_hash": "f0e070071f99a69512ae697902a066c9"
+  },
+  "lib/db/types.ts": {
+    "mtime": 1786354295.6475818,
+    "ast_hash": "fb768ec43d4f1dab674b2949b185cb32",
+    "semantic_hash": "fb768ec43d4f1dab674b2949b185cb32"
+  },
+  "lib/guardian/alertDispatcher.ts": {
+    "mtime": 1785473677.6273103,
+    "ast_hash": "90216ec1bc7801f7393172e3e7c98fd7",
+    "semantic_hash": "90216ec1bc7801f7393172e3e7c98fd7"
+  },
+  "lib/guardian/emergencyDispatcher.ts": {
+    "mtime": 1785473693.4000306,
+    "ast_hash": "b42c65dd8ef3593f9f0f185d9238b6bc",
+    "semantic_hash": "b42c65dd8ef3593f9f0f185d9238b6bc"
+  },
+  "lib/guardian/medicationReminderDispatcher.ts": {
+    "mtime": 1785473712.475091,
+    "ast_hash": "fa3ec7da40fa76ceb35db9806be9261c",
+    "semantic_hash": "fa3ec7da40fa76ceb35db9806be9261c"
+  },
+  "lib/guardian/notify.ts": {
+    "mtime": 1785415147.2053542,
+    "ast_hash": "38b2eaf4f9cd9ced513002b5dbb0909b",
+    "semantic_hash": "38b2eaf4f9cd9ced513002b5dbb0909b"
+  },
+  "lib/guardian/resendClient.ts": {
+    "mtime": 1785415138.5701478,
+    "ast_hash": "27b57e8e8bfd643c406b930ba5a09f8e",
+    "semantic_hash": "27b57e8e8bfd643c406b930ba5a09f8e"
+  },
+  "lib/guardian/storageClient.ts": {
+    "mtime": 1785175547.6091542,
+    "ast_hash": "07927c7c7c559161aeacda3775de456b",
+    "semantic_hash": "07927c7c7c559161aeacda3775de456b"
+  },
+  "lib/guardian/twilioClient.ts": {
+    "mtime": 1785176387.9525423,
+    "ast_hash": "5355b7209f05605cc7d5201a76a9ad9d",
+    "semantic_hash": "5355b7209f05605cc7d5201a76a9ad9d"
+  },
+  "lib/guardian/webPush.ts": {
+    "mtime": 1785176173.556425,
+    "ast_hash": "4d0f1ffbf1ea268d50d44790f4e7da55",
+    "semantic_hash": "4d0f1ffbf1ea268d50d44790f4e7da55"
+  },
+  "lib/llmStream.ts": {
+    "mtime": 1785825352.3214118,
+    "ast_hash": "f928f2159808a534bdbe0e254429d908",
+    "semantic_hash": "f928f2159808a534bdbe0e254429d908"
+  },
+  "lib/memory/embedClient.ts": {
+    "mtime": 1785166928.0996313,
+    "ast_hash": "84372d3255360b1c8bc117368d0d2622",
+    "semantic_hash": "84372d3255360b1c8bc117368d0d2622"
+  },
+  "lib/memory/familyContext.ts": {
+    "mtime": 1785826785.8800733,
+    "ast_hash": "24d2f1a3ed75439d8959d701a058a166",
+    "semantic_hash": "24d2f1a3ed75439d8959d701a058a166"
+  },
+  "lib/memory/photoContext.ts": {
+    "mtime": 1786364597.0181885,
+    "ast_hash": "ba2ff009e0102e5d70195a481f754964",
+    "semantic_hash": "ba2ff009e0102e5d70195a481f754964"
+  },
+  "lib/memory/pineconeClient.ts": {
+    "mtime": 1786330301.6063235,
+    "ast_hash": "0306bc9d24995d00d07101fb6b1aebd0",
+    "semantic_hash": "0306bc9d24995d00d07101fb6b1aebd0"
+  },
+  "lib/moodAnalysis.ts": {
+    "mtime": 1785375255.0646873,
+    "ast_hash": "f4d8764d7b09eb3e22b0d87e494a43fe",
+    "semantic_hash": "f4d8764d7b09eb3e22b0d87e494a43fe"
+  },
+  "lib/speechQueue.ts": {
+    "mtime": 1785310119.0694444,
+    "ast_hash": "cdddfa11dcaac3c806af222d26993288",
+    "semantic_hash": "cdddfa11dcaac3c806af222d26993288"
+  },
+  "lib/tts/clovaVoice.ts": {
+    "mtime": 1785137780.2206771,
+    "ast_hash": "4d490ec5f06e74fc261e4e46d1faaa5a",
+    "semantic_hash": "4d490ec5f06e74fc261e4e46d1faaa5a"
+  },
+  "lib/tts/provider.ts": {
+    "mtime": 1785136585.8671772,
+    "ast_hash": "ab773dd98eb02f6b98e890f3f685ab41",
+    "semantic_hash": "ab773dd98eb02f6b98e890f3f685ab41"
+  },
+  "lib/tts/ttsClient.ts": {
+    "mtime": 1785400385.799271,
+    "ast_hash": "2d09d8dd534a2370b1d00d9eb506137f",
+    "semantic_hash": "2d09d8dd534a2370b1d00d9eb506137f"
+  },
+  "lib/turnDetector.ts": {
+    "mtime": 1785406656.8134859,
+    "ast_hash": "807fabf606ce57efe0446f2fbfc27bf2",
+    "semantic_hash": "807fabf606ce57efe0446f2fbfc27bf2"
+  },
+  "lib/whisperClient.ts": {
+    "mtime": 1785733207.0518477,
+    "ast_hash": "6ede34df1280b3bc884e69624b9a5206",
+    "semantic_hash": "6ede34df1280b3bc884e69624b9a5206"
+  },
+  "next.config.ts": {
+    "mtime": 1785120948.0295205,
+    "ast_hash": "9b77af189a21a7a64e4bd7a426f64176",
+    "semantic_hash": "9b77af189a21a7a64e4bd7a426f64176"
+  },
+  "package.json": {
+    "mtime": 1785263891.785369,
+    "ast_hash": "7c623553a772ad8f14a49a7f21525244",
+    "semantic_hash": "7c623553a772ad8f14a49a7f21525244"
+  },
+  "postcss.config.mjs": {
+    "mtime": 1785120947.9533162,
+    "ast_hash": "239f3ebf717465dc636818a1a619398d",
+    "semantic_hash": "239f3ebf717465dc636818a1a619398d"
+  },
+  "prisma.config.ts": {
+    "mtime": 1785263918.4771342,
+    "ast_hash": "bc021d9da9211105788aa7110b3713e7",
+    "semantic_hash": "bc021d9da9211105788aa7110b3713e7"
+  },
+  "prisma/migrations/20260727153330_init/migration.sql": {
+    "mtime": 1785166410.1474738,
+    "ast_hash": "f47cd75f31802ac00106f60bcba3d7fc",
+    "semantic_hash": "f47cd75f31802ac00106f60bcba3d7fc"
+  },
+  "prisma/migrations/20260727180128_guardian_features/migration.sql": {
+    "mtime": 1785175288.2307985,
+    "ast_hash": "5ce30dd00af79f2e63ef87d465c06cf0",
+    "semantic_hash": "5ce30dd00af79f2e63ef87d465c06cf0"
+  },
+  "prisma/migrations/20260727181940_guardian_phone/migration.sql": {
+    "mtime": 1785176380.397829,
+    "ast_hash": "9a498197bb628824d3fa713a95577c0a",
+    "semantic_hash": "9a498197bb628824d3fa713a95577c0a"
+  },
+  "prisma/migrations/20260730123735_medication_reminders/migration.sql": {
+    "mtime": 1785415055.8615184,
+    "ast_hash": "a1a7d3153a57486ea1a8a61287e22bde",
+    "semantic_hash": "a1a7d3153a57486ea1a8a61287e22bde"
+  },
+  "prisma/migrations/20260731042941_family_connection/migration.sql": {
+    "mtime": 1785472181.8681562,
+    "ast_hash": "e1d9d93756416efcc62aa1c10fa323bd",
+    "semantic_hash": "e1d9d93756416efcc62aa1c10fa323bd"
+  },
+  "prisma/migrations/20260803044602_patient_wake_word/migration.sql": {
+    "mtime": 1785732362.577694,
+    "ast_hash": "49ba2aee8dbe83214e3cfeae39500d25",
+    "semantic_hash": "49ba2aee8dbe83214e3cfeae39500d25"
+  },
+  "prisma/migrations/20260804062723_photo_offer_flow/migration.sql": {
+    "mtime": 1785824843.7905912,
+    "ast_hash": "e5707aca05156eceeffd29a38058f37f",
+    "semantic_hash": "e5707aca05156eceeffd29a38058f37f"
+  },
+  "prisma/migrations/20260804155317_family_message_photo/migration.sql": {
+    "mtime": 1785826397.461973,
+    "ast_hash": "a98cb8d9810e4a782ea5312e6354551b",
+    "semantic_hash": "a98cb8d9810e4a782ea5312e6354551b"
+  },
+  "prisma/migrations/20260810031500_session_date_key/migration.sql": {
+    "mtime": 1786331263.8811488,
+    "ast_hash": "3aa283046d841df94f4717e881ac2908",
+    "semantic_hash": "3aa283046d841df94f4717e881ac2908"
+  },
+  "prisma/migrations/20260810093241_dementia_stage/migration.sql": {
+    "mtime": 1786354361.4755127,
+    "ast_hash": "47a77c0d6dd36f29eebbd1a02bdf4857",
+    "semantic_hash": "47a77c0d6dd36f29eebbd1a02bdf4857"
+  },
+  "prisma/migrations/20260810122251_photo_patient_quote/migration.sql": {
+    "mtime": 1786364571.6485682,
+    "ast_hash": "037bab6c2235a7646c88e9f89ed26773",
+    "semantic_hash": "037bab6c2235a7646c88e9f89ed26773"
+  },
+  "prisma/seed.ts": {
+    "mtime": 1785422016.092429,
+    "ast_hash": "dc033a87771ad11e0303b27ae5d0aabb",
+    "semantic_hash": "dc033a87771ad11e0303b27ae5d0aabb"
+  },
+  "public/sw.js": {
+    "mtime": 1785176198.2720628,
+    "ast_hash": "58e1853c79c59cad9c67a23b803856f9",
+    "semantic_hash": "58e1853c79c59cad9c67a23b803856f9"
+  },
+  "scripts/__verify-message-photo.ts": {
+    "mtime": 1786338764.6490083,
+    "ast_hash": "14d9ed4e262ee64bc42bd4faac038744",
+    "semantic_hash": "14d9ed4e262ee64bc42bd4faac038744"
+  },
+  "scripts/apply-migration-to-turso.mjs": {
+    "mtime": 1785415077.608304,
+    "ast_hash": "f29cdf903a66bba8d6ca00e4726bbd74",
+    "semantic_hash": "f29cdf903a66bba8d6ca00e4726bbd74"
+  },
+  "scripts/check-photo-context.ts": {
+    "mtime": 1785825408.434255,
+    "ast_hash": "cbc32a05640a0005e4075d85d252186b",
+    "semantic_hash": "cbc32a05640a0005e4075d85d252186b"
+  },
+  "scripts/check-reminder-scheduling.ts": {
+    "mtime": 1785415615.3444152,
+    "ast_hash": "96fcaf4b6b89284b2df06b39cac417c4",
+    "semantic_hash": "96fcaf4b6b89284b2df06b39cac417c4"
+  },
+  "scripts/copy-vad-assets.mjs": {
+    "mtime": 1785127476.0731773,
+    "ast_hash": "537860b574359b6547bf123b176bcaf6",
+    "semantic_hash": "537860b574359b6547bf123b176bcaf6"
+  },
+  "scripts/make_app_icon.py": {
+    "mtime": 1785218897.8474252,
+    "ast_hash": "c3591493d6bb1e611ffaad1473f2b2b4",
+    "semantic_hash": "c3591493d6bb1e611ffaad1473f2b2b4"
+  },
+  "scripts/serve-lan.mjs": {
+    "mtime": 1785243250.0966017,
+    "ast_hash": "67211ee53125f727bd8791a140902726",
+    "semantic_hash": "67211ee53125f727bd8791a140902726"
+  },
+  "server/cron/send-medication-reminders.sh": {
+    "mtime": 1785415317.8801155,
+    "ast_hash": "5cba5fcb914f88ac6804c81bd2df537d",
+    "semantic_hash": "5cba5fcb914f88ac6804c81bd2df537d"
+  },
+  "server/deploy.sh": {
+    "mtime": 1785414341.1344187,
+    "ast_hash": "20cd34fbb4d7f2bbdbfe25ba3d957aca",
+    "semantic_hash": "20cd34fbb4d7f2bbdbfe25ba3d957aca"
+  },
+  "server/main.py": {
+    "mtime": 1785732975.1877093,
+    "ast_hash": "6ba9ad0a3e15aefd369020287fe8b47f",
+    "semantic_hash": "6ba9ad0a3e15aefd369020287fe8b47f"
+  },
+  "server/speaker.py": {
+    "mtime": 1785733015.4543977,
+    "ast_hash": "3b5a87476862fb5753f4ce7b7e5d5bb4",
+    "semantic_hash": "3b5a87476862fb5753f4ce7b7e5d5bb4"
+  },
+  "server/test_session_speaker.py": {
+    "mtime": 1785733047.4240015,
+    "ast_hash": "315283171d5dbd4fe0faf92101a10207",
+    "semantic_hash": "315283171d5dbd4fe0faf92101a10207"
+  },
+  "server/test_streaming.py": {
+    "mtime": 1785380630.2593565,
+    "ast_hash": "2190efbc038caa36903944280de2869f",
+    "semantic_hash": "2190efbc038caa36903944280de2869f"
+  },
+  "tsconfig.json": {
+    "mtime": 1785166887.6711805,
+    "ast_hash": "b6f8910c5edb1cc55751443cadd6c64f",
+    "semantic_hash": "b6f8910c5edb1cc55751443cadd6c64f"
+  },
+  "vercel.json": {
+    "mtime": 1785406336.3812132,
+    "ast_hash": "97da60c7b52c7766c81e0f33dd335216",
+    "semantic_hash": "97da60c7b52c7766c81e0f33dd335216"
+  }
+}
