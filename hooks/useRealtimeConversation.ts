@@ -39,6 +39,10 @@ export function useRealtimeConversation(): UseConversationEngineResult {
   const micStreamRef = useRef<MediaStream | null>(null);
   const audioElRef = useRef<HTMLAudioElement | null>(null);
   const startedRef = useRef(false);
+  // effect cleanup가 set(true)하는 취소 플래그. connect()는 await 뒤마다 이 값을 확인해
+  // 언마운트가 getUserMedia/offer/answer 대기 중에 끼어든 경우 이미 닫힌 pc를 계속
+  // 건드리지 않고 그 시점까지 확보한 리소스만 정리한 뒤 빠져나온다.
+  const cancelledRef = useRef(false);
 
   // 페이지 마운트 시 한 번 연결 - 기존 useConversationEngine이 마운트 시 vad.start()를
   // 부르던 것과 동일한 타이밍(app/page.tsx는 이 훅을 호출만 하면 된다). startedRef 가드가
@@ -47,6 +51,21 @@ export function useRealtimeConversation(): UseConversationEngineResult {
   // async 함수) - react-hooks/set-state-in-effect가 "effect 밖 콜백을 의존성으로 불러
   // 그 안에서 setState" 모양을 정적으로 문제 삼는다.
   useEffect(() => {
+    cancelledRef.current = false;
+
+    // connect()가 각 await 이후 이미 확보한 리소스(pc/mic/audioEl)를 정리할 때 쓰는
+    // 헬퍼. pc.close()·track.stop()·audioEl.remove()는 모두 멱등이라, 언마운트 시
+    // effect cleanup이 같은 리소스를 이미 정리했더라도 다시 불러도 안전하다.
+    function cleanupPartialConnection(
+      pc: RTCPeerConnection,
+      mic: MediaStream | null,
+      audioEl: HTMLAudioElement | null,
+    ) {
+      pc.close();
+      mic?.getTracks().forEach((track) => track.stop());
+      audioEl?.remove();
+    }
+
     async function connect() {
       if (startedRef.current) return;
       startedRef.current = true;
@@ -55,16 +74,18 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       try {
         tokenRes = await fetch("/api/realtime/token");
       } catch {
-        setErrorMsg("네트워크 연결을 확인해주세요.");
+        if (!cancelledRef.current) setErrorMsg("네트워크 연결을 확인해주세요.");
         startedRef.current = false;
         return;
       }
+      if (cancelledRef.current) return;
       if (!tokenRes.ok) {
         setErrorMsg("지금은 대화를 시작할 수 없어요.");
         startedRef.current = false;
         return;
       }
       const { token, resource } = (await tokenRes.json()) as { token: string; resource: string };
+      if (cancelledRef.current) return;
 
       const pc = new RTCPeerConnection();
       peerConnectionRef.current = pc;
@@ -87,8 +108,15 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       try {
         mic = await navigator.mediaDevices.getUserMedia({ audio: true });
       } catch (err) {
-        setVadError(err instanceof Error ? err.message : "마이크 접근 실패");
+        cleanupPartialConnection(pc, null, audioEl);
+        if (!cancelledRef.current) {
+          setVadError(err instanceof Error ? err.message : "마이크 접근 실패");
+        }
         startedRef.current = false;
+        return;
+      }
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
         return;
       }
       micStreamRef.current = mic;
@@ -139,24 +167,45 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       });
 
       const offer = await pc.createOffer();
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
+        return;
+      }
       await pc.setLocalDescription(offer);
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
+        return;
+      }
 
       const sdpRes = await fetch(`https://${resource}.openai.azure.com/openai/v1/realtime/calls?webrtcfilter=on`, {
         method: "POST",
         body: offer.sdp,
         headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/sdp" },
       });
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
+        return;
+      }
       if (!sdpRes.ok) {
+        cleanupPartialConnection(pc, mic, audioEl);
         setErrorMsg("지금은 대화를 시작할 수 없어요.");
         startedRef.current = false;
         return;
       }
       const answerSdp = await sdpRes.text();
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
+        return;
+      }
       await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+      if (cancelledRef.current) {
+        cleanupPartialConnection(pc, mic, audioEl);
+      }
     }
 
     void connect();
     return () => {
+      cancelledRef.current = true;
       peerConnectionRef.current?.close();
       // pc.close()는 마이크 트랙을 멈추지 않는다(WebRTC 스펙) - 그대로 두면 훅이 언마운트된
       // 뒤에도 브라우저 마이크 사용중 표시가 계속 떠 있는다.

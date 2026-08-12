@@ -15,8 +15,8 @@
     "semantic_hash": ""
   },
   "android/app/build.gradle.kts": {
-    "mtime": 1786496789.696457,
-    "ast_hash": "1632c06716bc7ba98cf2b8a7f7e35e39",
+    "mtime": 1786425030.7304788,
+    "ast_hash": "a30f2be17709251e21ce11c9ff83d7c0",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/neurocare/app/BootReceiver.kt": {
@@ -25,9 +25,9 @@
     "semantic_hash": "139df06d71b98f7447557bbad67fad61"
   },
   "android/app/src/main/java/com/neurocare/app/MainActivity.kt": {
-    "mtime": 1786496789.698468,
-    "ast_hash": "33aaa0870573af94691f8e5bc001922f",
-    "semantic_hash": ""
+    "mtime": 1786335338.0454495,
+    "ast_hash": "84dca286c4105b5df182de7eadc2f8e8",
+    "semantic_hash": "84dca286c4105b5df182de7eadc2f8e8"
   },
   "android/app/src/main/java/com/neurocare/app/emergency/EmergencyAlertActivity.kt": {
     "mtime": 1785176795.6382594,
@@ -50,14 +50,14 @@
     "semantic_hash": "8ce9c32e19780e0b2b956ad6a6ff5be0"
   },
   "android/app/src/main/java/com/neurocare/app/wakeword/SpeechSegmenter.kt": {
-    "mtime": 1786458037.1675887,
-    "ast_hash": "5a6a5fa257dfcaddd5c0cba139280246",
-    "semantic_hash": ""
+    "mtime": 1785143254.7179797,
+    "ast_hash": "68b0e59c9efa7132b46c61d4fd02dcaa",
+    "semantic_hash": "68b0e59c9efa7132b46c61d4fd02dcaa"
   },
   "android/app/src/main/java/com/neurocare/app/wakeword/WakeWordService.kt": {
-    "mtime": 1786453790.4184527,
-    "ast_hash": "a35b9f737c68d409cad94c6090cb752c",
-    "semantic_hash": ""
+    "mtime": 1786353544.5324314,
+    "ast_hash": "7934c0d127c419b7a29a3eb61589a6cd",
+    "semantic_hash": "7934c0d127c419b7a29a3eb61589a6cd"
   },
   "android/app/src/main/java/com/neurocare/app/wakeword/WhisperClient.kt": {
     "mtime": 1786425014.4195645,
@@ -100,8 +100,8 @@
     "semantic_hash": "cc887dab999307f7d6a654c5f603d594"
   },
   "app/api/chat/route.ts": {
-    "mtime": 1786516065.372097,
-    "ast_hash": "9673a79e2da3db4cf8f2c70683ab5b9f",
+    "mtime": 1786425797.5884004,
+    "ast_hash": "3306f31d7887a7c4cf27e3fa568d193b",
     "semantic_hash": ""
   },
   "app/api/client-log/route.ts": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1786449737.466065,
-    "ast_hash": "a7daa0b9af8ce00fc1b73a58e91fc963",
+    "mtime": 1786446947.1212907,
+    "ast_hash": "8ac16b2031f9469ef26b977a44fa6150",
     "semantic_hash": ""
   },
   "app/signup/page.tsx": {
@@ -380,8 +380,8 @@
     "semantic_hash": ""
   },
   "components/VoiceEnrollment.tsx": {
-    "mtime": 1786449737.4926796,
-    "ast_hash": "6ee414ba4d186c4fbbf413d645bdda68",
+    "mtime": 1786446947.7903447,
+    "ast_hash": "f8d49b5b881f3de3d045b5f162eadbad",
     "semantic_hash": ""
   },
   "components/guardian/DashboardLayoutEditor.tsx": {
@@ -480,8 +480,8 @@
     "semantic_hash": ""
   },
   "hooks/useConversationEngine.ts": {
-    "mtime": 1786496789.702818,
-    "ast_hash": "b6e93c1bf7302dad7a731bb56c33e4a8",
+    "mtime": 1786425822.1469846,
+    "ast_hash": "e2927133d23473b5e0c2308f2f5d2339",
     "semantic_hash": ""
   },
   "hooks/useConversationPersistence.ts": {
@@ -575,9 +575,9 @@
     "semantic_hash": "4d0f1ffbf1ea268d50d44790f4e7da55"
   },
   "lib/llmStream.ts": {
-    "mtime": 1786496789.7039275,
-    "ast_hash": "92bdc2a93ccc934120e7d1500b1d5921",
-    "semantic_hash": ""
+    "mtime": 1785825352.3214118,
+    "ast_hash": "f928f2159808a534bdbe0e254429d908",
+    "semantic_hash": "f928f2159808a534bdbe0e254429d908"
   },
   "lib/memory/embedClient.ts": {
     "mtime": 1785166928.0996313,
@@ -590,9 +590,9 @@
     "semantic_hash": ""
   },
   "lib/memory/photoContext.ts": {
-    "mtime": 1786496789.7049327,
-    "ast_hash": "2ae371af80fabfe8850490304e30400d",
-    "semantic_hash": ""
+    "mtime": 1786364597.0181885,
+    "ast_hash": "ba2ff009e0102e5d70195a481f754964",
+    "semantic_hash": "ba2ff009e0102e5d70195a481f754964"
   },
   "lib/memory/pineconeClient.ts": {
     "mtime": 1786330301.6063235,
@@ -600,9 +600,9 @@
     "semantic_hash": "0306bc9d24995d00d07101fb6b1aebd0"
   },
   "lib/moodAnalysis.ts": {
-    "mtime": 1786511543.391808,
-    "ast_hash": "19a327fdb6809025c96ad8510dad20d8",
-    "semantic_hash": ""
+    "mtime": 1785375255.0646873,
+    "ast_hash": "f4d8764d7b09eb3e22b0d87e494a43fe",
+    "semantic_hash": "f4d8764d7b09eb3e22b0d87e494a43fe"
   },
   "lib/speechQueue.ts": {
     "mtime": 1785310119.0694444,
@@ -640,8 +640,8 @@
     "semantic_hash": "9b77af189a21a7a64e4bd7a426f64176"
   },
   "package.json": {
-    "mtime": 1786516906.5155284,
-    "ast_hash": "0e5d0f2516b32dd71f358470c1be752f",
+    "mtime": 1786446198.6960611,
+    "ast_hash": "f268f6f0098593fb18de7a281538d637",
     "semantic_hash": ""
   },
   "postcss.config.mjs": {
@@ -1262,76 +1262,6 @@
   "public/window.svg": {
     "mtime": 1785120948.005196,
     "ast_hash": "a2760511c65806022ad20adf74370ff3",
-    "semantic_hash": ""
-  },
-  "app/api/calendar-events/[id]/synced/route.ts": {
-    "mtime": 1786496789.6994796,
-    "ast_hash": "83d16ac6bd67689e4ff61b37db3e4faa",
-    "semantic_hash": ""
-  },
-  "app/api/calendar-events/unsynced/route.ts": {
-    "mtime": 1786496789.6994796,
-    "ast_hash": "fb241734ccf04391404f26ba1b32310f",
-    "semantic_hash": ""
-  },
-  "app/api/realtime/distress-check/route.ts": {
-    "mtime": 1786517071.6571028,
-    "ast_hash": "8c14b395d6c9c7faa9e77e8bbfd4510a",
-    "semantic_hash": ""
-  },
-  "app/api/realtime/token/route.ts": {
-    "mtime": 1786516280.3293915,
-    "ast_hash": "682f285134dadfbcef56e76e177390f2",
-    "semantic_hash": ""
-  },
-  "hooks/useRealtimeConversation.ts": {
-    "mtime": 1786518176.510337,
-    "ast_hash": "69f254435de4ca0f836e70623e906ea0",
-    "semantic_hash": ""
-  },
-  "lib/calendar/calendarEvents.ts": {
-    "mtime": 1786496789.702818,
-    "ast_hash": "ac84fb356e9580ed623d13c1fb277c80",
-    "semantic_hash": ""
-  },
-  "lib/calendar/detectCalendarIntent.ts": {
-    "mtime": 1786511517.5742955,
-    "ast_hash": "81ec85992e5ef29b457e44a46f3d7ef3",
-    "semantic_hash": ""
-  },
-  "lib/persona.ts": {
-    "mtime": 1786515669.1400487,
-    "ast_hash": "8e961e6b3dbab154cbacfb3a4112e6cd",
-    "semantic_hash": ""
-  },
-  "lib/weather.ts": {
-    "mtime": 1786462250.5430124,
-    "ast_hash": "a7a626bfad38976ad8eaabbcaf48a27b",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/plans/2026-08-12-calendar-integration.md": {
-    "mtime": 1786496789.7017932,
-    "ast_hash": "8e0f0fa7a104977e150a23b5c494abd7",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/plans/2026-08-12-realtime-voice-pipeline.md": {
-    "mtime": 1786515377.469477,
-    "ast_hash": "9c6108b01c1b57178f54cc9dc0ad98a8",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-08-12-calendar-integration-design.md": {
-    "mtime": 1786463465.3808045,
-    "ast_hash": "bddff0bc1626158ceb6b356b459041a7",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-08-12-realtime-voice-pipeline-design.md": {
-    "mtime": 1786515014.6960666,
-    "ast_hash": "99c4c1743cf6956eaecb0ebc23792421",
-    "semantic_hash": ""
-  },
-  "docs/superpowers/specs/2026-08-12-youtube-music-design.md": {
-    "mtime": 1786499481.4410565,
-    "ast_hash": "3e02aa6dc732086ae2754fcca2deb768",
     "semantic_hash": ""
   }
 }
