@@ -55,4 +55,5 @@ dependencies {
     implementation(libs.material)
     implementation(libs.onnxruntime.android)
     implementation(libs.okhttp)
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }

@@ -2,6 +2,7 @@ package com.neurocare.app
 
 import android.Manifest
 import android.content.BroadcastReceiver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
@@ -9,6 +10,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.CalendarContract
 import android.provider.Settings
 import android.view.WindowManager
 import android.webkit.JavascriptInterface
@@ -32,10 +34,14 @@ import androidx.core.content.ContextCompat
 import com.neurocare.app.emergency.EmergencyNotifier
 import com.neurocare.app.wakeword.WakeWordService
 import kotlin.concurrent.thread
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.Response
 import org.json.JSONObject
 
 /**
@@ -106,6 +112,16 @@ class MainActivity : AppCompatActivity() {
                 .edit()
                 .putString(WakeWordService.WAKE_WORD_PREF_KEY, word)
                 .apply()
+        }
+
+        /**
+         * 방금 대화에서 일정이 확인·저장되면(chat/route.ts의 X-Calendar-Sync 헤더)
+         * 웹이 이걸 호출한다. onResume()에서도 같은 함수를 호출하므로 로직은
+         * syncUnsyncedCalendarEvents() 하나로 통일한다.
+         */
+        @JavascriptInterface
+        fun syncCalendarNow() {
+            syncUnsyncedCalendarEvents()
         }
     }
 
@@ -340,7 +356,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ensurePermissionsThenStart() {
-        val needed = mutableListOf(Manifest.permission.RECORD_AUDIO, Manifest.permission.ACCESS_COARSE_LOCATION)
+        val needed = mutableListOf(
+            Manifest.permission.RECORD_AUDIO,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.WRITE_CALENDAR,
+            // getPrimaryCalendarId()가 캘린더 목록을 쿼리하므로 쓰기뿐 아니라 읽기도 필요하다.
+            Manifest.permission.READ_CALENDAR,
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             needed += Manifest.permission.POST_NOTIFICATIONS
         }
@@ -366,6 +388,91 @@ class MainActivity : AppCompatActivity() {
         stopService(Intent(this, WakeWordService::class.java))
     }
 
+    private val calendarHttpClient = OkHttpClient()
+
+    /**
+     * 서버(app/api/calendar-events/unsynced)에서 아직 네이티브 캘린더에 반영 안 된
+     * 일정을 받아 각각 CalendarContract에 삽입하고, 완료된 것만 서버에 표시한다.
+     * WRITE_CALENDAR 권한이 없으면 아무것도 안 하고 조용히 리턴한다 - 서버 DB에는
+     * 이미 저장돼 있으므로 보호자 대시보드/대화 중 조회는 권한과 무관하게 정상 동작한다.
+     */
+    private fun syncUnsyncedCalendarEvents() {
+        val hasCalendarPermissions = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) ==
+            PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALENDAR) ==
+                PackageManager.PERMISSION_GRANTED
+        if (!hasCalendarPermissions) return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val listRequest = Request.Builder()
+                    .url("${BuildConfig.WEBAPP_BASE_URL}/api/calendar-events/unsynced")
+                    .build()
+                val listResponse: Response = calendarHttpClient.newCall(listRequest).execute()
+                val body = listResponse.body?.string().orEmpty()
+                listResponse.close()
+                if (!listResponse.isSuccessful || body.isBlank()) return@launch
+
+                val events = JSONObject(body).getJSONArray("events")
+                for (i in 0 until events.length()) {
+                    val event = events.getJSONObject(i)
+                    val id = event.getString("id")
+                    val title = event.getString("title")
+                    val isoDate = event.getString("date")
+                    val inserted = insertIntoDeviceCalendar(title, isoDate)
+                    if (inserted) markSyncedOnServer(id)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "캘린더 동기화 실패", e)
+            }
+        }
+    }
+
+    /** ContentResolver로 기본 캘린더에 하루짜리 일정을 삽입한다. 성공하면 true. */
+    private fun insertIntoDeviceCalendar(title: String, isoDate: String): Boolean {
+        return try {
+            val calendarId = getPrimaryCalendarId() ?: return false
+            val startMillis = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.KOREA)
+                .parse(isoDate)?.time ?: return false
+            val endMillis = startMillis + 24 * 60 * 60 * 1000
+
+            val values = ContentValues().apply {
+                put(CalendarContract.Events.CALENDAR_ID, calendarId)
+                put(CalendarContract.Events.TITLE, title)
+                put(CalendarContract.Events.DTSTART, startMillis)
+                put(CalendarContract.Events.DTEND, endMillis)
+                put(CalendarContract.Events.ALL_DAY, 1)
+                put(CalendarContract.Events.EVENT_TIMEZONE, java.util.TimeZone.getDefault().id)
+            }
+            contentResolver.insert(CalendarContract.Events.CONTENT_URI, values) != null
+        } catch (e: Exception) {
+            Log.e(TAG, "네이티브 캘린더 삽입 실패: $title", e)
+            false
+        }
+    }
+
+    /** 기기의 기본(첫 번째) 캘린더 ID를 찾는다. 계정이 여러 개면 그중 첫 번째를 쓴다. */
+    private fun getPrimaryCalendarId(): Long? {
+        val projection = arrayOf(CalendarContract.Calendars._ID)
+        contentResolver.query(CalendarContract.Calendars.CONTENT_URI, projection, null, null, null)
+            ?.use { cursor ->
+                if (cursor.moveToFirst()) return cursor.getLong(0)
+            }
+        return null
+    }
+
+    private fun markSyncedOnServer(eventId: String) {
+        try {
+            val request = Request.Builder()
+                .url("${BuildConfig.WEBAPP_BASE_URL}/api/calendar-events/$eventId/synced")
+                .post("".toRequestBody(null))
+                .build()
+            calendarHttpClient.newCall(request).execute().close()
+        } catch (e: Exception) {
+            Log.e(TAG, "동기화 완료 표시 실패: $eventId", e)
+        }
+    }
+
     override fun onResume() {
         super.onResume()
         // 실제 기기 로그로 확인된 원인: "마이크 사용" 타입 포그라운드 서비스가 실제로 녹음
@@ -374,6 +481,7 @@ class MainActivity : AppCompatActivity() {
         // 화면에 떠 있는 동안은 서비스 자체를 완전히 종료해 충돌 여지를 없앤다.
         reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
         stopWakeWordService()
+        syncUnsyncedCalendarEvents()
         webView.onResume()
         // JS 타이머를 먼저 풀어준 뒤에 재개 신호를 보내야 콜백이 확실히 실행된다.
         webView.evaluateJavascript("window.__neurocareResume && window.__neurocareResume()", null)
