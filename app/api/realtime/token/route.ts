@@ -43,7 +43,21 @@ export async function GET() {
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
 
-  let instructions = buildBasePersonaPrompt(dementiaStage);
+  // 서버가 UTC로 도는 Vercel이라 그냥 new Date()를 텍스트로 넣으면 한국 자정~오전 9시
+  // 사이엔 어제 날짜가 된다 - Asia/Seoul 기준으로 계산한다. 요일도 명시한다 - 모델이
+  // 날짜만 보고 요일을 스스로 계산하면 자주 틀려서("다음 주 화요일" 같은 상대 날짜를
+  // 절대 날짜로 바꿀 때 반드시 요일이 필요) 환자가 말한 요일과 실제 등록되는 날짜가
+  // 어긋나는 원인이 됐다.
+  const nowKst = new Date();
+  const todayDate = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(nowKst);
+  const todayWeekday = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", weekday: "long" }).format(nowKst);
+
+  let instructions = buildBasePersonaPrompt(dementiaStage) + `
+
+[오늘 날짜]
+오늘은 ${todayDate}(${todayWeekday})입니다. "내일"/"모레"/"다음 주 화요일"처럼
+상대적인 날짜를 언급하면 이 날짜와 요일을 기준으로 정확히 계산하세요 - 요일을
+스스로 다시 계산하지 말고 위 요일을 그대로 사용하세요.`;
   if (roster) {
     instructions += `
 

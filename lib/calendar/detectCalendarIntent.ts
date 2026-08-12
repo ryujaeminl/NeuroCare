@@ -30,7 +30,14 @@ export async function detectCalendarIntent(
 ): Promise<{ title: string; date: string } | null> {
   if (!AZURE_OPENAI_ENDPOINT || !AZURE_OPENAI_API_KEY || !latestUserText.trim()) return null;
 
-  const today = new Date().toISOString().slice(0, 10);
+  // 서버가 UTC로 도는 Vercel이라 new Date().toISOString()을 그대로 쓰면 한국 자정~오전
+  // 9시 사이엔 어제 날짜가 나온다 - Asia/Seoul 기준으로 직접 계산한다. 요일도 문자열로
+  // 같이 넘긴다 - 모델이 날짜만 보고 요일을 스스로 계산하면 자주 틀린다(gpt-5.4-mini뿐
+  // 아니라 LLM 전반의 약점 - "다음 주 화요일" 같은 상대 표현을 절대 날짜로 바꿀 때
+  // 요일을 반드시 참고하므로, 여기서 틀리면 등록되는 날짜 자체가 어긋난다).
+  const now = new Date();
+  const today = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(now); // YYYY-MM-DD
+  const weekday = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", weekday: "long" }).format(now);
   try {
     const response = await fetch(`${AZURE_OPENAI_ENDPOINT.replace(/\/$/, "")}/openai/v1/responses`, {
       method: "POST",
@@ -39,7 +46,8 @@ export async function detectCalendarIntent(
       body: JSON.stringify({
         model: RESPONSES_MODEL,
         instructions:
-          `오늘 날짜는 ${today}입니다. 아래 사용자 발화에 "일정으로 등록해달라"는 ` +
+          `오늘 날짜는 ${today}(${weekday})입니다. 이 요일을 기준으로 요일 계산을 ` +
+          `직접 하지 말고 그대로 활용하세요. 아래 사용자 발화에 "일정으로 등록해달라"는 ` +
           `의도가 있으면(예: "다음 주 화요일에 병원 가야해", "모레 손녀 온다고 ` +
           `일정에 넣어줘") {"title": "짧은 제목", "date": "YYYY-MM-DD"} 형식의 JSON ` +
           `만 답하세요. 의도가 없으면(그냥 하는 말, 질문, 과거 이야기 등) 정확히 ` +
