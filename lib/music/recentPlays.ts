@@ -11,10 +11,22 @@ export async function buildRecentPlaysContext(patientId: string): Promise<string
   const plays = await prisma.playedSong.findMany({
     where: { patientId },
     orderBy: { playedAt: "desc" },
-    take: 15,
-    select: { title: true },
+    take: 30,
+    select: { title: true, playedAt: true },
   });
   if (plays.length === 0) return "";
 
-  return plays.map((p) => `- ${p.title}`).join("\n");
+  const counts = new Map<string, number>();
+  for (const play of plays) counts.set(play.title, (counts.get(play.title) ?? 0) + 1);
+  const favorites = [...counts.entries()]
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 8)
+    .map(([title, count]) => `- ${title}${count > 1 ? ` (${count}회)` : ""}`)
+    .join("\n");
+  const recent = plays
+    .slice(0, 8)
+    .map((play) => `- ${play.title} (${play.playedAt.toISOString().slice(0, 10)})`)
+    .join("\n");
+
+  return `[반복해서 들은 곡]\n${favorites}\n\n[최근 들은 곡]\n${recent}`;
 }

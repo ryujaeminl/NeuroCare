@@ -39,6 +39,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
   // 않고 항상 켠다 - 보호자 세션이면 저장 호출이 조용히 401로 실패할 뿐 대화
   // 자체엔 영향 없다.
   const persistence = useConversationPersistence(true);
+  const { saveTurn } = persistence;
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -248,13 +249,13 @@ export function useRealtimeConversation(): UseConversationEngineResult {
           case "response.output_audio_transcript.done": {
             const assistantText = e.transcript ?? "";
             setLog((prev) => [{ id: Date.now(), role: "assistant", text: assistantText }, ...prev]);
-            persistence.saveTurn("assistant", assistantText);
+            saveTurn("assistant", assistantText);
             break;
           }
           case "conversation.item.input_audio_transcription.completed": {
             const transcript: string = e.transcript ?? "";
             setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
-            persistence.saveTurn("user", transcript);
+            saveTurn("user", transcript);
             void fetch("/api/realtime/distress-check", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
@@ -346,7 +347,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
       delete window.__neurocarePause;
       delete window.__neurocareResume;
     };
-  }, []);
+  }, [saveTurn]);
 
   return {
     phase,

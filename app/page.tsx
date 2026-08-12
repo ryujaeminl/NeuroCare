@@ -8,6 +8,7 @@ import { useRealtimeConversation } from "@/hooks/useRealtimeConversation";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { TodayMoodCard } from "@/components/TodayMoodCard";
 import { MusicOverlay } from "@/components/MusicOverlay";
+import { DogMascot } from "@/components/DogMascot";
 
 interface DashboardCardProps {
   icon: string;
@@ -145,8 +146,7 @@ export default function HomePage() {
         <section className="flex flex-col items-center gap-4 text-center">
           <div className="relative flex items-center justify-center overflow-hidden rounded-xl bg-white">
             <div className={`absolute inset-0 rounded-xl blur-xl transition ${mascotGlow}`} aria-hidden />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/mascot-dog.png" alt="" className="relative h-56 w-56 object-contain p-4" />
+            <DogMascot phase={engine.phase} userSpeaking={engine.vadUserSpeaking} />
           </div>
 
           <div>
