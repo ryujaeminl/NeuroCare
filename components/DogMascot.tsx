@@ -1,6 +1,6 @@
 "use client";
 
-import { Component, Suspense, useEffect, useState, type ReactNode } from "react";
+import { Component, Suspense, useState, useSyncExternalStore, type ReactNode } from "react";
 import { Canvas } from "@react-three/fiber";
 import type { ConversationPhase } from "@/hooks/useConversationEngine";
 import { DogMascotModel } from "@/components/DogMascotModel";
@@ -34,17 +34,26 @@ function getLabel(phase: ConversationPhase, userSpeaking: boolean): string {
   return "준비 중인 뉴로케어 강아지";
 }
 
-function useStaticFallbackPreferred(loadFailed: boolean): boolean {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+function subscribeToReducedMotion(callback: () => void): () => void {
+  const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+  query.addEventListener("change", callback);
+  return () => query.removeEventListener("change", callback);
+}
 
-  useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- reading matchMedia's current value is a one-time sync from a browser API (unavailable during SSR/on the server) into React state; there is no external-system "subscribe" callback for the initial read, only for later changes.
-    setPrefersReducedMotion(query.matches);
-    const handleChange = (event: MediaQueryListEvent) => setPrefersReducedMotion(event.matches);
-    query.addEventListener("change", handleChange);
-    return () => query.removeEventListener("change", handleChange);
-  }, []);
+function getReducedMotionSnapshot(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function getReducedMotionServerSnapshot(): boolean {
+  return false;
+}
+
+function useStaticFallbackPreferred(loadFailed: boolean): boolean {
+  const prefersReducedMotion = useSyncExternalStore(
+    subscribeToReducedMotion,
+    getReducedMotionSnapshot,
+    getReducedMotionServerSnapshot,
+  );
 
   return loadFailed || prefersReducedMotion;
 }
