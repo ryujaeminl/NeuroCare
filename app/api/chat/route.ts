@@ -14,7 +14,7 @@ import { getUnofferedPhotoPrompt, pickPhotoToShow } from "@/lib/memory/photoCont
 import { buildWeatherContext } from "@/lib/weather";
 import { buildRecentCalendarEvents, handleCalendarTurn } from "@/lib/calendar/calendarEvents";
 import type { DementiaStage } from "@/lib/db/types";
-import { buildBasePersonaPrompt } from "@/lib/persona";
+import { buildBasePersonaPrompt, SYSTEM_PROMPT_RULES, SYSTEM_PROMPT_EXAMPLES } from "@/lib/persona";
 
 // 응답 헤더(X-Vercel-Id)로 확인한 결과 이 함수가 iad1(미국 동부)에서 실행되고 있었다 -
 // 이 앱의 실사용자가 한국이라 클라이언트↔Vercel 구간만이라도 왕복 지연을 줄이려고
@@ -67,7 +67,7 @@ async function buildSystemPrompt(
 
   if (!patientId) {
     return {
-      prompt: buildBasePersonaPrompt("moderate") + weatherBlock,
+      prompt: SYSTEM_PROMPT_RULES + "\n" + SYSTEM_PROMPT_EXAMPLES + weatherBlock,
       photo: null,
       calendarJustConfirmed: false,
     };
