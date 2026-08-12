@@ -207,7 +207,7 @@ export function useRealtimeConversation(): UseConversationEngineResult {
                 void fetch("/api/music/history", {
                   method: "POST", headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({ title: payload.title, videoId: payload.videoId }),
-                });
+                }).catch(() => {});
                 output = `"${payload.title}"을(를) 재생을 시작했어요.`;
               }
             }
