@@ -59,18 +59,21 @@ export default function HomePage() {
   // 하단 카드들(가족 연결/오늘의 계획/가족 메시지/복약 알림)이 예전엔 전부 하드코딩된
   // 가짜 데이터였다 - 보호자 앱이 실제로 입력한 내용과 전혀 연동되지 않고 있었다.
   // 로그인한 환자 계정일 때만 실제 요약을 불러온다.
+  // 보호자 앱이 등록한 일정, 메시지, 복약 알림이 실시간으로 대시보드 카드에 뜨도록 2.5초마다 폴링한다.
   useEffect(() => {
-    if (session?.user?.role !== "patient") return;
-    void (async () => {
+    let timer: NodeJS.Timeout;
+    const fetchDashboard = async () => {
       try {
         const response = await fetch("/api/patient/dashboard");
-        if (!response.ok) return;
-        setDashboard(await response.json());
-      } catch {
-        // 대시보드 요약은 부가 정보라 실패해도 대화 화면 자체는 그대로 쓸 수 있어야 한다.
-      }
-    })();
-  }, [session?.user?.role]);
+        if (response.ok) {
+          setDashboard(await response.json());
+        }
+      } catch {}
+    };
+    fetchDashboard();
+    timer = setInterval(fetchDashboard, 2500);
+    return () => clearInterval(timer);
+  }, []);
 
   // 로그인 없이는 마이크도, 기분/기록 조회도 전부 401만 반복된다 - 대시보드를 보여주기 전에
   // 먼저 로그인부터 시키는 게 맞다. status가 "loading"인 동안은 아직 세션 확인 중이라

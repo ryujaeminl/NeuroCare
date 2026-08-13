@@ -487,8 +487,8 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
             saveTurn("user", transcript);
 
-            // '살려줘', '도와줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출
-            const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호)/i.test(transcript);
+            // '살려줘', '도와줘', '배 아파', '보호자 연락해줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출
+            const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|아파요|배\s*아파|머리\s*아파|연락|보호자)/i.test(transcript);
             if (isDistressKeyword) {
               void fetch("/api/emergency", {
                 method: "POST",

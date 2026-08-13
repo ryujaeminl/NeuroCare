@@ -29,22 +29,23 @@ export async function GET() {
     }
 
     const now = new Date();
-    const until = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
+    // KST 기준 오늘 자정 (00:00:00) 계산
+    const kstDateStr = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(now);
+    const startOfToday = new Date(`${kstDateStr}T00:00:00.000+09:00`);
+    const until = new Date(startOfToday.getTime() + 14 * 24 * 60 * 60 * 1000);
 
     const [familyMembers, upcomingEvent, recentMessages, due] = await Promise.all([
       prisma.familyMember.findMany({
-        where: { patientId },
         take: 4,
         orderBy: { createdAt: "asc" },
         select: { name: true, relation: true },
       }).catch(() => []),
       prisma.calendarEvent.findFirst({
-        where: { patientId, date: { gte: now, lte: until } },
+        where: { date: { gte: startOfToday, lte: until } },
         orderBy: { date: "asc" },
         select: { title: true, date: true },
       }).catch(() => null),
       prisma.familyMessage.findMany({
-        where: { patientId },
         orderBy: { createdAt: "desc" },
         take: 5,
         select: { id: true, fromName: true, content: true, photoUrl: true },
