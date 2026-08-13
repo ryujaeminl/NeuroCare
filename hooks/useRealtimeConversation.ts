@@ -117,6 +117,8 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const audioAnalyserRef = useRef<AnalyserNode | null>(null);
   const audioFrameRef = useRef<number | null>(null);
   const lipsyncRef = useRef<Lipsync | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const recordedChunksRef = useRef<Blob[]>([]);
   const startedRef = useRef(false);
   const lastUserSpeechAtRef = useRef<number | null>(null);
   const checkInSentAtRef = useRef<number | null>(null);
@@ -249,6 +251,28 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       }
       micStreamRef.current = mic;
       pc.addTrack(mic.getAudioTracks()[0]);
+
+      if (typeof MediaRecorder !== "undefined") {
+        try {
+          const recorder = new MediaRecorder(mic, { mimeType: "audio/webm" });
+          recorder.ondataavailable = (ev) => {
+            if (ev.data && ev.data.size > 0) {
+              recordedChunksRef.current.push(ev.data);
+            }
+          };
+          mediaRecorderRef.current = recorder;
+        } catch {
+          try {
+            const recorder = new MediaRecorder(mic);
+            recorder.ondataavailable = (ev) => {
+              if (ev.data && ev.data.size > 0) {
+                recordedChunksRef.current.push(ev.data);
+              }
+            };
+            mediaRecorderRef.current = recorder;
+          } catch {}
+        }
+      }
 
       lastUserSpeechAtRef.current = Date.now();
       checkInSentAtRef.current = null;
@@ -492,10 +516,37 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             lastUserSpeechAtRef.current = Date.now();
             checkInSentAtRef.current = null;
             sessionTimeoutFiredRef.current = false;
+            recordedChunksRef.current = [];
+            try {
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state === "inactive") {
+                mediaRecorderRef.current.start(100);
+              }
+            } catch {}
             break;
           case "input_audio_buffer.speech_stopped":
             setVadUserSpeaking(false);
             setPhase("thinking");
+            try {
+              if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
+                mediaRecorderRef.current.stop();
+              }
+            } catch {}
+            setTimeout(() => {
+              if (recordedChunksRef.current.length > 0) {
+                const blob = new Blob(recordedChunksRef.current, { type: "audio/webm" });
+                recordedChunksRef.current = [];
+                if (blob.size > 1000) {
+                  const form = new FormData();
+                  form.append("file", blob, "user-speech.webm");
+                  void fetch("/api/stt", { method: "POST", body: form })
+                    .then((res) => res.json())
+                    .then((data: { text?: string }) => {
+                      if (data.text) handleUserTranscript(data.text);
+                    })
+                    .catch(() => {});
+                }
+              }
+            }, 300);
             break;
           case "output_audio_buffer.started":
             setPhase("speaking");
