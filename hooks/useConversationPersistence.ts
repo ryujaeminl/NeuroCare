@@ -27,19 +27,21 @@ export function useConversationPersistence(enabled: boolean): ConversationPersis
     if (!enabled) return null;
     if (sessionIdRef.current) return sessionIdRef.current;
 
-    sessionPromiseRef.current ??= (async () => {
-      try {
-        const response = await fetch("/api/sessions", { method: "POST" });
-        if (!response.ok) return null;
+    try {
+      const response = await fetch("/api/sessions", { method: "POST" });
+      if (response.ok) {
         const data = (await response.json()) as { session?: { id?: string } };
-        sessionIdRef.current = data.session?.id ?? null;
-        return sessionIdRef.current;
-      } catch {
-        return null;
+        if (data.session?.id) {
+          sessionIdRef.current = data.session.id;
+          return data.session.id;
+        }
       }
-    })();
+    } catch {}
 
-    return sessionPromiseRef.current;
+    const todayKey = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+    const fallbackId = `session-fallback-${todayKey}`;
+    sessionIdRef.current = fallbackId;
+    return fallbackId;
   }, [enabled]);
 
   useEffect(() => {

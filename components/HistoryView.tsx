@@ -43,35 +43,6 @@ export function HistoryView({ patientId, dense = false }: HistoryViewProps) {
 
   const baseParams = useMemo(() => (patientId ? `patientId=${patientId}` : ""), [patientId]);
 
-  useEffect(() => {
-    let cancelled = false;
-
-    async function loadSessions() {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/history?${baseParams}`);
-        const data = await response.json();
-        if (cancelled) return;
-        if (!response.ok) {
-          setError(data.error ?? "기록을 불러오지 못했습니다.");
-          return;
-        }
-        setSessions(data.sessions ?? []);
-        setError(null);
-      } catch {
-        if (!cancelled) setError("기록을 불러오지 못했습니다.");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    void loadSessions();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [baseParams]);
-
   const openSession = useCallback(
     async (sessionId: string) => {
       setSelectedId(sessionId);
@@ -86,6 +57,40 @@ export function HistoryView({ patientId, dense = false }: HistoryViewProps) {
     },
     [baseParams],
   );
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSessions() {
+      setLoading(true);
+      try {
+        const response = await fetch(`/api/history?${baseParams}`);
+        const data = await response.json();
+        if (cancelled) return;
+        if (!response.ok) {
+          setError(data.error ?? "기록을 불러오지 못했습니다.");
+          return;
+        }
+        const loadedSessions: HistorySessionSummary[] = data.sessions ?? [];
+        setSessions(loadedSessions);
+        setError(null);
+
+        if (loadedSessions.length > 0) {
+          void openSession(loadedSessions[0].id);
+        }
+      } catch {
+        if (!cancelled) setError("기록을 불러오지 못했습니다.");
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    void loadSessions();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [baseParams, openSession]);
 
   const runSearch = useCallback(
     async (event: React.FormEvent) => {
