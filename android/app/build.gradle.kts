@@ -35,6 +35,7 @@ android {
             dimension = "audience"
             applicationIdSuffix = ".patient"
             versionNameSuffix = "-patient"
+            buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neuro-care-sand.vercel.app\"")
             buildConfigField("String", "WEBAPP_START_PATH", "\"/\"")
             resValue("string", "app_name", "Neurocare Patient")
         }
@@ -42,7 +43,8 @@ android {
             dimension = "audience"
             applicationIdSuffix = ".guardian"
             versionNameSuffix = "-guardian"
-            buildConfigField("String", "WEBAPP_START_PATH", "\"/guardian\"")
+            buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neurocare-care.vercel.app\"")
+            buildConfigField("String", "WEBAPP_START_PATH", "\"/\"")
             resValue("string", "app_name", "Neurocare Guardian")
         }
     }
