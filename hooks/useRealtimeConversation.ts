@@ -89,10 +89,18 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   // 건드리지 않고 그 시점까지 확보한 리소스만 정리한 뒤 빠져나온다.
   const cancelledRef = useRef(false);
 
+  // Azure Realtime은 한 번에 응답(response) 하나만 진행 중일 수 있다 - 이미 진행 중인
+  // 응답이 있을 때 response.create를 또 보내면 서버가 거부하고 error 이벤트만 온다.
+  // tool 호출(play_song 등) 직후 우리가 곧바로 response.create를 보내는 게 바로 이
+  // 상황이다: 모델이 tool을 부른 그 응답 자체가 아직 안 끝난 상태이기 때문이다.
+  // "생각 중" 멈춤(특히 음악 재생 직후)의 유력한 원인으로 지목돼 응답 진행 여부를
+  // 추적해 진행 중이면 큐에 쌓았다가 response.done 시점에 보내도록 고쳤다.
+  const responseActiveRef = useRef(false);
+  const queuedResponseCreateRef = useRef<Record<string, unknown> | null>(null);
+
   // "생각 중"에서 다음 이벤트 없이 멈춘 채 굳는 사례가 반복 보고됐다(음악 재생 요청
-  // 직후가 가장 흔함) - 정확한 원인을 실시간으로 못 잡아서, 응급처치로 일정 시간
-  // 안에 다음 상태 전이가 없으면 스스로 리스닝으로 복구한다. 사용자가 다시 말을
-  // 걸 수 있는 상태로만 되돌리는 최소한의 안전장치다 - 근본 원인 자체는 아니다.
+  // 직후가 가장 흔함) - 위 큐잉으로 근본 원인을 고쳤지만, 혹시 놓치는 경로가 있을 때를
+  // 대비한 마지막 안전장치로 남겨둔다.
   const THINKING_STALL_TIMEOUT_MS = 15000;
   useEffect(() => {
     if (phase !== "thinking") return undefined;
@@ -210,6 +218,31 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
 
       const dataChannel = pc.createDataChannel("realtime-channel");
 
+      // response.create를 직접 보내지 말고 항상 이 함수를 거친다 - 이미 진행 중인
+      // 응답이 있으면(responseActiveRef) 큐에 쌓아뒀다가 그 응답의 response.done이
+      // 온 뒤 자동으로 보낸다. extra로 instructions 등 response.create의 추가 필드를
+      // 전달할 수 있다(체크인 안부 질문 등).
+      function sendResponseCreate(extra?: Record<string, unknown>) {
+        const payload = { type: "response.create", ...extra };
+        if (responseActiveRef.current) {
+          queuedResponseCreateRef.current = payload;
+          return;
+        }
+        responseActiveRef.current = true;
+        dataChannel.send(JSON.stringify(payload));
+      }
+
+      /** 응답이 끝났다고 볼 수 있는 시점(response.done 또는 error)에 부른다. 큐에
+       * 쌓인 요청이 있으면 그제서야 실제로 내보낸다. */
+      function onResponseSlotFreed() {
+        responseActiveRef.current = false;
+        const queued = queuedResponseCreateRef.current;
+        if (!queued) return;
+        queuedResponseCreateRef.current = null;
+        responseActiveRef.current = true;
+        dataChannel.send(JSON.stringify(queued));
+      }
+
       sessionTimeoutIntervalRef.current = setInterval(() => {
         if (sessionTimeoutFiredRef.current) return;
         if (pc.connectionState !== "connected") return; // 연결 자체가 끊긴 건 다른 문제(앱 종료 등)다.
@@ -220,10 +253,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           if (Date.now() - lastUserSpeechAtRef.current < SESSION_TIMEOUT_MS) return;
           // 1단계: 곧바로 SOS가 아니라 먼저 모델이 안부를 묻는다.
           checkInSentAtRef.current = Date.now();
-          dataChannel.send(JSON.stringify({
-            type: "response.create",
-            response: { instructions: CHECK_IN_INSTRUCTIONS },
-          }));
+          sendResponseCreate({ response: { instructions: CHECK_IN_INSTRUCTIONS } });
           return;
         }
 
@@ -285,7 +315,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
               type: "function_call_output", call_id: e.call_id, output: payload.result ?? payload.error ?? "검색 실패",
             }}));
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
+            sendResponseCreate();
           })();
           return;
         }
@@ -322,7 +352,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
               type: "function_call_output", call_id: callId, output,
             }}));
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
+            sendResponseCreate();
           })();
           return;
         }
@@ -348,7 +378,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
               type: "function_call_output", call_id: callId, output,
             }}));
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
+            sendResponseCreate();
           })();
           return;
         }
@@ -382,7 +412,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
               type: "function_call_output", call_id: callId, output,
             }}));
-            dataChannel.send(JSON.stringify({ type: "response.create" }));
+            sendResponseCreate();
           })();
           return;
         }
@@ -391,7 +421,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
             type: "function_call_output", call_id: e.call_id, output: "재생을 멈췄어요.",
           }}));
-          dataChannel.send(JSON.stringify({ type: "response.create" }));
+          sendResponseCreate();
           return;
         }
         switch (e.type) {
@@ -408,6 +438,12 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             break;
           case "output_audio_buffer.started":
             setPhase("speaking");
+            break;
+          case "response.created":
+            responseActiveRef.current = true;
+            break;
+          case "response.done":
+            onResponseSlotFreed();
             break;
           case "output_audio_buffer.stopped":
             setPhase("listening");
@@ -438,9 +474,10 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           }
           case "error":
             setErrorMsg(e.error?.message ?? "오류가 발생했습니다.");
-            // 에러가 나면 응답이 영영 안 올 수 있다(예: 이전 응답이 아직 안 끝난
-            // 상태에서 response.create를 보내 거부된 경우) - phase를 안 풀어주면
-            // "생각 중"에 화면이 멈춘 채로 굳는다. 다시 말할 수 있게 리스닝으로 돌린다.
+            // 에러가 나면 response.done이 영영 안 올 수 있다 - 응답 슬롯을 점유한 채로
+            // 두면 큐에 쌓인 response.create가 영원히 못 나가고, phase도 "생각 중"에
+            // 멈춘 채로 굳는다. 슬롯을 비우고(큐 있으면 바로 흘려보내고) 리스닝으로 돌린다.
+            onResponseSlotFreed();
             setPhase("listening");
             break;
         }
