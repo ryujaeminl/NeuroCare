@@ -7,6 +7,8 @@ android {
     namespace = "com.neurocare.app"
     compileSdk = 34
 
+    flavorDimensions += "audience"
+
     defaultConfig {
         applicationId = "com.neurocare.app"
         minSdk = 26
@@ -26,6 +28,23 @@ android {
         buildConfigField("String", "WAKE_WORD_LABEL", "\"복실아\"")
         // 태블릿 1대 = 환자 1명 전제. 이 기기에서 등록된 성문의 ID.
         buildConfigField("String", "SPEAKER_ID", "\"device\"")
+    }
+
+    productFlavors {
+        create("patient") {
+            dimension = "audience"
+            applicationIdSuffix = ".patient"
+            versionNameSuffix = "-patient"
+            buildConfigField("String", "WEBAPP_START_PATH", "\"/\"")
+            resValue("string", "app_name", "Neurocare Patient")
+        }
+        create("guardian") {
+            dimension = "audience"
+            applicationIdSuffix = ".guardian"
+            versionNameSuffix = "-guardian"
+            buildConfigField("String", "WEBAPP_START_PATH", "\"/guardian\"")
+            resValue("string", "app_name", "Neurocare Guardian")
+        }
     }
 
     buildFeatures {

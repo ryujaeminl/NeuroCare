@@ -172,7 +172,7 @@ class MainActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
             // 결과와 상관없이 마이크 권한 요청은 WebView의 onPermissionRequest에서 다시 확인한다.
             // 웨이크워드 서비스는 여기서 켜지 않는다 - onPause에서 백그라운드로 갈 때만 띄운다.
-            webView.loadUrl(BuildConfig.WEBAPP_BASE_URL)
+            webView.loadUrl(BuildConfig.WEBAPP_BASE_URL + BuildConfig.WEBAPP_START_PATH)
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -399,7 +399,7 @@ class MainActivity : AppCompatActivity() {
 
         if (missing.isEmpty()) {
             // 웨이크워드 서비스는 여기서 켜지 않는다 - onPause에서 백그라운드로 갈 때만 띄운다.
-            webView.loadUrl(BuildConfig.WEBAPP_BASE_URL)
+            webView.loadUrl(BuildConfig.WEBAPP_BASE_URL + BuildConfig.WEBAPP_START_PATH)
         } else {
             requestPermissions.launch(missing.toTypedArray())
         }
