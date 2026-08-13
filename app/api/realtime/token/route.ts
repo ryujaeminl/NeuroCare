@@ -146,6 +146,9 @@ ${recentPlays}
 
   instructions += `
 
+[긴급 상황 / SOS 알림]
+환자가 '살려줘', '도와줘', 'SOS 신호 보내줘', '119', '보호자 불러줘', '비상상황이야' 등 위급 상황을 표현하거나 SOS 알림을 요청하면 절대로 '할 수 없다'고 거절하지 마세요! 즉시 trigger_emergency 툴을 호출하고, "보호자분께 긴급 SOS 신호를 즉시 보냈습니다. 안심하세요!"라고 따뜻하게 안심시키세요.
+
 [음악 재생]
 "곡 추천해줘"처럼 그냥 추천만 원하는 요청은 tool 호출 없이 말로만 답하세요 -
 곡 하나를 골라 이름을 말하고 "틀어드릴까요?"라고 물어보면 끝입니다.
@@ -183,6 +186,14 @@ ${recentPlays}
           instructions,
           audio,
           tools: [{
+            type: "function",
+            name: "trigger_emergency",
+            description: "환자가 '살려줘', '도와줘', 'SOS 신호 보내' 등 위급 상황이나 긴급 알림 요청을 할 때 즉시 호출하여 보호자에게 SOS 신호를 송출합니다.",
+            parameters: {
+              type: "object",
+              properties: { detail: { type: "string", description: "환자의 위급 상황 내용 (예: 살려줘 요청, 통증, 긴급 SOS 요청 등)" } },
+            },
+          }, {
             type: "function",
             name: "web_search",
             description: "최신 정보가 필요할 때 공개 웹을 검색합니다.",

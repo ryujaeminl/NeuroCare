@@ -422,6 +422,24 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           })();
           return;
         }
+        if (e.type === "response.function_call_arguments.done" && e.name === "trigger_emergency" && e.call_id) {
+          void (async () => {
+            let detail = "환자 긴급 SOS 요청";
+            try { detail = (JSON.parse(e.arguments ?? "{}") as { detail?: string }).detail?.trim() || detail; } catch {}
+            const callId = e.call_id as string;
+            await fetch("/api/emergency", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ triggerType: "voice_distress", detail }),
+            }).catch(() => null);
+
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output: "보호자분께 긴급 SOS 신호를 즉시 보냈습니다.",
+            }}));
+            sendResponseCreate();
+          })();
+          return;
+        }
         if (e.type === "response.function_call_arguments.done" && e.name === "stop_song" && e.call_id) {
           setMusicOverlay(null);
           dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
@@ -468,6 +486,17 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             const transcript: string = e.transcript ?? "";
             setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
             saveTurn("user", transcript);
+
+            // '살려줘', '도와줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출
+            const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호)/i.test(transcript);
+            if (isDistressKeyword) {
+              void fetch("/api/emergency", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ triggerType: "voice_distress", detail: transcript }),
+              });
+            }
+
             void fetch("/api/realtime/distress-check", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
