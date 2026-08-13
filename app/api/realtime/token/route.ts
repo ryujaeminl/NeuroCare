@@ -177,12 +177,10 @@ ${recentPlays}
     );
   }
 
-  const audio = REALTIME_TRANSCRIPTION_DEPLOYMENT
-    ? {
-        output: { voice: "marin" },
-        input: { transcription: { model: REALTIME_TRANSCRIPTION_DEPLOYMENT } },
-      }
-    : { output: { voice: "marin" } };
+  const audio = {
+    output: { voice: "marin" },
+    input: { transcription: { model: REALTIME_TRANSCRIPTION_DEPLOYMENT || "whisper-1" } },
+  };
 
   const azureRes = await fetch(
     `https://${AZURE_RESOURCE}.openai.azure.com/openai/v1/realtime/client_secrets`,
@@ -195,6 +193,9 @@ ${recentPlays}
           model: REALTIME_DEPLOYMENT,
           instructions,
           audio,
+          input_audio_transcription: {
+            model: "whisper-1",
+          },
           tools: [{
             type: "function",
             name: "trigger_emergency",

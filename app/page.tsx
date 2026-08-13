@@ -302,10 +302,19 @@ export default function HomePage() {
             }
           >
             {dashboard && dashboard.recentMessages.length > 0 && (
-              <ul className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+              <ul className="flex flex-col gap-1.5 text-sm">
                 {dashboard.recentMessages.map((message) => (
-                  <li key={message.id} className="truncate">
-                    <span className="font-medium text-foreground">{message.fromName}</span>: {message.content}
+                  <li
+                    key={message.id}
+                    onClick={() => setActiveMessageModal(message)}
+                    className="flex items-center justify-between gap-2 rounded-lg p-1.5 transition hover:bg-white/10 active:scale-98 cursor-pointer text-muted-foreground hover:text-foreground"
+                  >
+                    <span className="truncate">
+                      <span className="font-semibold text-amber-400">{message.fromName}</span>: {message.content}
+                    </span>
+                    {message.photoUrl && (
+                      <span className="shrink-0 text-xs font-semibold text-amber-300">📷 사진</span>
+                    )}
                   </li>
                 ))}
               </ul>

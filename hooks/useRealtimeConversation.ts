@@ -482,10 +482,24 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             saveTurn("assistant", assistantText);
             break;
           }
+          case "conversation.item.created": {
+            const rawEvent = e as any;
+            if (rawEvent.item?.role === "user") {
+              const text = (rawEvent.item?.content?.[0]?.transcript || rawEvent.item?.content?.[0]?.text || rawEvent.transcript || "").trim();
+              if (text) {
+                setLog((prev) => [{ id: Date.now(), role: "user", text }, ...prev]);
+                saveTurn("user", text);
+              }
+            }
+            break;
+          }
           case "conversation.item.input_audio_transcription.completed": {
-            const transcript: string = e.transcript ?? "";
-            setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
-            saveTurn("user", transcript);
+            const rawEvent = e as any;
+            const transcript: string = (rawEvent.transcript ?? rawEvent.item?.content?.[0]?.transcript ?? "").trim();
+            if (transcript) {
+              setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
+              saveTurn("user", transcript);
+            }
 
             // '살려줘', '도와줘', '배 아파', '보호자 연락해줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출
             const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|아파요|배\s*아파|머리\s*아파|연락|보호자)/i.test(transcript);
