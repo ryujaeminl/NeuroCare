@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRealtimeConversationContext } from "@/components/RealtimeConversationProvider";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { DogMascot } from "@/components/DogMascot";
@@ -38,6 +38,7 @@ interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
   upcomingEvent: { title: string; date: string } | null;
   recentMessages: { id: string; fromName: string; content: string; photoUrl: string | null }[];
+  latestNewMessage: { id: string; fromName: string; content: string; photoUrl: string | null } | null;
   dueMedication: { id: string; name: string; dosage: string; time: string } | null;
 }
 
@@ -53,20 +54,35 @@ function formatPlanDate(iso: string): string {
 export default function HomePage() {
   const [medsDismissed, setMedsDismissed] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
+  const [activeMessageModal, setActiveMessageModal] = useState<{ id: string; fromName: string; content: string; photoUrl: string | null } | null>(null);
+  const [readAloudActive, setReadAloudActive] = useState(false);
+  const spokenMessageIdsRef = useRef<Set<string>>(new Set());
   const { data: session, status } = useSession();
   const router = useRouter();
 
-  // 하단 카드들(가족 연결/오늘의 계획/가족 메시지/복약 알림)이 예전엔 전부 하드코딩된
-  // 가짜 데이터였다 - 보호자 앱이 실제로 입력한 내용과 전혀 연동되지 않고 있었다.
-  // 로그인한 환자 계정일 때만 실제 요약을 불러온다.
-  // 보호자 앱이 등록한 일정, 메시지, 복약 알림이 실시간으로 대시보드 카드에 뜨도록 2.5초마다 폴링한다.
   useEffect(() => {
     let timer: NodeJS.Timeout;
     const fetchDashboard = async () => {
       try {
         const response = await fetch("/api/patient/dashboard");
         if (response.ok) {
-          setDashboard(await response.json());
+          const data: DashboardSummary = await response.json();
+          setDashboard(data);
+
+          if (data.latestNewMessage && !spokenMessageIdsRef.current.has(data.latestNewMessage.id)) {
+            spokenMessageIdsRef.current.add(data.latestNewMessage.id);
+            setActiveMessageModal(data.latestNewMessage);
+
+            if ("speechSynthesis" in window) {
+              window.speechSynthesis.cancel();
+              const utterance = new SpeechSynthesisUtterance(
+                `${data.latestNewMessage.fromName}님께 메시지가 도착했어요. 읽어드릴까요?`,
+              );
+              utterance.lang = "ko-KR";
+              utterance.rate = 0.95;
+              window.speechSynthesis.speak(utterance);
+            }
+          }
         }
       } catch {}
     };
@@ -75,9 +91,28 @@ export default function HomePage() {
     return () => clearInterval(timer);
   }, []);
 
-  // 로그인 없이는 마이크도, 기분/기록 조회도 전부 401만 반복된다 - 대시보드를 보여주기 전에
-  // 먼저 로그인부터 시키는 게 맞다. status가 "loading"인 동안은 아직 세션 확인 중이라
-  // 섣불리 리다이렉트하지 않는다.
+  const handleReadMessageAloud = (msg: { id: string; fromName: string; content: string }) => {
+    setReadAloudActive(true);
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(
+        `${msg.fromName}님이 남기신 메시지입니다. ${msg.content}`,
+      );
+      utterance.lang = "ko-KR";
+      utterance.rate = 0.9;
+      window.speechSynthesis.speak(utterance);
+    }
+  };
+
+  const handleDismissMessageModal = (msgId: string) => {
+    setActiveMessageModal(null);
+    setReadAloudActive(false);
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+    void fetch(`/api/patient/messages/${msgId}/read`, { method: "POST" }).catch(() => {});
+  };
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");

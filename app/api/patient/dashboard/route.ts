@@ -34,35 +34,42 @@ export async function GET() {
     const startOfToday = new Date(`${kstDateStr}T00:00:00.000+09:00`);
     const until = new Date(startOfToday.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [familyMembers, calendarEvents, familyTasks, familyPlans, recentMessages, due] = await Promise.all([
+    const [familyMembers, calendarEvents, familyTasks, familyPlans, recentMessages, latestNewMessage, due] = await Promise.all([
       prisma.familyMember.findMany({
+        where: { patientId },
         take: 4,
         orderBy: { createdAt: "asc" },
         select: { name: true, relation: true },
       }).catch(() => []),
       prisma.calendarEvent.findMany({
-        where: { date: { gte: startOfToday, lte: until } },
+        where: { patientId, date: { gte: startOfToday, lte: until } },
         orderBy: { date: "asc" },
         take: 5,
         select: { title: true, date: true },
       }).catch(() => []),
       prisma.familyTask.findMany({
-        where: { dueDate: { gte: startOfToday, lte: until }, completed: false },
+        where: { patientId, dueDate: { gte: startOfToday, lte: until }, completed: false },
         orderBy: { dueDate: "asc" },
         take: 5,
         select: { title: true, dueDate: true },
       }).catch(() => []),
       prisma.familyPlan.findMany({
-        where: { date: { gte: startOfToday, lte: until } },
+        where: { patientId, date: { gte: startOfToday, lte: until } },
         orderBy: { date: "asc" },
         take: 5,
         select: { title: true, date: true },
       }).catch(() => []),
       prisma.familyMessage.findMany({
+        where: { patientId },
         orderBy: { createdAt: "desc" },
         take: 5,
         select: { id: true, fromName: true, content: true, photoUrl: true },
       }).catch(() => []),
+      prisma.familyMessage.findFirst({
+        where: { patientId, deliveredAt: null },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, fromName: true, content: true, photoUrl: true },
+      }).catch(() => null),
       findDueUnconfirmedMedication(patientId).catch(() => null),
     ]);
 
@@ -79,6 +86,7 @@ export async function GET() {
       familyMembers,
       upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: new Date(upcomingEvent.date).toISOString() } : null,
       recentMessages,
+      latestNewMessage,
       dueMedication,
     });
   } catch (err) {
