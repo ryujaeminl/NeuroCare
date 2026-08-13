@@ -38,7 +38,7 @@ interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
   upcomingEvent: { title: string; date: string } | null;
   recentMessages: { id: string; fromName: string; content: string; photoUrl: string | null }[];
-  dueMedication: { name: string; dosage: string; time: string } | null;
+  dueMedication: { id: string; name: string; dosage: string; time: string } | null;
 }
 
 function formatPlanDate(iso: string): string {
@@ -200,7 +200,18 @@ export default function HomePage() {
               </div>
             </div>
             <button
-              onClick={() => setMedsDismissed(true)}
+              onClick={() => {
+                setMedsDismissed(true);
+                const due = dashboard?.dueMedication;
+                if (!due) return;
+                // 음성("드셨어요?" → confirm_medication)과 같은 라우트를 쓴다 - 버튼으로
+                // 확인해도 AI가 잠시 뒤 또 물어보지 않게 서버에 남긴다.
+                void fetch("/api/realtime/medication-confirm", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ medicationId: due.id, reminderTime: due.time }),
+                }).catch(() => {});
+              }}
               className="shrink-0 rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:brightness-110"
             >
               확인했습니다

@@ -95,3 +95,47 @@ export async function buildRecentCalendarEvents(patientId: string): Promise<stri
     .map((e) => `- ${formatDateLabel(e.date)} ${e.title}${e.notes ? ` (${e.notes})` : ""}`)
     .join("\n");
 }
+
+function todayStartKst(): Date {
+  const dateKey = new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Seoul" }).format(new Date());
+  return new Date(`${dateKey}T00:00:00+09:00`);
+}
+
+/**
+ * 보호자가 오늘 웹에서 등록한 일정 중 AI가 아직 언급한 적 없는(announcedAt이 null인)
+ * 것을 가져오면서, 그 자리에서 바로 announced로 표시한다 - takePendingFamilyMessages와
+ * 같은 패턴(lib/memory/familyContext.ts). patient_voice로 생긴 일정은 환자가 직접
+ * 말해서 만든 것이라 다시 언급할 대상이 아니므로 제외한다.
+ */
+export async function takeTodaysNewCalendarEvents(
+  patientId: string,
+): Promise<{ title: string; date: Date; notes: string | null }[]> {
+  const pending = await prisma.calendarEvent.findMany({
+    where: { patientId, source: "guardian_web", createdAt: { gte: todayStartKst() }, announcedAt: null },
+    orderBy: { createdAt: "asc" },
+    select: { id: true, title: true, date: true, notes: true },
+  });
+  if (pending.length === 0) return [];
+
+  await prisma.calendarEvent.updateMany({
+    where: { id: { in: pending.map((e) => e.id) } },
+    data: { announcedAt: new Date() },
+  });
+
+  return pending.map(({ title, date, notes }) => ({ title, date, notes }));
+}
+
+/** takeTodaysNewCalendarEvents 결과를 realtime 프롬프트 블록으로 만든다. */
+export async function buildTodaysNewCalendarEventsContext(patientId: string): Promise<string | null> {
+  const events = await takeTodaysNewCalendarEvents(patientId);
+  if (events.length === 0) return null;
+
+  const list = events
+    .map((e) => `- ${formatDateLabel(e.date)} ${e.title}${e.notes ? ` (${e.notes})` : ""}`)
+    .join("\n");
+  return `[오늘 새로 등록된 일정]
+보호자가 오늘 새로 등록한 일정입니다. 대화 중 자연스러운 타이밍에 한 번, 환자가 먼저
+묻지 않아도 이 중 하나를 짧게 먼저 언급해주세요(예: "참, 보호자분이 ○월 ○일에 ○○
+일정을 등록해두셨어요.") - 강요하듯 말고 자연스러운 흐름에서 꺼내세요.
+${list}`;
+}

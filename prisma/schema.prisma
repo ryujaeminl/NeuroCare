@@ -12,37 +12,37 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  email        String   @unique
-  passwordHash String
-  name         String
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String
+  name          String
   /// "patient" | "guardian" - SQLite에 enum이 없어 문자열로 두고 TS 유니온으로 제약한다.
-  role         String
+  role          String
   /// 환자 계정만 보유. 보호자가 이 코드를 입력해 연동한다.
-  inviteCode   String?  @unique
+  inviteCode    String?  @unique
   /// 환자 계정만 의미 있음. null이면 기본값("복실아")을 쓴다 - 보호자가 설정 화면에서 바꿀 수 있다.
-  wakeWord     String?
+  wakeWord      String?
   /// 환자 계정만 의미 있음. "mild" | "moderate" | "severe" - null이면 "moderate"로 취급한다.
   /// 대화 페르소나(app/api/chat/route.ts)가 단계별로 문장 길이/질문 방식을 조절한다.
   dementiaStage String?
-  createdAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
 
   guardianLinks PatientGuardianLink[] @relation("PatientToLinks")
   patientLinks  PatientGuardianLink[] @relation("GuardianToLinks")
   sessions      ConversationSession[]
 
   // 아래는 전부 환자 계정에만 달린다 (보호자가 환자를 위해 입력한 자료).
-  medications     Medication[]
-  familyMembers   FamilyMember[]
-  memories        Memory[]
-  photos          Photo[]
-  emergencyEvents EmergencyEvent[]
-  familyMessages  FamilyMessage[]
-  familyPlans     FamilyPlan[]
-  familyTasks     FamilyTask[]
+  medications             Medication[]
+  familyMembers           FamilyMember[]
+  memories                Memory[]
+  photos                  Photo[]
+  emergencyEvents         EmergencyEvent[]
+  familyMessages          FamilyMessage[]
+  familyPlans             FamilyPlan[]
+  familyTasks             FamilyTask[]
   calendarEvents          CalendarEvent[]
   pendingCalendarProposal PendingCalendarProposal?
-  playedSongs              PlayedSong[]
+  playedSongs             PlayedSong[]
 
   // 보호자 계정 전용
   preference        GuardianPreference?
@@ -82,8 +82,8 @@ model ConversationSession {
   turns   Turn[]
   mood    MoodAnalysis?
 
-  @@index([patientId, startedAt])
   @@unique([patientId, dateKey])
+  @@index([patientId, startedAt])
 }
 
 model Turn {
@@ -134,8 +134,9 @@ model Medication {
   addedBy       String
   createdAt     DateTime  @default(now())
 
-  patient      User                    @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  reminderLogs MedicationReminderLog[]
+  patient       User                     @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  reminderLogs  MedicationReminderLog[]
+  confirmations MedicationConfirmation[]
 
   @@index([patientId])
 }
@@ -151,6 +152,23 @@ model MedicationReminderLog {
   /// "YYYY-MM-DD"(KST 기준) - 날짜별로 같은 시각 슬롯 재발송을 막는 키
   dateKey      String
   sentAt       DateTime @default(now())
+
+  medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
+
+  @@unique([medicationId, reminderTime, dateKey])
+}
+
+/// 환자가 실시간 음성 대화 중 "먹었어요"라고 확인한 기록. MedicationReminderLog(보호자
+/// 푸시 발송 기록)와는 독립적이다 - 보호자가 알림을 꺼놨어도 환자 스스로 확인할 수
+/// 있어야 하고, 같은 (medicationId, reminderTime, dateKey) 슬롯 유니크 제약으로 같은
+/// 시간대 슬롯을 두 번 확인 처리하지 않게 막는다(재확인 요청은 그냥 무시하고 성공
+/// 취급 - app/api/realtime/medication-confirm/route.ts 참고).
+model MedicationConfirmation {
+  id           String   @id @default(cuid())
+  medicationId String
+  reminderTime String
+  dateKey      String
+  confirmedAt  DateTime @default(now())
 
   medication Medication @relation(fields: [medicationId], references: [id], onDelete: Cascade)
 
@@ -230,19 +248,19 @@ model Photo {
 /// 가족이 환자에게 남기는 짧은 메시지. 대화 중 AI가 곧바로 읽어주는 게 아니라 "OO님이
 /// 메시지를 남기셨어요, 읽어드릴까요?"라고 먼저 묻고 환자가 원할 때만 전달한다.
 model FamilyMessage {
-  id          String    @id @default(cuid())
-  patientId   String
+  id           String    @id @default(cuid())
+  patientId    String
   /// 메시지를 남긴 사람 이름 - FamilyMember로 미리 등록 안 해도 자유롭게 적을 수 있다.
-  fromName    String
-  content     String
+  fromName     String
+  content      String
   /// Vercel Blob URL. 사진 없이 텍스트만 남길 수도 있어 선택 항목이다.
-  photoUrl    String?
-  addedBy     String
-  createdAt   DateTime  @default(now())
+  photoUrl     String?
+  addedBy      String
+  createdAt    DateTime  @default(now())
   /// null이면 AI가 아직 이 메시지의 존재를 언급한 적이 없다는 뜻. 시스템 프롬프트에
   /// 한 번 주입되는 순간(=AI가 물어볼 기회를 갖는 순간) 채워져서 이후엔 반복해서
   /// 묻지 않는다 - app/api/chat/route.ts 참고.
-  deliveredAt DateTime?
+  deliveredAt  DateTime?
   /// photoUrl이 있고 환자가 메시지를 읽어달라고 동의했을 때, 그 사진을 실제로 화면에
   /// 보여준 시각. Photo.shownAt과 같은 패턴 - lib/memory/familyContext.ts 참고.
   photoShownAt DateTime?
@@ -281,6 +299,10 @@ model CalendarEvent {
   /// 보호자 User.id - source가 patient_voice면 null.
   addedBy          String?
   syncedToDeviceAt DateTime?
+  /// null이면 AI가 아직 이 일정(보호자가 오늘 등록한 것)을 대화 중 먼저 언급한 적이
+  /// 없다는 뜻 - FamilyMessage.deliveredAt과 같은 패턴. source가 patient_voice면
+  /// 환자가 직접 말해서 생긴 일정이라 애초에 언급 대상이 아니다.
+  announcedAt      DateTime?
   createdAt        DateTime  @default(now())
 
   patient User @relation(fields: [patientId], references: [id], onDelete: Cascade)

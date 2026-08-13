@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1786449737.466065,
-    "ast_hash": "a7daa0b9af8ce00fc1b73a58e91fc963",
+    "mtime": 1786518516.2944813,
+    "ast_hash": "00199bd545d8ab90e9d7af777b6a97e5",
     "semantic_hash": ""
   },
   "app/signup/page.tsx": {
@@ -1280,13 +1280,13 @@
     "semantic_hash": ""
   },
   "app/api/realtime/token/route.ts": {
-    "mtime": 1786516280.3293915,
-    "ast_hash": "682f285134dadfbcef56e76e177390f2",
+    "mtime": 1786533636.2671506,
+    "ast_hash": "25b49caeeed13336ecaccfe90f6fec11",
     "semantic_hash": ""
   },
   "hooks/useRealtimeConversation.ts": {
-    "mtime": 1786518176.510337,
-    "ast_hash": "69f254435de4ca0f836e70623e906ea0",
+    "mtime": 1786533758.6758826,
+    "ast_hash": "8a74d9a49c653d114782a6338fc72d36",
     "semantic_hash": ""
   },
   "lib/calendar/calendarEvents.ts": {
@@ -1332,6 +1332,41 @@
   "docs/superpowers/specs/2026-08-12-youtube-music-design.md": {
     "mtime": 1786499481.4410565,
     "ast_hash": "3e02aa6dc732086ae2754fcca2deb768",
+    "semantic_hash": ""
+  },
+  "app/api/realtime/web-search/route.ts": {
+    "mtime": 1786532408.923308,
+    "ast_hash": "6888b1d0791e896a785b9720840e1fee",
+    "semantic_hash": ""
+  },
+  "app/api/realtime/calendar-event/route.ts": {
+    "mtime": 1786531610.2209556,
+    "ast_hash": "79a066de5e25ed644ff7585a0967a930",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-12-realtime-calendar.md": {
+    "mtime": 1786531489.1039393,
+    "ast_hash": "1102eccf32192114825cf3392b7e29f8",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md": {
+    "mtime": 1786531377.6605456,
+    "ast_hash": "865cc3d45e73fbb9218d1bf2e032b6ec",
+    "semantic_hash": ""
+  },
+  "lib/memory/previousSession.ts": {
+    "mtime": 1786533459.5309012,
+    "ast_hash": "8a742b581bffc03151932009d09ab1dc",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md": {
+    "mtime": 1786533320.5245373,
+    "ast_hash": "83628f3eb0a93d197cf946b9f4e9e47a",
+    "semantic_hash": ""
+  },
+  "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md": {
+    "mtime": 1786532975.2280307,
+    "ast_hash": "a18693ea7c73f9b1c201b6f2ebdab5ae",
     "semantic_hash": ""
   }
 }

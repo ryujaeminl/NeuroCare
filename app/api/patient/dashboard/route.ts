@@ -1,11 +1,6 @@
 import { prisma } from "@/lib/db/prisma";
 import { requirePatientSelf, authErrorResponse } from "@/lib/auth/permissions";
-import { parseReminderTimes } from "@/lib/db/types";
-import { findDueDateKey } from "@/lib/guardian/medicationReminderDispatcher";
-
-/** 배너로 보여주는 용도라 크론의 발송 창(15분)보다 조금 더 넉넉하게 잡는다 - 이미 지나간
- * 시간도 잠깐은 "복용 시간이에요"로 보여야 자연스럽다. */
-const DUE_DISPLAY_WINDOW_MINUTES = 30;
+import { findDueUnconfirmedMedication } from "@/lib/medication/dueMedicationContext";
 
 /**
  * 환자 홈 화면 하단 카드들이 쓰는 요약 정보. app/page.tsx의 예전 하드코딩된 가짜 데이터
@@ -23,7 +18,7 @@ export async function GET() {
     const now = new Date();
     const until = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [familyMembers, upcomingEvent, recentMessages, medications] = await Promise.all([
+    const [familyMembers, upcomingEvent, recentMessages, due] = await Promise.all([
       prisma.familyMember.findMany({
         where: { patientId },
         take: 4,
@@ -44,22 +39,11 @@ export async function GET() {
         take: 5,
         select: { id: true, fromName: true, content: true, photoUrl: true },
       }),
-      prisma.medication.findMany({
-        where: { patientId, startDate: { lte: now }, OR: [{ endDate: null }, { endDate: { gte: now } }] },
-        select: { name: true, dosage: true, reminderTimes: true },
-      }),
+      // realtime 음성 확인("약 드셨어요?")과 같은 함수를 써서 판정을 맞춘다 - 음성으로
+      // 이미 확인된 약은 배너에도 안 뜨고, 배너 버튼으로 확인하면 음성 쪽도 다시 안 물어본다.
+      findDueUnconfirmedMedication(patientId),
     ]);
-
-    let dueMedication: { name: string; dosage: string; time: string } | null = null;
-    for (const medication of medications) {
-      for (const time of parseReminderTimes(medication.reminderTimes)) {
-        if (findDueDateKey(time, now, DUE_DISPLAY_WINDOW_MINUTES)) {
-          dueMedication = { name: medication.name, dosage: medication.dosage, time };
-          break;
-        }
-      }
-      if (dueMedication) break;
-    }
+    const dueMedication = due ? { id: due.id, name: due.name, dosage: due.dosage, time: due.reminderTime } : null;
 
     return Response.json({
       familyMembers,

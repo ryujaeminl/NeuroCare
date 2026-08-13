@@ -2,9 +2,11 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth/authOptions";
 import { prisma } from "@/lib/db/prisma";
 import { buildFamilyRoster } from "@/lib/memory/familyContext";
-import { buildRecentCalendarEvents } from "@/lib/calendar/calendarEvents";
+import { buildRecentCalendarEvents, buildTodaysNewCalendarEventsContext } from "@/lib/calendar/calendarEvents";
 import { buildPreviousSessionContext } from "@/lib/memory/previousSession";
 import { buildRecentPlaysContext } from "@/lib/music/recentPlays";
+import { buildDueMedicationContext } from "@/lib/medication/dueMedicationContext";
+import { buildMorningGreetingContext } from "@/lib/session/wakeGreeting";
 import { buildBasePersonaPrompt } from "@/lib/persona";
 import type { DementiaStage } from "@/lib/db/types";
 
@@ -34,12 +36,24 @@ export async function GET() {
   }
   const patientId = session.user.id;
 
-  const [roster, patientRecord, recentCalendarEvents, previousSessionContext, recentPlays] = await Promise.all([
+  const [
+    roster,
+    patientRecord,
+    recentCalendarEvents,
+    previousSessionContext,
+    recentPlays,
+    dueMedicationContext,
+    todaysNewCalendarEventsContext,
+    morningGreetingContext,
+  ] = await Promise.all([
     buildFamilyRoster(patientId),
     prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }),
     buildRecentCalendarEvents(patientId),
     buildPreviousSessionContext(patientId),
     buildRecentPlaysContext(patientId),
+    buildDueMedicationContext(patientId),
+    buildTodaysNewCalendarEventsContext(patientId),
+    buildMorningGreetingContext(patientId),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
 
@@ -58,6 +72,12 @@ export async function GET() {
 오늘은 ${todayDate}(${todayWeekday})입니다. "내일"/"모레"/"다음 주 화요일"처럼
 상대적인 날짜를 언급하면 이 날짜와 요일을 기준으로 정확히 계산하세요 - 요일을
 스스로 다시 계산하지 말고 위 요일을 그대로 사용하세요.`;
+
+  if (morningGreetingContext) {
+    instructions += `
+
+${morningGreetingContext}`;
+  }
   if (roster) {
     instructions += `
 
@@ -81,6 +101,27 @@ ${recentCalendarEvents}`;
 [일정 등록]
 대화 중 환자가 일정을 언급하면 자연스럽게 한 번 물어보세요(예: "그거 일정에 추가해드릴까요?").
 강요하지 마세요. 사용자가 명확히 동의했을 때만 add_calendar_event를 호출하세요.`;
+
+  if (todaysNewCalendarEventsContext) {
+    instructions += `
+
+${todaysNewCalendarEventsContext}`;
+  }
+
+  if (dueMedicationContext) {
+    instructions += `
+
+${dueMedicationContext}
+
+[복약 확인]
+위 [복용 예정 약]이 있으면, 대화 흐름을 보다가 자연스러운 시점에 한 번 "OO님, 지금
+[약이름] 드실 시간이에요. 드셨어요?"처럼 먼저 물어보세요. 강요하지 말고 이미 다른
+용건으로 대화가 바쁘면 조금 기다렸다 물어봐도 됩니다. 환자가 "응"/"먹었어"/"드셨어요"
+등 긍정으로 답하면 그 즉시 confirm_medication을 medicationId/reminderTime 그대로
+호출하세요. "아직"/"이따가" 등 부정이면 호출하지 말고 "네, 이따가 다시 여쭤볼게요"
+정도로 짧게 넘어가세요. 확인 안 된 약이 없으면(위 블록이 없으면) 복약 이야기를 먼저
+꺼내지 마세요.`;
+  }
 
   if (previousSessionContext) {
     instructions += `
@@ -148,6 +189,18 @@ ${recentPlays}
               type: "object",
               properties: { query: { type: "string", description: "검색할 질문" } },
               required: ["query"],
+            },
+          }, {
+            type: "function",
+            name: "confirm_medication",
+            description: "환자가 약을 먹었다고 확인했을 때 호출해 복약 알림을 해제합니다.",
+            parameters: {
+              type: "object",
+              properties: {
+                medicationId: { type: "string", description: "[복용 예정 약]에 제공된 medicationId 그대로" },
+                reminderTime: { type: "string", description: "[복용 예정 약]에 제공된 reminderTime 그대로(HH:MM)" },
+              },
+              required: ["medicationId", "reminderTime"],
             },
           }, {
             type: "function",

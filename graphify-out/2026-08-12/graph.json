@@ -811,7 +811,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_main",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/__main__.py"
     },
     {
@@ -821,7 +821,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/benchmark.py"
     },
@@ -833,7 +833,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_count_tokens",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_tokens()"
     },
@@ -845,7 +845,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_benchmark_pair",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "benchmark_pair()"
     },
@@ -856,7 +856,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_py_path",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -868,7 +868,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_print_table",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_table()"
     },
@@ -880,7 +880,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_main",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
@@ -892,7 +892,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/cli.py"
     },
     {
@@ -904,7 +904,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli_print_usage",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_usage()"
     },
     {
@@ -916,7 +916,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli_main",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
     {
@@ -927,7 +927,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/compress.py"
     },
     {
@@ -939,7 +939,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_split_frontmatter",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split_frontmatter()"
     },
     {
@@ -951,7 +951,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_backup_dir_for",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backup_dir_for()"
     },
     {
@@ -962,7 +962,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_py_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -974,7 +974,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_is_sensitive_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "is_sensitive_path()"
     },
     {
@@ -986,7 +986,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_strip_llm_wrapper",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip_llm_wrapper()"
     },
     {
@@ -998,7 +998,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_write_text_atomic",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write_text_atomic()"
     },
     {
@@ -1010,7 +1010,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_first_nonblank_line",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "first_nonblank_line()"
     },
     {
@@ -1022,7 +1022,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_write_target",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_write_target()"
     },
     {
@@ -1034,7 +1034,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_call_claude",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "call_claude()"
     },
     {
@@ -1046,7 +1046,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_build_compress_prompt",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_compress_prompt()"
     },
     {
@@ -1058,7 +1058,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_build_fix_prompt",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_fix_prompt()"
     },
     {
@@ -1070,7 +1070,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_compress_file",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "compress_file()"
     },
     {
@@ -1081,7 +1081,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_31",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split yaml frontmatter from body. returns (frontmatter, body). memory files..."
     },
     {
@@ -1092,7 +1092,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_72",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "resolve the out-of-tree backup directory for a given source file. backups must..."
     },
     {
@@ -1103,7 +1103,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_96",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic denylist for files that must never be shipped to a third-party api."
     },
     {
@@ -1114,7 +1114,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_109",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip outer ```markdown ... ``` fence when it wraps the entire output."
     },
     {
@@ -1125,7 +1125,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_117",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write ``text`` to ``path`` atomically as utf-8. path.write_text() truncates the..."
     },
     {
@@ -1136,7 +1136,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_148",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return the first non-blank line, stripped \u2014 used to detect a prose preamble..."
     },
     {
@@ -1147,7 +1147,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_157",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write to the target file, surfacing the backup location if the write itself..."
     },
     {
@@ -1158,7 +1158,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_178",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "send a prompt to claude. prefers the anthropic sdk when anthropic_api_key is..."
     },
     {
@@ -1169,7 +1169,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/detect.py"
     },
     {
@@ -1181,7 +1181,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_code_line",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_code_line()"
     },
     {
@@ -1193,7 +1193,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_json_content",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_json_content()"
     },
     {
@@ -1205,7 +1205,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_yaml_content",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_yaml_content()"
     },
     {
@@ -1217,7 +1217,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_detect_file_type",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "detect_file_type()"
     },
     {
@@ -1228,7 +1228,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_py_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -1240,7 +1240,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_should_compress",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "should_compress()"
     },
     {
@@ -1251,7 +1251,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_43",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if a line looks like code."
     },
     {
@@ -1262,7 +1262,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_48",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if content is valid json."
     },
     {
@@ -1273,7 +1273,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_57",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic: check if content looks like yaml."
     },
     {
@@ -1284,7 +1284,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_73",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "classify a file as 'natural_language', 'code', 'config', or 'unknown'. returns:..."
     },
     {
@@ -1295,7 +1295,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_119",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return true if the file is natural language and should be compressed."
     },
     {
@@ -1305,7 +1305,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/validate.py"
     },
@@ -1318,7 +1318,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validationresult"
     },
@@ -1330,7 +1330,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_init",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".__init__()"
     },
@@ -1342,7 +1342,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_add_error",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_error()"
     },
@@ -1354,7 +1354,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_add_warning",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_warning()"
     },
@@ -1366,7 +1366,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_read_file",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "read_file()"
     },
@@ -1377,7 +1377,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_py_path",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -1389,7 +1389,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_headings",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_headings()"
     },
@@ -1401,7 +1401,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_code_blocks",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_code_blocks()"
     },
@@ -1413,7 +1413,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_urls",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_urls()"
     },
@@ -1425,7 +1425,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_paths",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_paths()"
     },
@@ -1437,7 +1437,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_count_bullets",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_bullets()"
     },
@@ -1449,7 +1449,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_inline_codes",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_inline_codes()"
     },
@@ -1461,7 +1461,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_headings",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_headings()"
     },
@@ -1473,7 +1473,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_code_blocks",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_code_blocks()"
     },
@@ -1485,7 +1485,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_urls",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_urls()"
     },
@@ -1497,7 +1497,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_paths",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_paths()"
     },
@@ -1509,7 +1509,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_bullets",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_bullets()"
     },
@@ -1521,7 +1521,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_inline_codes",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_inline_codes()"
     },
@@ -1533,7 +1533,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate()"
     },
@@ -1544,7 +1544,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_rationale_42",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "line-based fenced code block extractor. handles ``` and ~~~ fences with..."
     },
@@ -1555,7 +1555,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_rationale_98",
-      "community": 82,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backtick-delimited inline spans, with fenced code blocks stripped first...."
     },
@@ -1589,7 +1589,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_main",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/__main__.py"
     },
     {
@@ -1599,7 +1599,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/benchmark.py"
     },
@@ -1611,7 +1611,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_count_tokens",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_tokens()"
     },
@@ -1623,7 +1623,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_benchmark_pair",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "benchmark_pair()"
     },
@@ -1634,7 +1634,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_py_path",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -1646,7 +1646,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_print_table",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_table()"
     },
@@ -1658,7 +1658,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_main",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
@@ -1670,7 +1670,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/cli.py"
     },
     {
@@ -1682,7 +1682,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli_print_usage",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "print_usage()"
     },
     {
@@ -1694,7 +1694,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli_main",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "main()"
     },
     {
@@ -1705,7 +1705,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/compress.py"
     },
     {
@@ -1717,7 +1717,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_split_frontmatter",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "split_frontmatter()"
     },
     {
@@ -1729,7 +1729,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_backup_dir_for",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "backup_dir_for()"
     },
     {
@@ -1740,7 +1740,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_py_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "path"
     },
     {
@@ -1752,7 +1752,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_is_sensitive_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "is_sensitive_path()"
     },
     {
@@ -1764,7 +1764,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_strip_llm_wrapper",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "strip_llm_wrapper()"
     },
     {
@@ -1776,7 +1776,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_write_text_atomic",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "write_text_atomic()"
     },
     {
@@ -1788,7 +1788,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_first_nonblank_line",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "first_nonblank_line()"
     },
     {
@@ -1800,7 +1800,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_write_target",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "_write_target()"
     },
     {
@@ -1812,7 +1812,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_call_claude",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "call_claude()"
     },
     {
@@ -1824,7 +1824,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_build_compress_prompt",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "build_compress_prompt()"
     },
     {
@@ -1836,7 +1836,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_build_fix_prompt",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "build_fix_prompt()"
     },
     {
@@ -1848,7 +1848,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_compress_file",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "compress_file()"
     },
     {
@@ -1859,7 +1859,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_31",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "split yaml frontmatter from body. returns (frontmatter, body). memory files..."
     },
     {
@@ -1870,7 +1870,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_72",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "resolve the out-of-tree backup directory for a given source file. backups must..."
     },
     {
@@ -1881,7 +1881,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_96",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "heuristic denylist for files that must never be shipped to a third-party api."
     },
     {
@@ -1892,7 +1892,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_109",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "strip outer ```markdown ... ``` fence when it wraps the entire output."
     },
     {
@@ -1903,7 +1903,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_117",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "write ``text`` to ``path`` atomically as utf-8. path.write_text() truncates the..."
     },
     {
@@ -1914,7 +1914,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_148",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "return the first non-blank line, stripped \u2014 used to detect a prose preamble..."
     },
     {
@@ -1925,7 +1925,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_157",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "write to the target file, surfacing the backup location if the write itself..."
     },
     {
@@ -1936,7 +1936,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_178",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "send a prompt to claude. prefers the anthropic sdk when anthropic_api_key is..."
     },
     {
@@ -1947,7 +1947,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/detect.py"
     },
     {
@@ -1959,7 +1959,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_code_line",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "_is_code_line()"
     },
     {
@@ -1971,7 +1971,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_json_content",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "_is_json_content()"
     },
     {
@@ -1983,7 +1983,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_yaml_content",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "_is_yaml_content()"
     },
     {
@@ -1995,7 +1995,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_detect_file_type",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "detect_file_type()"
     },
     {
@@ -2006,7 +2006,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_py_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "path"
     },
     {
@@ -2018,7 +2018,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_should_compress",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "should_compress()"
     },
     {
@@ -2029,7 +2029,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_43",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "check if a line looks like code."
     },
     {
@@ -2040,7 +2040,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_48",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "check if content is valid json."
     },
     {
@@ -2051,7 +2051,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_57",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "heuristic: check if content looks like yaml."
     },
     {
@@ -2062,7 +2062,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_73",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "classify a file as 'natural_language', 'code', 'config', or 'unknown'. returns:..."
     },
     {
@@ -2073,7 +2073,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_119",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
       "norm_label": "return true if the file is natural language and should be compressed."
     },
     {
@@ -2083,7 +2083,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/validate.py"
     },
@@ -2096,7 +2096,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validationresult"
     },
@@ -2108,7 +2108,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_init",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".__init__()"
     },
@@ -2120,7 +2120,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_add_error",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_error()"
     },
@@ -2132,7 +2132,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_add_warning",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_warning()"
     },
@@ -2144,7 +2144,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_read_file",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "read_file()"
     },
@@ -2155,7 +2155,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_py_path",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -2167,7 +2167,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_headings",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_headings()"
     },
@@ -2179,7 +2179,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_code_blocks",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_code_blocks()"
     },
@@ -2191,7 +2191,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_urls",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_urls()"
     },
@@ -2203,7 +2203,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_paths",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_paths()"
     },
@@ -2215,7 +2215,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_count_bullets",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_bullets()"
     },
@@ -2227,7 +2227,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_inline_codes",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_inline_codes()"
     },
@@ -2239,7 +2239,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_headings",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_headings()"
     },
@@ -2251,7 +2251,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_code_blocks",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_code_blocks()"
     },
@@ -2263,7 +2263,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_urls",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_urls()"
     },
@@ -2275,7 +2275,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_paths",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_paths()"
     },
@@ -2287,7 +2287,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_bullets",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_bullets()"
     },
@@ -2299,7 +2299,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_inline_codes",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_inline_codes()"
     },
@@ -2311,7 +2311,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate()"
     },
@@ -2322,7 +2322,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_rationale_42",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "line-based fenced code block extractor. handles ``` and ~~~ fences with..."
     },
@@ -2333,7 +2333,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_rationale_98",
-      "community": 37,
+      "community": 0,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backtick-delimited inline spans, with fenced code blocks stripped first...."
     },
@@ -2957,8 +2957,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": "emergencynotifier.kt"
     },
     {
@@ -2970,8 +2970,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": "emergencynotifier"
     },
     {
@@ -2982,8 +2982,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_createchannel",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".createchannel()"
     },
     {
@@ -2993,8 +2993,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_kt_context",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": "context"
     },
     {
@@ -3005,8 +3005,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_canusefullscreenintent",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".canusefullscreenintent()"
     },
     {
@@ -3017,8 +3017,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_ensurefullscreenintentpermission",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".ensurefullscreenintentpermission()"
     },
     {
@@ -3028,8 +3028,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "activity",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": "activity"
     },
     {
@@ -3040,8 +3040,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_showemergencyalert",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 64,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".showemergencyalert()"
     },
     {
@@ -3815,7 +3815,7 @@
       "_origin": "ast",
       "id": "app_api_auth_invite_route",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "invite/route.ts"
     },
     {
@@ -3827,7 +3827,7 @@
       "_origin": "ast",
       "id": "app_api_auth_invite_route_get",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "get()"
     },
     {
@@ -3839,7 +3839,7 @@
       "_origin": "ast",
       "id": "app_api_auth_invite_route_post",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "post()"
     },
     {
@@ -3851,7 +3851,7 @@
       "_origin": "ast",
       "id": "app_api_auth_invite_route_delete",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "delete()"
     },
     {
@@ -3861,8 +3861,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_auth_register_route",
-      "community": 89,
-      "community_name": "register/route.ts",
+      "community": 11,
+      "community_name": "authOptions.ts",
       "norm_label": "register/route.ts"
     },
     {
@@ -3873,8 +3873,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_auth_register_route_generateinvitecode",
-      "community": 89,
-      "community_name": "register/route.ts",
+      "community": 11,
+      "community_name": "authOptions.ts",
       "norm_label": "generateinvitecode()"
     },
     {
@@ -3885,8 +3885,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_auth_register_route_post",
-      "community": 89,
-      "community_name": "register/route.ts",
+      "community": 11,
+      "community_name": "authOptions.ts",
       "norm_label": "post()"
     },
     {
@@ -4016,8 +4016,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_chat_route_post",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 7,
+      "community_name": "chat/route.ts",
       "norm_label": "post()"
     },
     {
@@ -4051,7 +4051,7 @@
       "_origin": "ast",
       "id": "app_api_cron_medication_reminders_route",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "medication-reminders/route.ts"
     },
     {
@@ -4063,7 +4063,7 @@
       "_origin": "ast",
       "id": "app_api_cron_medication_reminders_route_post",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "post()"
     },
     {
@@ -4108,8 +4108,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_emergency_route",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "emergency/route.ts"
     },
     {
@@ -4119,8 +4119,8 @@
       "source_location": "L7",
       "_origin": "ast",
       "id": "app_api_emergency_route_patient_trigger_types",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "patient_trigger_types"
     },
     {
@@ -4132,8 +4132,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_emergency_route_emergencyinput",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "emergencyinput"
     },
     {
@@ -4144,8 +4144,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_emergency_route_post",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "post()"
     },
     {
@@ -4156,8 +4156,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_emergency_route_get",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "get()"
     },
     {
@@ -4168,7 +4168,7 @@
       "_origin": "ast",
       "id": "app_api_enroll_route",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "enroll/route.ts"
     },
     {
@@ -4180,7 +4180,7 @@
       "_origin": "ast",
       "id": "app_api_enroll_route_get",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "get()"
     },
     {
@@ -4192,7 +4192,7 @@
       "_origin": "ast",
       "id": "app_api_enroll_route_post",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "post()"
     },
     {
@@ -4204,7 +4204,7 @@
       "_origin": "ast",
       "id": "app_api_enroll_route_delete",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "delete()"
     },
     {
@@ -4322,8 +4322,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "medications/[id]/route.ts"
     },
     {
@@ -4335,8 +4335,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_medicationpatch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "medicationpatch"
     },
     {
@@ -4347,8 +4347,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_patch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "patch()"
     },
     {
@@ -4359,8 +4359,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_delete",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "delete()"
     },
     {
@@ -4370,8 +4370,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_medications_route",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "medications/route.ts"
     },
     {
@@ -4383,8 +4383,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_medicationinput",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "medicationinput"
     },
     {
@@ -4395,8 +4395,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_validate",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "validate()"
     },
     {
@@ -4407,8 +4407,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_get",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "get()"
     },
     {
@@ -4419,8 +4419,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_post",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "post()"
     },
     {
@@ -4431,7 +4431,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_id_route",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "memories/[id]/route.ts"
     },
     {
@@ -4444,7 +4444,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_id_route_memorypatch",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "memorypatch"
     },
     {
@@ -4456,7 +4456,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_id_route_patch",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "patch()"
     },
     {
@@ -4467,8 +4467,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_memories_id_route_delete",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "delete()"
     },
     {
@@ -4479,7 +4479,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_route",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "guardian/memories/route.ts"
     },
     {
@@ -4492,7 +4492,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_route_memoryinput",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "memoryinput"
     },
     {
@@ -4504,7 +4504,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_route_get",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "get()"
     },
     {
@@ -4516,7 +4516,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_memories_route_post",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "post()"
     },
     {
@@ -4526,8 +4526,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_messages_id_route",
-      "community": 83,
-      "community_name": "prisma.ts",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "messages/[id]/route.ts"
     },
     {
@@ -4538,8 +4538,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_messages_id_route_delete",
-      "community": 83,
-      "community_name": "prisma.ts",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "delete()"
     },
     {
@@ -4584,8 +4584,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 1,
+      "community_name": "types.ts",
       "norm_label": "[patientid]/route.ts"
     },
     {
@@ -4597,8 +4597,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route_patientpatch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 1,
+      "community_name": "types.ts",
       "norm_label": "patientpatch"
     },
     {
@@ -4609,8 +4609,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route_patch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 1,
+      "community_name": "types.ts",
       "norm_label": "patch()"
     },
     {
@@ -4621,7 +4621,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_patients_route",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "patients/route.ts"
     },
     {
@@ -4633,7 +4633,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_patients_route_get",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "get()"
     },
     {
@@ -4701,8 +4701,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "plans/[id]/route.ts"
     },
     {
@@ -4714,8 +4714,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_planpatch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "planpatch"
     },
     {
@@ -4726,8 +4726,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_patch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "patch()"
     },
     {
@@ -4738,8 +4738,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_delete",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "delete()"
     },
     {
@@ -4822,8 +4822,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_preferences_route_preferencepatch",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "preferencepatch"
     },
     {
@@ -4882,7 +4882,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_push_subscriptions_route",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "push-subscriptions/route.ts"
     },
     {
@@ -4895,7 +4895,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_push_subscriptions_route_subscribeinput",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "subscribeinput"
     },
     {
@@ -4907,7 +4907,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_push_subscriptions_route_post",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "post()"
     },
     {
@@ -4919,7 +4919,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_push_subscriptions_route_delete",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "delete()"
     },
     {
@@ -4929,8 +4929,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "tasks/[id]/route.ts"
     },
     {
@@ -4942,8 +4942,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_taskpatch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "taskpatch"
     },
     {
@@ -4954,8 +4954,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_patch",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "patch()"
     },
     {
@@ -4966,8 +4966,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_delete",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "delete()"
     },
     {
@@ -5037,8 +5037,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_history_route",
-      "community": 55,
-      "community_name": "permissions.ts",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "history/route.ts"
     },
     {
@@ -5049,8 +5049,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_history_route_get",
-      "community": 55,
-      "community_name": "permissions.ts",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
     {
@@ -5060,8 +5060,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_mood_route",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "mood/route.ts"
     },
     {
@@ -5072,8 +5072,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_mood_route_post",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "post()"
     },
     {
@@ -5083,8 +5083,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_patient_dashboard_route",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "dashboard/route.ts"
     },
     {
@@ -5095,8 +5095,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_patient_dashboard_route_get",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "get()"
     },
     {
@@ -5106,8 +5106,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_patient_memories_route",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "patient/memories/route.ts"
     },
     {
@@ -5118,8 +5118,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_patient_memories_route_get",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "get()"
     },
     {
@@ -5129,8 +5129,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_patient_wake_word_route",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "wake-word/route.ts"
     },
     {
@@ -5141,9 +5141,32 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_patient_wake_word_route_get",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "get()"
+    },
+    {
+      "label": "calendar-event/route.ts",
+      "file_type": "code",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_api_realtime_calendar_event_route",
+      "community": 83,
+      "community_name": "prisma.ts",
+      "norm_label": "calendar-event/route.ts"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L12",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "app_api_realtime_calendar_event_route_post",
+      "community": 83,
+      "community_name": "prisma.ts",
+      "norm_label": "post()"
     },
     {
       "label": "distress-check/route.ts",
@@ -5152,8 +5175,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_realtime_distress_check_route",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 7,
+      "community_name": "chat/route.ts",
       "norm_label": "distress-check/route.ts"
     },
     {
@@ -5164,8 +5187,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_distress_check_route_post",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 7,
+      "community_name": "chat/route.ts",
       "norm_label": "post()"
     },
     {
@@ -5183,7 +5206,7 @@
       "label": "GET()",
       "file_type": "code",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L17",
+      "source_location": "L22",
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_token_route_get",
@@ -5192,14 +5215,76 @@
       "norm_label": "get()"
     },
     {
+      "label": "web-search/route.ts",
+      "file_type": "code",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "app_api_realtime_web_search_route",
+      "community": 11,
+      "community_name": "authOptions.ts",
+      "norm_label": "web-search/route.ts"
+    },
+    {
+      "label": "ResponsesApiOutputTextPart",
+      "file_type": "code",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L5",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "app_api_realtime_web_search_route_responsesapioutputtextpart",
+      "community": 11,
+      "community_name": "authOptions.ts",
+      "norm_label": "responsesapioutputtextpart"
+    },
+    {
+      "label": "ResponsesApiMessageItem",
+      "file_type": "code",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L9",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "app_api_realtime_web_search_route_responsesapimessageitem",
+      "community": 11,
+      "community_name": "authOptions.ts",
+      "norm_label": "responsesapimessageitem"
+    },
+    {
+      "label": "ResponsesApiResult",
+      "file_type": "code",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L13",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "id": "app_api_realtime_web_search_route_responsesapiresult",
+      "community": 11,
+      "community_name": "authOptions.ts",
+      "norm_label": "responsesapiresult"
+    },
+    {
+      "label": "POST()",
+      "file_type": "code",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L21",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "app_api_realtime_web_search_route_post",
+      "community": 11,
+      "community_name": "authOptions.ts",
+      "norm_label": "post()"
+    },
+    {
       "label": "sessions/route.ts",
       "file_type": "code",
       "source_file": "app/api/sessions/route.ts",
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_sessions_route",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "sessions/route.ts"
     },
     {
@@ -5210,8 +5295,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_sessions_route_todaykeykst",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "todaykeykst()"
     },
     {
@@ -5222,8 +5307,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_sessions_route_post",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "post()"
     },
     {
@@ -5234,7 +5319,7 @@
       "_origin": "ast",
       "id": "app_api_stt_route",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "stt/route.ts"
     },
     {
@@ -5246,7 +5331,7 @@
       "_origin": "ast",
       "id": "app_api_stt_route_post",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "post()"
     },
     {
@@ -5279,8 +5364,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_turns_route",
-      "community": 83,
-      "community_name": "prisma.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "turns/route.ts"
     },
     {
@@ -5291,8 +5376,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_turns_route_post",
-      "community": 83,
-      "community_name": "prisma.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "post()"
     },
     {
@@ -5410,8 +5495,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_guardian_family_page",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "family/page.tsx"
     },
     {
@@ -5422,8 +5507,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_guardian_family_page_familypage",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familypage()"
     },
     {
@@ -5480,7 +5565,7 @@
       "_origin": "ast",
       "id": "app_guardian_medications_page",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "medications/page.tsx"
     },
     {
@@ -5492,7 +5577,7 @@
       "_origin": "ast",
       "id": "app_guardian_medications_page_formatdate",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "formatdate()"
     },
     {
@@ -5504,7 +5589,7 @@
       "_origin": "ast",
       "id": "app_guardian_medications_page_isendingsoon",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "isendingsoon()"
     },
     {
@@ -5516,7 +5601,7 @@
       "_origin": "ast",
       "id": "app_guardian_medications_page_isended",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "isended()"
     },
     {
@@ -5528,7 +5613,7 @@
       "_origin": "ast",
       "id": "app_guardian_medications_page_medicationspage",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "medicationspage()"
     },
     {
@@ -5538,8 +5623,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_guardian_page",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "guardian/page.tsx"
     },
     {
@@ -5551,7 +5636,7 @@
       "_origin": "ast",
       "id": "app_guardian_page_guardianpage",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "guardianpage()"
     },
     {
@@ -5562,7 +5647,7 @@
       "_origin": "ast",
       "id": "app_guardian_photos_page",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "photos/page.tsx"
     },
     {
@@ -5575,7 +5660,7 @@
       "_origin": "ast",
       "id": "app_guardian_photos_page_familymemberoption",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "familymemberoption"
     },
     {
@@ -5587,7 +5672,7 @@
       "_origin": "ast",
       "id": "app_guardian_photos_page_photospage",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "photospage()"
     },
     {
@@ -5597,7 +5682,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_guardian_settings_page",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "settings/page.tsx"
     },
@@ -5610,8 +5695,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_guardian_settings_page_preferencestate",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "preferencestate"
     },
     {
@@ -5621,7 +5706,7 @@
       "source_location": "L27",
       "_origin": "ast",
       "id": "app_guardian_settings_page_threshold_labels",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "threshold_labels"
     },
@@ -5632,7 +5717,7 @@
       "source_location": "L33",
       "_origin": "ast",
       "id": "app_guardian_settings_page_channel_labels",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "channel_labels"
     },
@@ -5644,7 +5729,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_guardian_settings_page_settingspage",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "settingspage()"
     },
@@ -6309,8 +6394,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_dashboardlayouteditor",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "dashboardlayouteditor.tsx"
     },
     {
@@ -6320,8 +6405,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_guardian_dashboardlayouteditor_widget_labels",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "widget_labels"
     },
     {
@@ -6333,8 +6418,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_dashboardlayouteditor_dashboardlayouteditorprops",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "dashboardlayouteditorprops"
     },
     {
@@ -6345,8 +6430,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_dashboardlayouteditor_dashboardlayouteditor",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "dashboardlayouteditor()"
     },
     {
@@ -6356,7 +6441,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "dementiastagesettings.tsx"
     },
@@ -6369,7 +6454,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings_dementiastagesettingsprops",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "dementiastagesettingsprops"
     },
@@ -6381,7 +6466,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings_dementiastagesettings",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "dementiastagesettings()"
     },
@@ -6428,8 +6513,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_familymembercard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familymembercard.tsx"
     },
     {
@@ -6441,8 +6526,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_familymembercard_familymembersummary",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familymembersummary"
     },
     {
@@ -6453,8 +6538,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familymembercard_familymembercard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familymembercard()"
     },
     {
@@ -6464,8 +6549,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_familymessageboard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familymessageboard.tsx"
     },
     {
@@ -6476,8 +6561,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familymessageboard_familymessageboard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familymessageboard()"
     },
     {
@@ -6487,8 +6572,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_familyplanlist",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familyplanlist.tsx"
     },
     {
@@ -6499,8 +6584,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familyplanlist_todateinput",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "todateinput()"
     },
     {
@@ -6511,8 +6596,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familyplanlist_familyplanlist",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familyplanlist()"
     },
     {
@@ -6522,8 +6607,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_familysummarycard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familysummarycard.tsx"
     },
     {
@@ -6534,8 +6619,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familysummarycard_familysummarycard",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familysummarycard()"
     },
     {
@@ -6545,8 +6630,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_familytaskchecklist",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familytaskchecklist.tsx"
     },
     {
@@ -6557,8 +6642,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_familytaskchecklist_familytaskchecklist",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "familytaskchecklist()"
     },
     {
@@ -6628,7 +6713,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "medicationform.tsx"
     },
     {
@@ -6641,7 +6726,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_medicationformprops",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "medicationformprops"
     },
     {
@@ -6653,7 +6738,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_todateinput",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "todateinput()"
     },
     {
@@ -6665,7 +6750,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_medicationform",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "medicationform()"
     },
     {
@@ -6675,8 +6760,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_medicationsummarycard",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "medicationsummarycard.tsx"
     },
     {
@@ -6687,8 +6772,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_medicationsummarycard_isendingsoon",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "isendingsoon()"
     },
     {
@@ -6699,8 +6784,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_medicationsummarycard_isactive",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "isactive()"
     },
     {
@@ -6711,8 +6796,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_medicationsummarycard_medicationsummarycard",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "medicationsummarycard()"
     },
     {
@@ -6857,7 +6942,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_patientselector",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "patientselector.tsx"
     },
@@ -6870,7 +6955,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_patientselector_patientselectorprops",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "patientselectorprops"
     },
@@ -6882,8 +6967,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_patientselector_patientselector",
-      "community": 64,
-      "community_name": "family/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "patientselector()"
     },
     {
@@ -6894,7 +6979,7 @@
       "_origin": "ast",
       "id": "components_guardian_photouploader",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "photouploader.tsx"
     },
     {
@@ -6907,7 +6992,7 @@
       "_origin": "ast",
       "id": "components_guardian_photouploader_uploadedphoto",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "uploadedphoto"
     },
     {
@@ -6920,7 +7005,7 @@
       "_origin": "ast",
       "id": "components_guardian_photouploader_familymemberoption",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "familymemberoption"
     },
     {
@@ -6933,7 +7018,7 @@
       "_origin": "ast",
       "id": "components_guardian_photouploader_photouploaderprops",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "photouploaderprops"
     },
     {
@@ -6945,7 +7030,7 @@
       "_origin": "ast",
       "id": "components_guardian_photouploader_photouploader",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "photouploader()"
     },
     {
@@ -6955,7 +7040,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_pushoptin",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "pushoptin.tsx"
     },
@@ -6967,7 +7052,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_pushoptin_urlbase64touint8array",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "urlbase64touint8array()"
     },
@@ -6979,7 +7064,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_pushoptin_pushoptin",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "pushoptin()"
     },
@@ -6990,7 +7075,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "wakewordsettings.tsx"
     },
@@ -7001,7 +7086,7 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_default_wake_word",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "default_wake_word"
     },
@@ -7014,7 +7099,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_wakewordsettingsprops",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "wakewordsettingsprops"
     },
@@ -7026,7 +7111,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_wakewordsettings",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "wakewordsettings()"
     },
@@ -7059,7 +7144,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useaudioqueue",
-      "community": 32,
+      "community": 104,
       "community_name": "useAudioQueue.ts",
       "norm_label": "useaudioqueue.ts"
     },
@@ -7072,7 +7157,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useaudioqueue_queueitem",
-      "community": 32,
+      "community": 104,
       "community_name": "useAudioQueue.ts",
       "norm_label": "queueitem"
     },
@@ -7085,7 +7170,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useaudioqueue_useaudioqueueresult",
-      "community": 32,
+      "community": 104,
       "community_name": "useAudioQueue.ts",
       "norm_label": "useaudioqueueresult"
     },
@@ -7097,7 +7182,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useaudioqueue_useaudioqueue",
-      "community": 32,
+      "community": 104,
       "community_name": "useAudioQueue.ts",
       "norm_label": "useaudioqueue()"
     },
@@ -7157,8 +7242,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_conversationlogentry",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "conversationlogentry"
     },
     {
@@ -7170,8 +7255,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_conversationphase",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "conversationphase"
     },
     {
@@ -7195,8 +7280,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_computedbfs",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "computedbfs()"
     },
     {
@@ -7207,8 +7292,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_reporttoserver",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "reporttoserver()"
     },
     {
@@ -7230,8 +7315,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_transcribesegment",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "transcribesegment()"
     },
     {
@@ -7242,8 +7327,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_decomposehangul",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "decomposehangul()"
     },
     {
@@ -7254,8 +7339,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_editdistance",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "editdistance()"
     },
     {
@@ -7266,8 +7351,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_iswakewordonly",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "iswakewordonly()"
     },
     {
@@ -7278,8 +7363,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_stripwakewordprefix",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "stripwakewordprefix()"
     },
     {
@@ -7290,8 +7375,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_trimhistory",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "trimhistory()"
     },
     {
@@ -7315,8 +7400,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationengine_useconversationengine",
-      "community": 19,
-      "community_name": "useConversationEngine",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "useconversationengine()"
     },
     {
@@ -7326,8 +7411,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_useconversationpersistence",
-      "community": 105,
-      "community_name": "useConversationPersistence.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "useconversationpersistence.ts"
     },
     {
@@ -7339,8 +7424,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_useconversationpersistence_conversationpersistence",
-      "community": 105,
-      "community_name": "useConversationPersistence.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "conversationpersistence"
     },
     {
@@ -7351,8 +7436,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_useconversationpersistence_useconversationpersistence",
-      "community": 105,
-      "community_name": "useConversationPersistence.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "useconversationpersistence()"
     },
     {
@@ -7362,7 +7447,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_uselinkedpatients",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "uselinkedpatients.ts"
     },
@@ -7375,7 +7460,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_uselinkedpatients_linkedpatient",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "linkedpatient"
     },
@@ -7386,8 +7471,8 @@
       "source_location": "L18",
       "_origin": "ast",
       "id": "hooks_uselinkedpatients_selected_patient_storage_key",
-      "community": 104,
-      "community_name": "guardian/page.tsx",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "selected_patient_storage_key"
     },
     {
@@ -7399,7 +7484,7 @@
       "_origin": "ast",
       "id": "hooks_uselinkedpatients_uselinkedpatients",
       "community": 60,
-      "community_name": "useLinkedPatients",
+      "community_name": "settings/page.tsx",
       "norm_label": "uselinkedpatients()"
     },
     {
@@ -7409,46 +7494,46 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_userealtimeconversation",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "userealtimeconversation.ts"
     },
     {
       "label": "Window",
       "file_type": "code",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_window",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "window"
     },
     {
       "label": "RealtimeServerEvent",
       "file_type": "code",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L22",
+      "source_location": "L25",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_realtimeserverevent",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "realtimeserverevent"
     },
     {
       "label": "useRealtimeConversation()",
       "file_type": "code",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L29",
+      "source_location": "L35",
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_userealtimeconversation_userealtimeconversation",
-      "community": 14,
-      "community_name": "useConversationEngine.ts",
+      "community": 22,
+      "community_name": "app/page.tsx",
       "norm_label": "userealtimeconversation()"
     },
     {
@@ -7494,8 +7579,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "hooks_usestreamingstt",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingstt.ts"
     },
     {
@@ -7507,8 +7592,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "hooks_usestreamingstt_usestreamingsttresult",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingsttresult"
     },
     {
@@ -7519,8 +7604,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "hooks_usestreamingstt_usestreamingstt",
-      "community": 91,
-      "community_name": "useStreamingStt.ts",
+      "community": 14,
+      "community_name": "useConversationEngine.ts",
       "norm_label": "usestreamingstt()"
     },
     {
@@ -7718,7 +7803,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_auth_permissions",
-      "community": 55,
+      "community": 56,
       "community_name": "permissions.ts",
       "norm_label": "permissions.ts"
     },
@@ -7732,7 +7817,7 @@
       "_origin": "ast",
       "id": "lib_auth_permissions_autherror",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "autherror"
     },
     {
@@ -7744,7 +7829,7 @@
       "_origin": "ast",
       "id": "lib_auth_permissions_autherror_constructor",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": ".constructor()"
     },
     {
@@ -7756,7 +7841,7 @@
       "_origin": "ast",
       "id": "lib_auth_permissions_requiresession",
       "community": 55,
-      "community_name": "permissions.ts",
+      "community_name": "requireSession",
       "norm_label": "requiresession()"
     },
     {
@@ -7779,8 +7864,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_auth_permissions_requirepatientself",
-      "community": 15,
-      "community_name": "requirePatientSelf",
+      "community": 56,
+      "community_name": "permissions.ts",
       "norm_label": "requirepatientself()"
     },
     {
@@ -7791,8 +7876,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_auth_permissions_requireguardianaccess",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "requireguardianaccess()"
     },
     {
@@ -7964,7 +8049,7 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "lib_db_types_dementia_stage_values",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "dementia_stage_values"
     },
@@ -7989,8 +8074,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_isdementiastage",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 1,
+      "community_name": "types.ts",
       "norm_label": "isdementiastage()"
     },
     {
@@ -8000,7 +8085,7 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_db_types_dementia_stage_labels",
-      "community": 61,
+      "community": 60,
       "community_name": "settings/page.tsx",
       "norm_label": "dementia_stage_labels"
     },
@@ -8011,8 +8096,8 @@
       "source_location": "L22",
       "_origin": "ast",
       "id": "lib_db_types_mood_values",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "mood_values"
     },
     {
@@ -8037,8 +8122,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_turnrole",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "turnrole"
     },
     {
@@ -8049,8 +8134,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_isuserrole",
-      "community": 89,
-      "community_name": "register/route.ts",
+      "community": 11,
+      "community_name": "authOptions.ts",
       "norm_label": "isuserrole()"
     },
     {
@@ -8073,8 +8158,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_parsenotablemoments",
-      "community": 55,
-      "community_name": "permissions.ts",
+      "community": 58,
+      "community_name": "authErrorResponse",
       "norm_label": "parsenotablemoments()"
     },
     {
@@ -8085,8 +8170,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_serializenotablemoments",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "serializenotablemoments()"
     },
     {
@@ -8098,7 +8183,7 @@
       "_origin": "ast",
       "id": "lib_db_types_parsetags",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "parsetags()"
     },
     {
@@ -8110,7 +8195,7 @@
       "_origin": "ast",
       "id": "lib_db_types_serializetags",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "serializetags()"
     },
     {
@@ -8122,7 +8207,7 @@
       "_origin": "ast",
       "id": "lib_db_types_isvalidtimestring",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "isvalidtimestring()"
     },
     {
@@ -8134,7 +8219,7 @@
       "_origin": "ast",
       "id": "lib_db_types_parseremindertimes",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "parseremindertimes()"
     },
     {
@@ -8145,8 +8230,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_serializeremindertimes",
-      "community": 0,
-      "community_name": "requireGuardianAccess",
+      "community": 5,
+      "community_name": "medications/route.ts",
       "norm_label": "serializeremindertimes()"
     },
     {
@@ -8169,8 +8254,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_widgetid",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "widgetid"
     },
     {
@@ -8230,8 +8315,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_alertthreshold",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "alertthreshold"
     },
     {
@@ -8254,8 +8339,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_notificationchannel",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 60,
+      "community_name": "settings/page.tsx",
       "norm_label": "notificationchannel"
     },
     {
@@ -8277,8 +8362,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_meetsalertthreshold",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "meetsalertthreshold()"
     },
     {
@@ -8299,8 +8384,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_alertdispatcher",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "alertdispatcher.ts"
     },
     {
@@ -8311,8 +8396,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_alertdispatcher_dispatchmoodalerts",
-      "community": 1,
-      "community_name": "types.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "dispatchmoodalerts()"
     },
     {
@@ -8322,8 +8407,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "emergencydispatcher.ts"
     },
     {
@@ -8333,8 +8418,8 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_trigger_labels",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "trigger_labels"
     },
     {
@@ -8346,8 +8431,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_guardiantarget",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "guardiantarget"
     },
     {
@@ -8357,8 +8442,8 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_voice_distress_phrases",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "voice_distress_phrases"
     },
     {
@@ -8369,8 +8454,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_detectvoicedistress",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 7,
+      "community_name": "chat/route.ts",
       "norm_label": "detectvoicedistress()"
     },
     {
@@ -8381,8 +8466,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_maybetriggervoicedistress",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 7,
+      "community_name": "chat/route.ts",
       "norm_label": "maybetriggervoicedistress()"
     },
     {
@@ -8393,8 +8478,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_dispatchemergency",
-      "community": 56,
-      "community_name": "mood/route.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "dispatchemergency()"
     },
     {
@@ -8405,8 +8490,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_fallbacktosms",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 83,
+      "community_name": "prisma.ts",
       "norm_label": "fallbacktosms()"
     },
     {
@@ -8417,7 +8502,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "medicationreminderdispatcher.ts"
     },
     {
@@ -8429,7 +8514,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_kstinstant",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "kstinstant()"
     },
     {
@@ -8441,7 +8526,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_todaykstdatekey",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "todaykstdatekey()"
     },
     {
@@ -8453,7 +8538,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_adddays",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "adddays()"
     },
     {
@@ -8465,7 +8550,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_findduedatekey",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "findduedatekey()"
     },
     {
@@ -8478,7 +8563,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_duemedication",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "duemedication"
     },
     {
@@ -8490,7 +8575,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_checkandsendmedicationreminders",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "checkandsendmedicationreminders()"
     },
     {
@@ -8502,7 +8587,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_sendmedicationreminder",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "sendmedicationreminder()"
     },
     {
@@ -8513,7 +8598,7 @@
       "_origin": "ast",
       "id": "lib_guardian_notify",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "notify.ts"
     },
     {
@@ -8526,7 +8611,7 @@
       "_origin": "ast",
       "id": "lib_guardian_notify_notifypayload",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "notifypayload"
     },
     {
@@ -8538,7 +8623,7 @@
       "_origin": "ast",
       "id": "lib_guardian_notify_notifyguardianbychannel",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "notifyguardianbychannel()"
     },
     {
@@ -8549,7 +8634,7 @@
       "_origin": "ast",
       "id": "lib_guardian_resendclient",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "resendclient.ts"
     },
     {
@@ -8561,7 +8646,7 @@
       "_origin": "ast",
       "id": "lib_guardian_resendclient_isresendconfigured",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "isresendconfigured()"
     },
     {
@@ -8573,7 +8658,7 @@
       "_origin": "ast",
       "id": "lib_guardian_resendclient_sendemail",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "sendemail()"
     },
     {
@@ -8643,7 +8728,7 @@
       "_origin": "ast",
       "id": "lib_guardian_twilioclient",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "twilioclient.ts"
     },
     {
@@ -8655,7 +8740,7 @@
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_messages_url",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "messages_url()"
     },
     {
@@ -8667,7 +8752,7 @@
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_istwilioconfigured",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "istwilioconfigured()"
     },
     {
@@ -8679,7 +8764,7 @@
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_sendsms",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "sendsms()"
     },
     {
@@ -8690,7 +8775,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "webpush.ts"
     },
     {
@@ -8703,7 +8788,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush_pushsubscriptioninput",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "pushsubscriptioninput"
     },
     {
@@ -8715,7 +8800,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush_ispushconfigured",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "ispushconfigured()"
     },
     {
@@ -8727,7 +8812,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush_ensureconfigured",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "ensureconfigured()"
     },
     {
@@ -8740,7 +8825,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush_pushpayload",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "pushpayload"
     },
     {
@@ -8752,7 +8837,7 @@
       "_origin": "ast",
       "id": "lib_guardian_webpush_sendpush",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "sendpush()"
     },
     {
@@ -8824,8 +8909,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_memory_embedclient",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "embedclient.ts"
     },
     {
@@ -8837,8 +8922,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_memory_embedclient_embeddingpurpose",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "embeddingpurpose"
     },
     {
@@ -8848,8 +8933,8 @@
       "source_location": "L11",
       "_origin": "ast",
       "id": "lib_memory_embedclient_embedding_dimension",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "embedding_dimension"
     },
     {
@@ -8860,8 +8945,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_embedclient_isembeddingconfigured",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "isembeddingconfigured()"
     },
     {
@@ -8872,8 +8957,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_embedclient_embedtext",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "embedtext()"
     },
     {
@@ -9001,8 +9086,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_memory_pineconeclient",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "pineconeclient.ts"
     },
     {
@@ -9014,8 +9099,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_memoryrecord",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "memoryrecord"
     },
     {
@@ -9027,8 +9112,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_similarmemory",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "similarmemory"
     },
     {
@@ -9040,8 +9125,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_familymemoryrecord",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "familymemoryrecord"
     },
     {
@@ -9052,8 +9137,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_ispineconeconfigured",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "ispineconeconfigured()"
     },
     {
@@ -9064,8 +9149,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_getindex",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "getindex()"
     },
     {
@@ -9076,8 +9161,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_upsertmemory",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "upsertmemory()"
     },
     {
@@ -9089,7 +9174,7 @@
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_upsertfamilymemory",
       "community": 99,
-      "community_name": "memories/[id]/route.ts",
+      "community_name": "pineconeClient.ts",
       "norm_label": "upsertfamilymemory()"
     },
     {
@@ -9100,8 +9185,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_deletefamilymemory",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "deletefamilymemory()"
     },
     {
@@ -9111,8 +9196,8 @@
       "source_location": "L130",
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_min_memory_relevance",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "min_memory_relevance"
     },
     {
@@ -9123,8 +9208,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_searchmemories",
-      "community": 7,
-      "community_name": "chat/route.ts",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "searchmemories()"
     },
     {
@@ -9135,9 +9220,55 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_deletememories",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
+      "norm_label": "deletememories()"
+    },
+    {
+      "label": "previousSession.ts",
+      "file_type": "code",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_memory_previoussession",
       "community": 7,
       "community_name": "chat/route.ts",
-      "norm_label": "deletememories()"
+      "norm_label": "previoussession.ts"
+    },
+    {
+      "label": "todayKeyKst()",
+      "file_type": "code",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L6",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "lib_memory_previoussession_todaykeykst",
+      "community": 7,
+      "community_name": "chat/route.ts",
+      "norm_label": "todaykeykst()"
+    },
+    {
+      "label": "ROLE_LABEL",
+      "file_type": "code",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "lib_memory_previoussession_role_label",
+      "community": 7,
+      "community_name": "chat/route.ts",
+      "norm_label": "role_label"
+    },
+    {
+      "label": "buildPreviousSessionContext()",
+      "file_type": "code",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L18",
+      "_callable": true,
+      "_origin": "ast",
+      "id": "lib_memory_previoussession_buildprevioussessioncontext",
+      "community": 7,
+      "community_name": "chat/route.ts",
+      "norm_label": "buildprevioussessioncontext()"
     },
     {
       "label": "moodAnalysis.ts",
@@ -9146,8 +9277,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_moodanalysis",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "moodanalysis.ts"
     },
     {
@@ -9157,8 +9288,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "lib_moodanalysis_foundryclient",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "foundryclient"
     },
     {
@@ -9170,8 +9301,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_moodresult",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "moodresult"
     },
     {
@@ -9183,8 +9314,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_analyzableturn",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "analyzableturn"
     },
     {
@@ -9195,8 +9326,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_extractjson",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "extractjson()"
     },
     {
@@ -9207,8 +9338,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_tomoodresult",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "tomoodresult()"
     },
     {
@@ -9219,8 +9350,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_analyzemood",
-      "community": 5,
-      "community_name": "moodAnalysis.ts",
+      "community": 57,
+      "community_name": "HistoryView.tsx",
       "norm_label": "analyzemood()"
     },
     {
@@ -9556,7 +9687,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "whisperclient.ts"
     },
     {
@@ -9569,7 +9700,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient_transcriberesult",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "transcriberesult"
     },
     {
@@ -9581,7 +9712,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient_transcribeaudio",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "transcribeaudio()"
     },
     {
@@ -9593,7 +9724,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient_enrollvoice",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "enrollvoice()"
     },
     {
@@ -9605,7 +9736,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient_getenrollmentstatus",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "getenrollmentstatus()"
     },
     {
@@ -9617,7 +9748,7 @@
       "_origin": "ast",
       "id": "lib_whisperclient_deleteenrollment",
       "community": 15,
-      "community_name": "requirePatientSelf",
+      "community_name": "enroll/route.ts",
       "norm_label": "deleteenrollment()"
     },
     {
@@ -10520,7 +10651,7 @@
       "_origin": "ast",
       "id": "scripts_check_reminder_scheduling",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "medicationReminderDispatcher.ts",
       "norm_label": "check-reminder-scheduling.ts"
     },
     {
@@ -15798,6 +15929,160 @@
       "norm_label": "\u110e\u116c\u110c\u1169\u11bc \u1112\u116a\u11a8\u110b\u1175\u11ab (\u1103\u116e \u110c\u1165\u110c\u1161\u11bc\u1109\u1169 \u1103\u1161 \u1111\u116e\u1109\u1175 \u110c\u1165\u11ab)"
     },
     {
+      "label": "2026-08-12-realtime-calendar.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "2026-08-12-realtime-calendar.md"
+    },
+    {
+      "label": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "realtime \u110b\u1173\u11b7\u1109\u1165\u11bc \u1100\u1167\u11bc\u1105\u1169 \u110f\u1162\u11af\u1105\u1175\u11ab\u1103\u1165 \u110b\u1167\u11ab\u1103\u1169\u11bc implementation plan"
+    },
+    {
+      "label": "Global Constraints",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_global_constraints",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "global constraints"
+    },
+    {
+      "label": "Task 1: \uc77c\uc815 \ub4f1\ub85d API \ub77c\uc6b0\ud2b8",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_1_\uc77c\uc815_\ub4f1\ub85d_api_\ub77c\uc6b0\ud2b8",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "task 1: \u110b\u1175\u11af\u110c\u1165\u11bc \u1103\u1173\u11bc\u1105\u1169\u11a8 api \u1105\u1161\u110b\u116e\u1110\u1173"
+    },
+    {
+      "label": "Task 2: \ud1a0\ud070 \ub77c\uc6b0\ud2b8\uc5d0 \uc77c\uc815 \uc870\ud68c \uc8fc\uc785 + add_calendar_event \ud234 \uc815\uc758",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_2_\ud1a0\ud070_\ub77c\uc6b0\ud2b8\uc5d0_\uc77c\uc815_\uc870\ud68c_\uc8fc\uc785_add_calendar_event_\ud234_\uc815\uc758",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "task 2: \u1110\u1169\u110f\u1173\u11ab \u1105\u1161\u110b\u116e\u1110\u1173\u110b\u1166 \u110b\u1175\u11af\u110c\u1165\u11bc \u110c\u1169\u1112\u116c \u110c\u116e\u110b\u1175\u11b8 + add_calendar_event \u1110\u116e\u11af \u110c\u1165\u11bc\u110b\u1174"
+    },
+    {
+      "label": "Task 3: \ud074\ub77c\uc774\uc5b8\ud2b8 \ud6c5\uc5d0\uc11c add_calendar_event \ucc98\ub9ac + \uc7ac\uc2dc\ub3c4 + \ub124\uc774\ud2f0\ube0c \ub3d9\uae30\ud654",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L247",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_3_\ud074\ub77c\uc774\uc5b8\ud2b8_\ud6c5\uc5d0\uc11c_add_calendar_event_\ucc98\ub9ac_\uc7ac\uc2dc\ub3c4_\ub124\uc774\ud2f0\ube0c_\ub3d9\uae30\ud654",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "task 3: \u110f\u1173\u11af\u1105\u1161\u110b\u1175\u110b\u1165\u11ab\u1110\u1173 \u1112\u116e\u11a8\u110b\u1166\u1109\u1165 add_calendar_event \u110e\u1165\u1105\u1175 + \u110c\u1162\u1109\u1175\u1103\u1169 + \u1102\u1166\u110b\u1175\u1110\u1175\u1107\u1173 \u1103\u1169\u11bc\u1100\u1175\u1112\u116a"
+    },
+    {
+      "label": "\ucd5c\uc885 \ud655\uc778",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L358",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_calendar_\ucd5c\uc885_\ud655\uc778",
+      "community": 61,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \uce98\ub9b0\ub354 \uc5f0\ub3d9 Implementation Plan",
+      "norm_label": "\u110e\u116c\u110c\u1169\u11bc \u1112\u116a\u11a8\u110b\u1175\u11ab"
+    },
+    {
+      "label": "2026-08-12-realtime-conversation-continuity.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "2026-08-12-realtime-conversation-continuity.md"
+    },
+    {
+      "label": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "realtime \u110b\u1173\u11b7\u1109\u1165\u11bc \u1100\u1167\u11bc\u1105\u1169 \u1103\u1162\u1112\u116a \u110c\u1165\u110c\u1161\u11bc + \u110c\u1165\u11ab\u1102\u1161\u11af \u1103\u1162\u1112\u116a \u110b\u1175\u110b\u1165\u1100\u1161\u1100\u1175 implementation plan"
+    },
+    {
+      "label": "Global Constraints",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_global_constraints",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "global constraints"
+    },
+    {
+      "label": "Task 1: \uc804\ub0a0 \ub300\ud654 \uc870\ud68c \ud568\uc218",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_1_\uc804\ub0a0_\ub300\ud654_\uc870\ud68c_\ud568\uc218",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "task 1: \u110c\u1165\u11ab\u1102\u1161\u11af \u1103\u1162\u1112\u116a \u110c\u1169\u1112\u116c \u1112\u1161\u11b7\u1109\u116e"
+    },
+    {
+      "label": "Task 2: \ud1a0\ud070 \ub77c\uc6b0\ud2b8\uc5d0 \uc804\ub0a0 \ub300\ud654 \uc8fc\uc785",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_2_\ud1a0\ud070_\ub77c\uc6b0\ud2b8\uc5d0_\uc804\ub0a0_\ub300\ud654_\uc8fc\uc785",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "task 2: \u1110\u1169\u110f\u1173\u11ab \u1105\u1161\u110b\u116e\u1110\u1173\u110b\u1166 \u110c\u1165\u11ab\u1102\u1161\u11af \u1103\u1162\u1112\u116a \u110c\u116e\u110b\u1175\u11b8"
+    },
+    {
+      "label": "Task 3: \ud074\ub77c\uc774\uc5b8\ud2b8 \ud6c5\uc5d0 \ub300\ud654 \uc800\uc7a5 \uc5f0\uacb0",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L215",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_3_\ud074\ub77c\uc774\uc5b8\ud2b8_\ud6c5\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc5f0\uacb0",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "task 3: \u110f\u1173\u11af\u1105\u1161\u110b\u1175\u110b\u1165\u11ab\u1110\u1173 \u1112\u116e\u11a8\u110b\u1166 \u1103\u1162\u1112\u116a \u110c\u1165\u110c\u1161\u11bc \u110b\u1167\u11ab\u1100\u1167\u11af"
+    },
+    {
+      "label": "\ucd5c\uc885 \ud655\uc778",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L307",
+      "_origin": "ast",
+      "id": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_\ucd5c\uc885_\ud655\uc778",
+      "community": 82,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 Implementation Plan",
+      "norm_label": "\u110e\u116c\u110c\u1169\u11bc \u1112\u116a\u11a8\u110b\u1175\u11ab"
+    },
+    {
       "label": "2026-08-12-realtime-voice-pipeline.md",
       "file_type": "document",
       "source_file": "docs/superpowers/plans/2026-08-12-realtime-voice-pipeline.md",
@@ -16027,6 +16312,204 @@
       "community": 96,
       "community_name": "\ud734\ub300\ud3f0 \ub124\uc774\ud2f0\ube0c \uce98\ub9b0\ub354 \uc5f0\ub3d9 \uc124\uacc4",
       "norm_label": "\u1100\u1167\u11af\u110c\u1165\u11bc \u1105\u1169\u1100\u1173"
+    },
+    {
+      "label": "2026-08-12-realtime-calendar-design.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "2026-08-12-realtime-calendar-design.md"
+    },
+    {
+      "label": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "realtime \u110b\u1173\u11b7\u1109\u1165\u11bc \u1100\u1167\u11bc\u1105\u1169\u110b\u1166 \u110f\u1162\u11af\u1105\u1175\u11ab\u1103\u1165 \u110b\u1167\u11ab\u1103\u1169\u11bc (stage 2-1)"
+    },
+    {
+      "label": "\ubc30\uacbd",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubc30\uacbd",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u1107\u1162\u1100\u1167\u11bc"
+    },
+    {
+      "label": "\ubaa9\ud45c / \ubc94\uc704",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubaa9\ud45c_\ubc94\uc704",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u1106\u1169\u11a8\u1111\u116d / \u1107\u1165\u11b7\u110b\u1171"
+    },
+    {
+      "label": "\ubc94\uc704 \ubc16",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubc94\uc704_\ubc16",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u1107\u1165\u11b7\u110b\u1171 \u1107\u1161\u11a9"
+    },
+    {
+      "label": "\uc544\ud0a4\ud14d\ucc98",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\uc544\ud0a4\ud14d\ucc98",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u110b\u1161\u110f\u1175\u1110\u1166\u11a8\u110e\u1165"
+    },
+    {
+      "label": "\ucef4\ud3ec\ub10c\ud2b8",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ucef4\ud3ec\ub10c\ud2b8",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u110f\u1165\u11b7\u1111\u1169\u1102\u1165\u11ab\u1110\u1173"
+    },
+    {
+      "label": "\uc5d0\ub7ec \ucc98\ub9ac",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L99",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\uc5d0\ub7ec_\ucc98\ub9ac",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u110b\u1166\u1105\u1165 \u110e\u1165\u1105\u1175"
+    },
+    {
+      "label": "\ud14c\uc2a4\ud2b8 \uacc4\ud68d",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L111",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ud14c\uc2a4\ud2b8_\uacc4\ud68d",
+      "community": 32,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \uce98\ub9b0\ub354 \uc5f0\ub3d9 (Stage 2-1)",
+      "norm_label": "\u1110\u1166\u1109\u1173\u1110\u1173 \u1100\u1168\u1112\u116c\u11a8"
+    },
+    {
+      "label": "2026-08-12-realtime-conversation-continuity-design.md",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "2026-08-12-realtime-conversation-continuity-design.md"
+    },
+    {
+      "label": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "realtime \u110b\u1173\u11b7\u1109\u1165\u11bc \u1100\u1167\u11bc\u1105\u1169\u110b\u1166 \u1103\u1162\u1112\u116a \u110c\u1165\u110c\u1161\u11bc + \u110c\u1165\u11ab\u1102\u1161\u11af \u1103\u1162\u1112\u116a \u110b\u1175\u110b\u1165\u1100\u1161\u1100\u1175 (stage 2-2)"
+    },
+    {
+      "label": "\ubc30\uacbd",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubc30\uacbd",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u1107\u1162\u1100\u1167\u11bc"
+    },
+    {
+      "label": "\ubaa9\ud45c / \ubc94\uc704",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubaa9\ud45c_\ubc94\uc704",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u1106\u1169\u11a8\u1111\u116d / \u1107\u1165\u11b7\u110b\u1171"
+    },
+    {
+      "label": "\ubc94\uc704 \ubc16",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubc94\uc704_\ubc16",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u1107\u1165\u11b7\u110b\u1171 \u1107\u1161\u11a9"
+    },
+    {
+      "label": "\uc544\ud0a4\ud14d\ucc98",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\uc544\ud0a4\ud14d\ucc98",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u110b\u1161\u110f\u1175\u1110\u1166\u11a8\u110e\u1165"
+    },
+    {
+      "label": "\ucef4\ud3ec\ub10c\ud2b8",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ucef4\ud3ec\ub10c\ud2b8",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u110f\u1165\u11b7\u1111\u1169\u1102\u1165\u11ab\u1110\u1173"
+    },
+    {
+      "label": "\uc5d0\ub7ec \ucc98\ub9ac",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L79",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\uc5d0\ub7ec_\ucc98\ub9ac",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u110b\u1166\u1105\u1165 \u110e\u1165\u1105\u1175"
+    },
+    {
+      "label": "\ud14c\uc2a4\ud2b8 \uacc4\ud68d",
+      "file_type": "document",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ud14c\uc2a4\ud2b8_\uacc4\ud68d",
+      "community": 19,
+      "community_name": "Realtime \uc74c\uc131 \uacbd\ub85c\uc5d0 \ub300\ud654 \uc800\uc7a5 + \uc804\ub0a0 \ub300\ud654 \uc774\uc5b4\uac00\uae30 (Stage 2-2)",
+      "norm_label": "\u1110\u1166\u1109\u1173\u1110\u1173 \u1100\u1168\u1112\u116c\u11a8"
     },
     {
       "label": "2026-08-12-realtime-voice-pipeline-design.md",
@@ -29051,6 +29534,53 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L12",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_calendar_event_route",
+      "target": "app_api_realtime_calendar_event_route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_calendar_event_route",
+      "target": "lib_auth_authoptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_calendar_event_route",
+      "target": "lib_db_prisma",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/calendar-event/route.ts",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_calendar_event_route",
+      "target": "lib_db_prisma_prisma",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/distress-check/route.ts",
       "source_location": "L5",
       "weight": 1.0,
@@ -29111,7 +29641,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L17",
+      "source_location": "L22",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29128,6 +29658,30 @@
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
       "target": "lib_auth_authoptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route",
+      "target": "lib_calendar_calendarevents",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route",
+      "target": "lib_calendar_calendarevents_buildrecentcalendarevents",
       "confidence_score": 1.0
     },
     {
@@ -29159,7 +29713,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L6",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29171,7 +29725,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L6",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29207,7 +29761,31 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L5",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route",
+      "target": "lib_memory_previoussession",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route",
+      "target": "lib_memory_previoussession_buildprevioussessioncontext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29219,7 +29797,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L5",
+      "source_location": "L7",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -29232,11 +29810,11 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L32",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
-      "target": "lib_memory_familycontext_buildfamilyroster"
+      "target": "lib_calendar_calendarevents_buildrecentcalendarevents"
     },
     {
       "relation": "calls",
@@ -29248,7 +29826,87 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
+      "target": "lib_memory_familycontext_buildfamilyroster"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route_get",
+      "target": "lib_memory_previoussession_buildprevioussessioncontext"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/realtime/token/route.ts",
+      "source_location": "L44",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_token_route_get",
       "target": "lib_persona_buildbasepersonaprompt"
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_web_search_route",
+      "target": "app_api_realtime_web_search_route_post",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_web_search_route",
+      "target": "app_api_realtime_web_search_route_responsesapimessageitem",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_web_search_route",
+      "target": "app_api_realtime_web_search_route_responsesapioutputtextpart",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L13",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_web_search_route",
+      "target": "app_api_realtime_web_search_route_responsesapiresult",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/realtime/web-search/route.ts",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_realtime_web_search_route",
+      "target": "lib_auth_authoptions",
+      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -31152,7 +31810,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page",
-      "target": "hooks_useconversationengine",
+      "target": "hooks_userealtimeconversation",
       "confidence_score": 1.0
     },
     {
@@ -31164,7 +31822,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page",
-      "target": "hooks_useconversationengine_useconversationengine",
+      "target": "hooks_userealtimeconversation_userealtimeconversation",
       "confidence_score": 1.0
     },
     {
@@ -31189,7 +31847,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page_homepage",
-      "target": "hooks_useconversationengine_useconversationengine"
+      "target": "hooks_userealtimeconversation_userealtimeconversation"
     },
     {
       "relation": "contains",
@@ -33715,6 +34373,42 @@
       "confidence_score": 1.0
     },
     {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useRealtimeConversation.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hooks_userealtimeconversation",
+      "target": "hooks_useconversationpersistence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "hooks/useRealtimeConversation.ts",
+      "source_location": "L9",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hooks_userealtimeconversation",
+      "target": "hooks_useconversationpersistence_useconversationpersistence",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "hooks/useRealtimeConversation.ts",
+      "source_location": "L40",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "hooks_userealtimeconversation_userealtimeconversation",
+      "target": "hooks_useconversationpersistence_useconversationpersistence"
+    },
+    {
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useLinkedPatients.ts",
@@ -33751,7 +34445,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L22",
+      "source_location": "L25",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_userealtimeconversation",
@@ -33762,7 +34456,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L29",
+      "source_location": "L35",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_userealtimeconversation",
@@ -33773,7 +34467,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "hooks/useRealtimeConversation.ts",
-      "source_location": "L11",
+      "source_location": "L12",
       "weight": 1.0,
       "_origin": "ast",
       "source": "hooks_userealtimeconversation",
@@ -34521,6 +35215,18 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession",
+      "target": "lib_db_prisma",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
       "source_file": "prisma/seed.ts",
       "source_location": "L3",
       "weight": 1.0,
@@ -34610,6 +35316,18 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_memory_photocontext",
+      "target": "lib_db_prisma_prisma",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession",
       "target": "lib_db_prisma_prisma",
       "confidence_score": 1.0
     },
@@ -36540,6 +37258,51 @@
       "_origin": "ast",
       "source": "lib_memory_pineconeclient_upsertmemory",
       "target": "lib_memory_pineconeclient_getindex",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession",
+      "target": "lib_memory_previoussession_buildprevioussessioncontext",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession",
+      "target": "lib_memory_previoussession_role_label",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession",
+      "target": "lib_memory_previoussession_todaykeykst",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "lib/memory/previousSession.ts",
+      "source_location": "L20",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "lib_memory_previoussession_buildprevioussessioncontext",
+      "target": "lib_memory_previoussession_todaykeykst",
       "confidence_score": 1.0
     },
     {
@@ -43352,6 +44115,138 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_global_constraints",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_1_\uc77c\uc815_\ub4f1\ub85d_api_\ub77c\uc6b0\ud2b8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L125",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_2_\ud1a0\ud070_\ub77c\uc6b0\ud2b8\uc5d0_\uc77c\uc815_\uc870\ud68c_\uc8fc\uc785_add_calendar_event_\ud234_\uc815\uc758",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L247",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_task_3_\ud074\ub77c\uc774\uc5b8\ud2b8_\ud6c5\uc5d0\uc11c_add_calendar_event_\ucc98\ub9ac_\uc7ac\uc2dc\ub3c4_\ub124\uc774\ud2f0\ube0c_\ub3d9\uae30\ud654",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-calendar.md",
+      "source_location": "L358",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_calendar_realtime_\uc74c\uc131_\uacbd\ub85c_\uce98\ub9b0\ub354_\uc5f0\ub3d9_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_calendar_\ucd5c\uc885_\ud655\uc778",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L16",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_global_constraints",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L33",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_1_\uc804\ub0a0_\ub300\ud654_\uc870\ud68c_\ud568\uc218",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L144",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_2_\ud1a0\ud070_\ub77c\uc6b0\ud2b8\uc5d0_\uc804\ub0a0_\ub300\ud654_\uc8fc\uc785",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L215",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_task_3_\ud074\ub77c\uc774\uc5b8\ud2b8_\ud6c5\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc5f0\uacb0",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/plans/2026-08-12-realtime-conversation-continuity.md",
+      "source_location": "L307",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_realtime_\uc74c\uc131_\uacbd\ub85c_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_implementation_plan",
+      "target": "docs_superpowers_plans_2026_08_12_realtime_conversation_continuity_\ucd5c\uc885_\ud655\uc778",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/superpowers/plans/2026-08-12-realtime-voice-pipeline.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -43561,6 +44456,182 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L18",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubaa9\ud45c_\ubc94\uc704",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubc30\uacbd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ubc94\uc704_\ubc16",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L31",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\uc544\ud0a4\ud14d\ucc98",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L99",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\uc5d0\ub7ec_\ucc98\ub9ac",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L111",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\uce98\ub9b0\ub354_\uc5f0\ub3d9_stage_2_1",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ud14c\uc2a4\ud2b8_\uacc4\ud68d",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-calendar-design.md",
+      "source_location": "L62",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\uc544\ud0a4\ud14d\ucc98",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_calendar_design_\ucef4\ud3ec\ub10c\ud2b8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L1",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L17",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubaa9\ud45c_\ubc94\uc704",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L3",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubc30\uacbd",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L25",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ubc94\uc704_\ubc16",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L34",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\uc544\ud0a4\ud14d\ucc98",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L79",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\uc5d0\ub7ec_\ucc98\ub9ac",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L87",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_realtime_\uc74c\uc131_\uacbd\ub85c\uc5d0_\ub300\ud654_\uc800\uc7a5_\uc804\ub0a0_\ub300\ud654_\uc774\uc5b4\uac00\uae30_stage_2_2",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ud14c\uc2a4\ud2b8_\uacc4\ud68d",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "docs/superpowers/specs/2026-08-12-realtime-conversation-continuity-design.md",
+      "source_location": "L55",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\uc544\ud0a4\ud14d\ucc98",
+      "target": "docs_superpowers_specs_2026_08_12_realtime_conversation_continuity_design_\ucef4\ud3ec\ub10c\ud2b8",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "contains",
+      "confidence": "EXTRACTED",
       "source_file": "docs/superpowers/specs/2026-08-12-realtime-voice-pipeline-design.md",
       "source_location": "L1",
       "weight": 1.0,
@@ -43758,5 +44829,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "6f30de28e5e58f3143cba88e2e536e2fc9d60684"
+  "built_at_commit": "242fe4bd36ed1d5f9429427405bdaa023d33a562"
 }

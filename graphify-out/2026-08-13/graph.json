@@ -811,7 +811,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_main",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/__main__.py"
     },
     {
@@ -821,7 +821,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/benchmark.py"
     },
@@ -833,7 +833,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_count_tokens",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_tokens()"
     },
@@ -845,7 +845,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_benchmark_pair",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "benchmark_pair()"
     },
@@ -856,7 +856,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_py_path",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -868,7 +868,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_print_table",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_table()"
     },
@@ -880,7 +880,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_benchmark_main",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
@@ -892,7 +892,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/cli.py"
     },
     {
@@ -904,7 +904,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli_print_usage",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_usage()"
     },
     {
@@ -916,7 +916,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_cli_main",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
     {
@@ -927,7 +927,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/compress.py"
     },
     {
@@ -939,7 +939,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_split_frontmatter",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split_frontmatter()"
     },
     {
@@ -951,7 +951,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_backup_dir_for",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backup_dir_for()"
     },
     {
@@ -962,7 +962,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_py_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -974,7 +974,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_is_sensitive_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "is_sensitive_path()"
     },
     {
@@ -986,7 +986,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_strip_llm_wrapper",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip_llm_wrapper()"
     },
     {
@@ -998,7 +998,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_write_text_atomic",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write_text_atomic()"
     },
     {
@@ -1010,7 +1010,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_first_nonblank_line",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "first_nonblank_line()"
     },
     {
@@ -1022,7 +1022,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_write_target",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_write_target()"
     },
     {
@@ -1034,7 +1034,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_call_claude",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "call_claude()"
     },
     {
@@ -1046,7 +1046,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_build_compress_prompt",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_compress_prompt()"
     },
     {
@@ -1058,7 +1058,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_build_fix_prompt",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_fix_prompt()"
     },
     {
@@ -1070,7 +1070,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_compress_file",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "compress_file()"
     },
     {
@@ -1081,7 +1081,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_31",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split yaml frontmatter from body. returns (frontmatter, body). memory files..."
     },
     {
@@ -1092,7 +1092,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_72",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "resolve the out-of-tree backup directory for a given source file. backups must..."
     },
     {
@@ -1103,7 +1103,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_96",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic denylist for files that must never be shipped to a third-party api."
     },
     {
@@ -1114,7 +1114,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_109",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip outer ```markdown ... ``` fence when it wraps the entire output."
     },
     {
@@ -1125,7 +1125,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_117",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write ``text`` to ``path`` atomically as utf-8. path.write_text() truncates the..."
     },
     {
@@ -1136,7 +1136,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_148",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return the first non-blank line, stripped \u2014 used to detect a prose preamble..."
     },
     {
@@ -1147,7 +1147,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_157",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write to the target file, surfacing the backup location if the write itself..."
     },
     {
@@ -1158,7 +1158,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_compress_rationale_178",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "send a prompt to claude. prefers the anthropic sdk when anthropic_api_key is..."
     },
     {
@@ -1169,7 +1169,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/detect.py"
     },
     {
@@ -1181,7 +1181,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_code_line",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_code_line()"
     },
     {
@@ -1193,7 +1193,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_json_content",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_json_content()"
     },
     {
@@ -1205,7 +1205,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_is_yaml_content",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_yaml_content()"
     },
     {
@@ -1217,7 +1217,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_detect_file_type",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "detect_file_type()"
     },
     {
@@ -1228,7 +1228,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_py_path",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -1240,7 +1240,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_should_compress",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "should_compress()"
     },
     {
@@ -1251,7 +1251,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_43",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if a line looks like code."
     },
     {
@@ -1262,7 +1262,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_48",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if content is valid json."
     },
     {
@@ -1273,7 +1273,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_57",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic: check if content looks like yaml."
     },
     {
@@ -1284,7 +1284,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_73",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "classify a file as 'natural_language', 'code', 'config', or 'unknown'. returns:..."
     },
     {
@@ -1295,7 +1295,7 @@
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_detect_rationale_119",
       "community": 20,
-      "community_name": ".continue/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return true if the file is natural language and should be compressed."
     },
     {
@@ -1305,7 +1305,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".continue/skills/caveman-compress/scripts/validate.py"
     },
@@ -1318,7 +1318,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validationresult"
     },
@@ -1330,7 +1330,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_init",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".__init__()"
     },
@@ -1342,7 +1342,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_add_error",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_error()"
     },
@@ -1354,7 +1354,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validationresult_add_warning",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_warning()"
     },
@@ -1366,7 +1366,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_read_file",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "read_file()"
     },
@@ -1377,7 +1377,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_py_path",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -1389,7 +1389,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_headings",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_headings()"
     },
@@ -1401,7 +1401,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_code_blocks",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_code_blocks()"
     },
@@ -1413,7 +1413,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_urls",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_urls()"
     },
@@ -1425,7 +1425,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_paths",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_paths()"
     },
@@ -1437,7 +1437,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_count_bullets",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_bullets()"
     },
@@ -1449,7 +1449,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_extract_inline_codes",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_inline_codes()"
     },
@@ -1461,7 +1461,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_headings",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_headings()"
     },
@@ -1473,7 +1473,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_code_blocks",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_code_blocks()"
     },
@@ -1485,7 +1485,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_urls",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_urls()"
     },
@@ -1497,7 +1497,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_paths",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_paths()"
     },
@@ -1509,7 +1509,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_bullets",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_bullets()"
     },
@@ -1521,7 +1521,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate_inline_codes",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_inline_codes()"
     },
@@ -1533,7 +1533,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_validate",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate()"
     },
@@ -1544,7 +1544,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_rationale_42",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "line-based fenced code block extractor. handles ``` and ~~~ fences with..."
     },
@@ -1555,7 +1555,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "continue_skills_caveman_compress_scripts_validate_rationale_98",
-      "community": 64,
+      "community": 20,
       "community_name": ".continue/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backtick-delimited inline spans, with fenced code blocks stripped first...."
     },
@@ -1589,7 +1589,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_main",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/__main__.py"
     },
     {
@@ -1599,7 +1599,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/benchmark.py"
     },
@@ -1611,7 +1611,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_count_tokens",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_tokens()"
     },
@@ -1623,7 +1623,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_benchmark_pair",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "benchmark_pair()"
     },
@@ -1634,7 +1634,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_py_path",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -1646,7 +1646,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_print_table",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_table()"
     },
@@ -1658,7 +1658,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_benchmark_main",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
@@ -1670,7 +1670,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/cli.py"
     },
     {
@@ -1682,7 +1682,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli_print_usage",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "print_usage()"
     },
     {
@@ -1694,7 +1694,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_cli_main",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "main()"
     },
     {
@@ -1705,7 +1705,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/compress.py"
     },
     {
@@ -1717,7 +1717,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_split_frontmatter",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split_frontmatter()"
     },
     {
@@ -1729,7 +1729,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_backup_dir_for",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backup_dir_for()"
     },
     {
@@ -1740,7 +1740,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_py_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -1752,7 +1752,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_is_sensitive_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "is_sensitive_path()"
     },
     {
@@ -1764,7 +1764,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_strip_llm_wrapper",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip_llm_wrapper()"
     },
     {
@@ -1776,7 +1776,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_write_text_atomic",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write_text_atomic()"
     },
     {
@@ -1788,7 +1788,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_first_nonblank_line",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "first_nonblank_line()"
     },
     {
@@ -1800,7 +1800,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_write_target",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_write_target()"
     },
     {
@@ -1812,7 +1812,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_call_claude",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "call_claude()"
     },
     {
@@ -1824,7 +1824,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_build_compress_prompt",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_compress_prompt()"
     },
     {
@@ -1836,7 +1836,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_build_fix_prompt",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "build_fix_prompt()"
     },
     {
@@ -1848,7 +1848,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_compress_file",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "compress_file()"
     },
     {
@@ -1859,7 +1859,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_31",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "split yaml frontmatter from body. returns (frontmatter, body). memory files..."
     },
     {
@@ -1870,7 +1870,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_72",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "resolve the out-of-tree backup directory for a given source file. backups must..."
     },
     {
@@ -1881,7 +1881,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_96",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic denylist for files that must never be shipped to a third-party api."
     },
     {
@@ -1892,7 +1892,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_109",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "strip outer ```markdown ... ``` fence when it wraps the entire output."
     },
     {
@@ -1903,7 +1903,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_117",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write ``text`` to ``path`` atomically as utf-8. path.write_text() truncates the..."
     },
     {
@@ -1914,7 +1914,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_148",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return the first non-blank line, stripped \u2014 used to detect a prose preamble..."
     },
     {
@@ -1925,7 +1925,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_157",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "write to the target file, surfacing the backup location if the write itself..."
     },
     {
@@ -1936,7 +1936,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_compress_rationale_178",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "send a prompt to claude. prefers the anthropic sdk when anthropic_api_key is..."
     },
     {
@@ -1947,7 +1947,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/detect.py"
     },
     {
@@ -1959,7 +1959,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_code_line",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_code_line()"
     },
     {
@@ -1971,7 +1971,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_json_content",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_json_content()"
     },
     {
@@ -1983,7 +1983,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_is_yaml_content",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "_is_yaml_content()"
     },
     {
@@ -1995,7 +1995,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_detect_file_type",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "detect_file_type()"
     },
     {
@@ -2006,7 +2006,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_py_path",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
     {
@@ -2018,7 +2018,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_should_compress",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "should_compress()"
     },
     {
@@ -2029,7 +2029,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_43",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if a line looks like code."
     },
     {
@@ -2040,7 +2040,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_48",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "check if content is valid json."
     },
     {
@@ -2051,7 +2051,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_57",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "heuristic: check if content looks like yaml."
     },
     {
@@ -2062,7 +2062,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_73",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "classify a file as 'natural_language', 'code', 'config', or 'unknown'. returns:..."
     },
     {
@@ -2073,7 +2073,7 @@
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_detect_rationale_119",
       "community": 37,
-      "community_name": ".roo/skills/caveman-compress/scripts/compress.py",
+      "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "return true if the file is natural language and should be compressed."
     },
     {
@@ -2083,7 +2083,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".roo/skills/caveman-compress/scripts/validate.py"
     },
@@ -2096,7 +2096,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validationresult"
     },
@@ -2108,7 +2108,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_init",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".__init__()"
     },
@@ -2120,7 +2120,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_add_error",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_error()"
     },
@@ -2132,7 +2132,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validationresult_add_warning",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": ".add_warning()"
     },
@@ -2144,7 +2144,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_read_file",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "read_file()"
     },
@@ -2155,7 +2155,7 @@
       "source_location": "",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_py_path",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "path"
     },
@@ -2167,7 +2167,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_headings",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_headings()"
     },
@@ -2179,7 +2179,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_code_blocks",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_code_blocks()"
     },
@@ -2191,7 +2191,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_urls",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_urls()"
     },
@@ -2203,7 +2203,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_paths",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_paths()"
     },
@@ -2215,7 +2215,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_count_bullets",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "count_bullets()"
     },
@@ -2227,7 +2227,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_extract_inline_codes",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "extract_inline_codes()"
     },
@@ -2239,7 +2239,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_headings",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_headings()"
     },
@@ -2251,7 +2251,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_code_blocks",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_code_blocks()"
     },
@@ -2263,7 +2263,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_urls",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_urls()"
     },
@@ -2275,7 +2275,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_paths",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_paths()"
     },
@@ -2287,7 +2287,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_bullets",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_bullets()"
     },
@@ -2299,7 +2299,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate_inline_codes",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate_inline_codes()"
     },
@@ -2311,7 +2311,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_validate",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "validate()"
     },
@@ -2322,7 +2322,7 @@
       "source_location": "L42",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_rationale_42",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "line-based fenced code block extractor. handles ``` and ~~~ fences with..."
     },
@@ -2333,7 +2333,7 @@
       "source_location": "L98",
       "_origin": "ast",
       "id": "roo_skills_caveman_compress_scripts_validate_rationale_98",
-      "community": 83,
+      "community": 37,
       "community_name": ".roo/skills/caveman-compress/scripts/validate.py",
       "norm_label": "backtick-delimited inline spans, with fenced code blocks stripped first...."
     },
@@ -2969,8 +2969,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": "emergencynotifier.kt"
     },
     {
@@ -2982,8 +2982,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": "emergencynotifier"
     },
     {
@@ -2994,8 +2994,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_createchannel",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".createchannel()"
     },
     {
@@ -3005,8 +3005,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_kt_context",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": "context"
     },
     {
@@ -3017,8 +3017,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_canusefullscreenintent",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".canusefullscreenintent()"
     },
     {
@@ -3029,8 +3029,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_ensurefullscreenintentpermission",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".ensurefullscreenintentpermission()"
     },
     {
@@ -3040,8 +3040,8 @@
       "source_location": "",
       "_origin": "ast",
       "id": "activity",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": "activity"
     },
     {
@@ -3052,8 +3052,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "android_app_src_main_java_com_neurocare_app_emergency_emergencynotifier_emergencynotifier_showemergencyalert",
-      "community": 3,
-      "community_name": "MainActivity",
+      "community": 109,
+      "community_name": "EmergencyNotifier",
       "norm_label": ".showemergencyalert()"
     },
     {
@@ -3874,7 +3874,7 @@
       "_origin": "ast",
       "id": "app_api_auth_register_route",
       "community": 91,
-      "community_name": "types.ts",
+      "community_name": "register/route.ts",
       "norm_label": "register/route.ts"
     },
     {
@@ -3886,7 +3886,7 @@
       "_origin": "ast",
       "id": "app_api_auth_register_route_generateinvitecode",
       "community": 91,
-      "community_name": "types.ts",
+      "community_name": "register/route.ts",
       "norm_label": "generateinvitecode()"
     },
     {
@@ -3898,7 +3898,7 @@
       "_origin": "ast",
       "id": "app_api_auth_register_route_post",
       "community": 91,
-      "community_name": "types.ts",
+      "community_name": "register/route.ts",
       "norm_label": "post()"
     },
     {
@@ -4030,8 +4030,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_chat_route_post",
-      "community": 0,
-      "community_name": "chat/route.ts",
+      "community": 83,
+      "community_name": "emergencyDispatcher.ts",
       "norm_label": "post()"
     },
     {
@@ -4065,7 +4065,7 @@
       "_origin": "ast",
       "id": "app_api_cron_medication_reminders_route",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "medication-reminders/route.ts"
     },
     {
@@ -4077,7 +4077,7 @@
       "_origin": "ast",
       "id": "app_api_cron_medication_reminders_route_post",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "post()"
     },
     {
@@ -4087,7 +4087,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_emergency_eventid_route",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "[eventid]/route.ts"
     },
@@ -4099,7 +4099,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_emergency_eventid_route_get",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
@@ -4111,7 +4111,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_emergency_eventid_route_patch",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "patch()"
     },
@@ -4229,7 +4229,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_family_memberid_route",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "[memberid]/route.ts"
     },
     {
@@ -4242,7 +4242,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_family_memberid_route_familymemberpatch",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "familymemberpatch"
     },
     {
@@ -4254,7 +4254,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_family_memberid_route_get",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
     {
@@ -4265,7 +4265,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_family_memberid_route_patch",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "patch()"
     },
@@ -4277,7 +4277,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_family_memberid_route_delete",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "delete()"
     },
@@ -4288,7 +4288,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_family_route",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "family/route.ts"
     },
@@ -4301,7 +4301,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_family_route_familymemberinput",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "familymemberinput"
     },
@@ -4313,7 +4313,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_family_route_get",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
@@ -4325,7 +4325,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_family_route_post",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "post()"
     },
@@ -4337,7 +4337,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "medications/[id]/route.ts"
     },
     {
@@ -4350,7 +4350,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_medicationpatch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "medicationpatch"
     },
     {
@@ -4362,7 +4362,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_patch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "patch()"
     },
     {
@@ -4374,7 +4374,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_id_route_delete",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "delete()"
     },
     {
@@ -4385,7 +4385,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_route",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "medications/route.ts"
     },
     {
@@ -4398,7 +4398,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_medicationinput",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "medicationinput"
     },
     {
@@ -4410,7 +4410,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_validate",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "validate()"
     },
     {
@@ -4422,7 +4422,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_get",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "get()"
     },
     {
@@ -4434,7 +4434,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_medications_route_post",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "post()"
     },
     {
@@ -4492,8 +4492,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_memories_route",
-      "community": 89,
-      "community_name": "requirePatientAccess",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "guardian/memories/route.ts"
     },
     {
@@ -4505,8 +4505,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_memories_route_memoryinput",
-      "community": 89,
-      "community_name": "requirePatientAccess",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "memoryinput"
     },
     {
@@ -4517,8 +4517,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_memories_route_get",
-      "community": 89,
-      "community_name": "requirePatientAccess",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "get()"
     },
     {
@@ -4541,7 +4541,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_messages_id_route",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "messages/[id]/route.ts"
     },
     {
@@ -4553,7 +4553,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_messages_id_route_delete",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "delete()"
     },
     {
@@ -4598,8 +4598,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route",
-      "community": 112,
-      "community_name": "[patientId]/route.ts",
+      "community": 58,
+      "community_name": "prisma",
       "norm_label": "[patientid]/route.ts"
     },
     {
@@ -4611,8 +4611,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route_patientpatch",
-      "community": 112,
-      "community_name": "[patientId]/route.ts",
+      "community": 58,
+      "community_name": "prisma",
       "norm_label": "patientpatch"
     },
     {
@@ -4623,8 +4623,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_guardian_patients_patientid_route_patch",
-      "community": 112,
-      "community_name": "[patientId]/route.ts",
+      "community": 58,
+      "community_name": "prisma",
       "norm_label": "patch()"
     },
     {
@@ -4716,7 +4716,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "plans/[id]/route.ts"
     },
     {
@@ -4729,7 +4729,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_planpatch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "planpatch"
     },
     {
@@ -4741,7 +4741,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_patch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "patch()"
     },
     {
@@ -4753,7 +4753,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_id_route_delete",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "delete()"
     },
     {
@@ -4764,7 +4764,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_route",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "plans/route.ts"
     },
     {
@@ -4777,7 +4777,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_route_planinput",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "planinput"
     },
     {
@@ -4789,7 +4789,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_route_validate",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "validate()"
     },
     {
@@ -4801,7 +4801,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_route_get",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
     {
@@ -4813,7 +4813,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_plans_route_post",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "post()"
     },
     {
@@ -4944,7 +4944,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "tasks/[id]/route.ts"
     },
     {
@@ -4957,7 +4957,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_taskpatch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "taskpatch"
     },
     {
@@ -4969,7 +4969,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_patch",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "patch()"
     },
     {
@@ -4981,7 +4981,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_id_route_delete",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "delete()"
     },
     {
@@ -4992,7 +4992,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_route",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "tasks/route.ts"
     },
     {
@@ -5005,7 +5005,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_route_taskinput",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "taskinput"
     },
     {
@@ -5017,7 +5017,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_route_validate",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "validate()"
     },
     {
@@ -5029,7 +5029,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_route_get",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "get()"
     },
     {
@@ -5041,7 +5041,7 @@
       "_origin": "ast",
       "id": "app_api_guardian_tasks_route_post",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "post()"
     },
     {
@@ -5143,20 +5143,20 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_patient_dashboard_route",
-      "community": 56,
-      "community_name": "permissions.ts",
+      "community": 9,
+      "community_name": "types.ts",
       "norm_label": "dashboard/route.ts"
     },
     {
       "label": "GET()",
       "file_type": "code",
       "source_file": "app/api/patient/dashboard/route.ts",
-      "source_location": "L14",
+      "source_location": "L19",
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_patient_dashboard_route_get",
-      "community": 56,
-      "community_name": "permissions.ts",
+      "community": 9,
+      "community_name": "types.ts",
       "norm_label": "get()"
     },
     {
@@ -5235,7 +5235,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_realtime_distress_check_route",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "distress-check/route.ts"
     },
@@ -5247,31 +5247,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_distress_check_route_post",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
-      "norm_label": "post()"
-    },
-    {
-      "label": "medication-confirm/route.ts",
-      "file_type": "code",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "app_api_realtime_medication_confirm_route",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "medication-confirm/route.ts"
-    },
-    {
-      "label": "POST()",
-      "file_type": "code",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L15",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "app_api_realtime_medication_confirm_route_post",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
       "norm_label": "post()"
     },
     {
@@ -5289,7 +5266,7 @@
       "label": "GET()",
       "file_type": "code",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L25",
+      "source_location": "L23",
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_token_route_get",
@@ -5304,8 +5281,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_api_realtime_web_search_route",
-      "community": 7,
-      "community_name": "authOptions.ts",
+      "community": 111,
+      "community_name": "web-search/route.ts",
       "norm_label": "web-search/route.ts"
     },
     {
@@ -5317,8 +5294,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_realtime_web_search_route_responsesapioutputtextpart",
-      "community": 7,
-      "community_name": "authOptions.ts",
+      "community": 111,
+      "community_name": "web-search/route.ts",
       "norm_label": "responsesapioutputtextpart"
     },
     {
@@ -5330,8 +5307,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_realtime_web_search_route_responsesapimessageitem",
-      "community": 7,
-      "community_name": "authOptions.ts",
+      "community": 111,
+      "community_name": "web-search/route.ts",
       "norm_label": "responsesapimessageitem"
     },
     {
@@ -5343,8 +5320,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "app_api_realtime_web_search_route_responsesapiresult",
-      "community": 7,
-      "community_name": "authOptions.ts",
+      "community": 111,
+      "community_name": "web-search/route.ts",
       "norm_label": "responsesapiresult"
     },
     {
@@ -5355,8 +5332,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_api_realtime_web_search_route_post",
-      "community": 7,
-      "community_name": "authOptions.ts",
+      "community": 111,
+      "community_name": "web-search/route.ts",
       "norm_label": "post()"
     },
     {
@@ -5812,8 +5789,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_guardian_settings_page_settingspage",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "settingspage()"
     },
     {
@@ -5925,8 +5902,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_memories_page",
-      "community": 55,
-      "community_name": "prisma.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "memories/page.tsx"
     },
     {
@@ -5937,8 +5914,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_memories_page_formatquotedat",
-      "community": 55,
-      "community_name": "prisma.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "formatquotedat()"
     },
     {
@@ -5949,8 +5926,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_memories_page_memoriespage",
-      "community": 55,
-      "community_name": "prisma.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "memoriespage()"
     },
     {
@@ -6033,8 +6010,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "app_signup_page",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "signup/page.tsx"
     },
     {
@@ -6045,8 +6022,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "app_signup_page_signuppage",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "signuppage()"
     },
     {
@@ -6778,8 +6755,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 112,
+      "community_name": "DementiaStageSettings.tsx",
       "norm_label": "dementiastagesettings.tsx"
     },
     {
@@ -6791,8 +6768,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings_dementiastagesettingsprops",
-      "community": 60,
-      "community_name": "guardian/page.tsx",
+      "community": 112,
+      "community_name": "DementiaStageSettings.tsx",
       "norm_label": "dementiastagesettingsprops"
     },
     {
@@ -6803,8 +6780,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_dementiastagesettings_dementiastagesettings",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 112,
+      "community_name": "DementiaStageSettings.tsx",
       "norm_label": "dementiastagesettings()"
     },
     {
@@ -7050,7 +7027,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "medicationform.tsx"
     },
     {
@@ -7063,7 +7040,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_medicationformprops",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "medicationformprops"
     },
     {
@@ -7075,7 +7052,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_todateinput",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "todateinput()"
     },
     {
@@ -7087,7 +7064,7 @@
       "_origin": "ast",
       "id": "components_guardian_medicationform_medicationform",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "medicationform()"
     },
     {
@@ -7412,8 +7389,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "wakewordsettings.tsx"
     },
     {
@@ -7423,8 +7400,8 @@
       "source_location": "L6",
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_default_wake_word",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "default_wake_word"
     },
     {
@@ -7436,8 +7413,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_wakewordsettingsprops",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "wakewordsettingsprops"
     },
     {
@@ -7448,8 +7425,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "components_guardian_wakewordsettings_wakewordsettings",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "wakewordsettings()"
     },
     {
@@ -8106,8 +8083,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_auth_authoptions_session",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "session"
     },
     {
@@ -8153,8 +8130,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_auth_permissions_autherror",
-      "community": 56,
-      "community_name": "permissions.ts",
+      "community": 55,
+      "community_name": "prisma.ts",
       "norm_label": "autherror"
     },
     {
@@ -8165,8 +8142,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_auth_permissions_autherror_constructor",
-      "community": 56,
-      "community_name": "permissions.ts",
+      "community": 55,
+      "community_name": "prisma.ts",
       "norm_label": ".constructor()"
     },
     {
@@ -8190,7 +8167,7 @@
       "_origin": "ast",
       "id": "lib_auth_permissions_requirepatientaccess",
       "community": 89,
-      "community_name": "requirePatientAccess",
+      "community_name": "authErrorResponse",
       "norm_label": "requirepatientaccess()"
     },
     {
@@ -8214,7 +8191,7 @@
       "_origin": "ast",
       "id": "lib_auth_permissions_requireguardianaccess",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "requireguardianaccess()"
     },
     {
@@ -8225,7 +8202,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_auth_permissions_autherrorresponse",
-      "community": 58,
+      "community": 89,
       "community_name": "authErrorResponse",
       "norm_label": "autherrorresponse()"
     },
@@ -8272,45 +8249,9 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_calendar_calendarevents_buildrecentcalendarevents",
-      "community": 104,
-      "community_name": "token/route.ts",
+      "community": 107,
+      "community_name": "calendarEvents.ts",
       "norm_label": "buildrecentcalendarevents()"
-    },
-    {
-      "label": "todayStartKst()",
-      "file_type": "code",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L99",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_calendar_calendarevents_todaystartkst",
-      "community": 107,
-      "community_name": "calendarEvents.ts",
-      "norm_label": "todaystartkst()"
-    },
-    {
-      "label": "takeTodaysNewCalendarEvents()",
-      "file_type": "code",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L110",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_calendar_calendarevents_taketodaysnewcalendarevents",
-      "community": 107,
-      "community_name": "calendarEvents.ts",
-      "norm_label": "taketodaysnewcalendarevents()"
-    },
-    {
-      "label": "buildTodaysNewCalendarEventsContext()",
-      "file_type": "code",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L129",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext",
-      "community": 107,
-      "community_name": "calendarEvents.ts",
-      "norm_label": "buildtodaysnewcalendareventscontext()"
     },
     {
       "label": "detectCalendarIntent.ts",
@@ -8415,8 +8356,8 @@
       "source_location": "L19",
       "_origin": "ast",
       "id": "lib_db_prisma_prisma",
-      "community": 55,
-      "community_name": "prisma.ts",
+      "community": 58,
+      "community_name": "prisma",
       "norm_label": "prisma"
     },
     {
@@ -8426,7 +8367,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_db_types",
-      "community": 91,
+      "community": 9,
       "community_name": "types.ts",
       "norm_label": "types.ts"
     },
@@ -8439,8 +8380,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_userrole",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 7,
+      "community_name": "authOptions.ts",
       "norm_label": "userrole"
     },
     {
@@ -8450,8 +8391,8 @@
       "source_location": "L9",
       "_origin": "ast",
       "id": "lib_db_types_dementia_stage_values",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 112,
+      "community_name": "DementiaStageSettings.tsx",
       "norm_label": "dementia_stage_values"
     },
     {
@@ -8463,8 +8404,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_dementiastage",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 104,
+      "community_name": "token/route.ts",
       "norm_label": "dementiastage"
     },
     {
@@ -8475,8 +8416,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_isdementiastage",
-      "community": 112,
-      "community_name": "[patientId]/route.ts",
+      "community": 58,
+      "community_name": "prisma",
       "norm_label": "isdementiastage()"
     },
     {
@@ -8486,8 +8427,8 @@
       "source_location": "L16",
       "_origin": "ast",
       "id": "lib_db_types_dementia_stage_labels",
-      "community": 91,
-      "community_name": "types.ts",
+      "community": 112,
+      "community_name": "DementiaStageSettings.tsx",
       "norm_label": "dementia_stage_labels"
     },
     {
@@ -8523,7 +8464,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_turnrole",
-      "community": 91,
+      "community": 9,
       "community_name": "types.ts",
       "norm_label": "turnrole"
     },
@@ -8536,7 +8477,7 @@
       "_origin": "ast",
       "id": "lib_db_types_isuserrole",
       "community": 91,
-      "community_name": "types.ts",
+      "community_name": "register/route.ts",
       "norm_label": "isuserrole()"
     },
     {
@@ -8583,8 +8524,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_parsetags",
-      "community": 89,
-      "community_name": "requirePatientAccess",
+      "community": 99,
+      "community_name": "pineconeClient.ts",
       "norm_label": "parsetags()"
     },
     {
@@ -8608,7 +8549,7 @@
       "_origin": "ast",
       "id": "lib_db_types_isvalidtimestring",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "isvalidtimestring()"
     },
     {
@@ -8620,7 +8561,7 @@
       "_origin": "ast",
       "id": "lib_db_types_parseremindertimes",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "parseremindertimes()"
     },
     {
@@ -8632,7 +8573,7 @@
       "_origin": "ast",
       "id": "lib_db_types_serializeremindertimes",
       "community": 58,
-      "community_name": "authErrorResponse",
+      "community_name": "prisma",
       "norm_label": "serializeremindertimes()"
     },
     {
@@ -8642,8 +8583,8 @@
       "source_location": "L83",
       "_origin": "ast",
       "id": "lib_db_types_default_widget_order",
-      "community": 1,
-      "community_name": "preferences/route.ts",
+      "community": 60,
+      "community_name": "guardian/page.tsx",
       "norm_label": "default_widget_order"
     },
     {
@@ -8668,7 +8609,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_db_types_dashboardlayout",
-      "community": 91,
+      "community": 9,
       "community_name": "types.ts",
       "norm_label": "dashboardlayout"
     },
@@ -8763,8 +8704,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_db_types_meetsalertthreshold",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "meetsalertthreshold()"
     },
     {
@@ -8785,8 +8726,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_alertdispatcher",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "alertdispatcher.ts"
     },
     {
@@ -8797,8 +8738,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_alertdispatcher_dispatchmoodalerts",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "dispatchmoodalerts()"
     },
     {
@@ -8808,7 +8749,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "emergencydispatcher.ts"
     },
@@ -8819,7 +8760,7 @@
       "source_location": "L13",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_trigger_labels",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "trigger_labels"
     },
@@ -8832,7 +8773,7 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_guardiantarget",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "guardiantarget"
     },
@@ -8843,7 +8784,7 @@
       "source_location": "L28",
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_voice_distress_phrases",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "voice_distress_phrases"
     },
@@ -8855,7 +8796,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_detectvoicedistress",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "detectvoicedistress()"
     },
@@ -8867,7 +8808,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_maybetriggervoicedistress",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "maybetriggervoicedistress()"
     },
@@ -8891,7 +8832,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_emergencydispatcher_fallbacktosms",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "fallbacktosms()"
     },
@@ -8903,7 +8844,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "medicationreminderdispatcher.ts"
     },
     {
@@ -8915,7 +8856,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_kstinstant",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "kstinstant()"
     },
     {
@@ -8927,7 +8868,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_todaykstdatekey",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "todaykstdatekey()"
     },
     {
@@ -8939,7 +8880,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_adddays",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "adddays()"
     },
     {
@@ -8951,7 +8892,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_findduedatekey",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "findduedatekey()"
     },
     {
@@ -8964,7 +8905,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_duemedication",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "duemedication"
     },
     {
@@ -8976,7 +8917,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_checkandsendmedicationreminders",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "checkandsendmedicationreminders()"
     },
     {
@@ -8988,7 +8929,7 @@
       "_origin": "ast",
       "id": "lib_guardian_medicationreminderdispatcher_sendmedicationreminder",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "sendmedicationreminder()"
     },
     {
@@ -8998,8 +8939,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_notify",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "notify.ts"
     },
     {
@@ -9011,8 +8952,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_guardian_notify_notifypayload",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "notifypayload"
     },
     {
@@ -9023,8 +8964,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_notify_notifyguardianbychannel",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "notifyguardianbychannel()"
     },
     {
@@ -9034,8 +8975,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_resendclient",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "resendclient.ts"
     },
     {
@@ -9046,8 +8987,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_resendclient_isresendconfigured",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "isresendconfigured()"
     },
     {
@@ -9058,8 +8999,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_resendclient_sendemail",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "sendemail()"
     },
     {
@@ -9128,7 +9069,7 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_twilioclient",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "twilioclient.ts"
     },
@@ -9140,7 +9081,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_messages_url",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "messages_url()"
     },
@@ -9152,7 +9093,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_istwilioconfigured",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "istwilioconfigured()"
     },
@@ -9164,7 +9105,7 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_twilioclient_sendsms",
-      "community": 9,
+      "community": 83,
       "community_name": "emergencyDispatcher.ts",
       "norm_label": "sendsms()"
     },
@@ -9175,8 +9116,8 @@
       "source_location": "L1",
       "_origin": "ast",
       "id": "lib_guardian_webpush",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "webpush.ts"
     },
     {
@@ -9188,8 +9129,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_guardian_webpush_pushsubscriptioninput",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "pushsubscriptioninput"
     },
     {
@@ -9200,8 +9141,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_webpush_ispushconfigured",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "ispushconfigured()"
     },
     {
@@ -9212,8 +9153,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_webpush_ensureconfigured",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "ensureconfigured()"
     },
     {
@@ -9225,8 +9166,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_guardian_webpush_pushpayload",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "pushpayload"
     },
     {
@@ -9237,8 +9178,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_guardian_webpush_sendpush",
-      "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community": 64,
+      "community_name": "notify.ts",
       "norm_label": "sendpush()"
     },
     {
@@ -9302,77 +9243,6 @@
       "community": 14,
       "community_name": "useConversationEngine.ts",
       "norm_label": "streamchat()"
-    },
-    {
-      "label": "dueMedicationContext.ts",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "duemedicationcontext.ts"
-    },
-    {
-      "label": "DUE_MEDICATION_WINDOW_MINUTES",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L7",
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext_due_medication_window_minutes",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "due_medication_window_minutes"
-    },
-    {
-      "label": "DueMedication",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L9",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext_duemedication",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "duemedication"
-    },
-    {
-      "label": "findDueUnconfirmedMedication()",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L22",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "finddueunconfirmedmedication()"
-    },
-    {
-      "label": "resolveConfirmationDateKey()",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L53",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext_resolveconfirmationdatekey",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "resolveconfirmationdatekey()"
-    },
-    {
-      "label": "buildDueMedicationContext()",
-      "file_type": "code",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L61",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_medication_duemedicationcontext_buildduemedicationcontext",
-      "community": 109,
-      "community_name": "dueMedicationContext.ts",
-      "norm_label": "buildduemedicationcontext()"
     },
     {
       "label": "embedClient.ts",
@@ -9680,8 +9550,8 @@
       "_callable": true,
       "_origin": "ast",
       "id": "lib_memory_pineconeclient_searchmemories",
-      "community": 99,
-      "community_name": "pineconeClient.ts",
+      "community": 0,
+      "community_name": "chat/route.ts",
       "norm_label": "searchmemories()"
     },
     {
@@ -9801,8 +9671,8 @@
       "_callable_class": true,
       "_origin": "ast",
       "id": "lib_moodanalysis_moodresult",
-      "community": 84,
-      "community_name": "HistoryView.tsx",
+      "community": 57,
+      "community_name": "moodAnalysis.ts",
       "norm_label": "moodresult"
     },
     {
@@ -9911,64 +9781,6 @@
       "community": 104,
       "community_name": "token/route.ts",
       "norm_label": "buildbasepersonaprompt()"
-    },
-    {
-      "label": "wakeGreeting.ts",
-      "file_type": "code",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "lib_session_wakegreeting",
-      "community": 111,
-      "community_name": "wakeGreeting.ts",
-      "norm_label": "wakegreeting.ts"
-    },
-    {
-      "label": "DEFAULT_MORNING_WINDOW",
-      "file_type": "code",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L6",
-      "_origin": "ast",
-      "id": "lib_session_wakegreeting_default_morning_window",
-      "community": 111,
-      "community_name": "wakeGreeting.ts",
-      "norm_label": "default_morning_window"
-    },
-    {
-      "label": "kstMinutesOfDay()",
-      "file_type": "code",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L10",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_session_wakegreeting_kstminutesofday",
-      "community": 111,
-      "community_name": "wakeGreeting.ts",
-      "norm_label": "kstminutesofday()"
-    },
-    {
-      "label": "todayDateKeyKst()",
-      "file_type": "code",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L22",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_session_wakegreeting_todaydatekeykst",
-      "community": 111,
-      "community_name": "wakeGreeting.ts",
-      "norm_label": "todaydatekeykst()"
-    },
-    {
-      "label": "buildMorningGreetingContext()",
-      "file_type": "code",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L36",
-      "_callable": true,
-      "_origin": "ast",
-      "id": "lib_session_wakegreeting_buildmorninggreetingcontext",
-      "community": 111,
-      "community_name": "wakeGreeting.ts",
-      "norm_label": "buildmorninggreetingcontext()"
     },
     {
       "label": "speechQueue.ts",
@@ -11276,7 +11088,7 @@
       "_origin": "ast",
       "id": "scripts_check_reminder_scheduling",
       "community": 9,
-      "community_name": "emergencyDispatcher.ts",
+      "community_name": "types.ts",
       "norm_label": "check-reminder-scheduling.ts"
     },
     {
@@ -30282,7 +30094,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "app/api/patient/dashboard/route.ts",
-      "source_location": "L14",
+      "source_location": "L19",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route",
@@ -30358,7 +30170,7 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route",
-      "target": "lib_medication_duemedicationcontext",
+      "target": "lib_db_types",
       "confidence_score": 1.0
     },
     {
@@ -30370,7 +30182,31 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route",
-      "target": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
+      "target": "lib_db_types_parseremindertimes",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/patient/dashboard/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_patient_dashboard_route",
+      "target": "lib_guardian_medicationreminderdispatcher",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "app/api/patient/dashboard/route.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_patient_dashboard_route",
+      "target": "lib_guardian_medicationreminderdispatcher_findduedatekey",
       "confidence_score": 1.0
     },
     {
@@ -30379,7 +30215,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/patient/dashboard/route.ts",
-      "source_location": "L55",
+      "source_location": "L71",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route_get",
@@ -30391,7 +30227,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/patient/dashboard/route.ts",
-      "source_location": "L16",
+      "source_location": "L21",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route_get",
@@ -30403,11 +30239,23 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/patient/dashboard/route.ts",
-      "source_location": "L44",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_patient_dashboard_route_get",
-      "target": "lib_medication_duemedicationcontext_finddueunconfirmedmedication"
+      "target": "lib_db_types_parseremindertimes"
+    },
+    {
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "app/api/patient/dashboard/route.ts",
+      "source_location": "L56",
+      "weight": 1.0,
+      "_origin": "ast",
+      "source": "app_api_patient_dashboard_route_get",
+      "target": "lib_guardian_medicationreminderdispatcher_findduedatekey"
     },
     {
       "relation": "contains",
@@ -30684,91 +30532,8 @@
     {
       "relation": "contains",
       "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L15",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "app_api_realtime_medication_confirm_route_post",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "lib_auth_authoptions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "lib_db_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "lib_db_prisma_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "lib_medication_duemedicationcontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L4",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route",
-      "target": "lib_medication_duemedicationcontext_resolveconfirmationdatekey",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/api/realtime/medication-confirm/route.ts",
-      "source_location": "L28",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_medication_confirm_route_post",
-      "target": "lib_medication_duemedicationcontext_resolveconfirmationdatekey"
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L25",
+      "source_location": "L23",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -30812,18 +30577,6 @@
       "confidence_score": 1.0
     },
     {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L5",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route",
-      "target": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext",
-      "confidence_score": 1.0
-    },
-    {
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -30852,7 +30605,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L11",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -30864,35 +30617,11 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L11",
+      "source_location": "L9",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
       "target": "lib_db_types_dementiastage",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route",
-      "target": "lib_medication_duemedicationcontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L8",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route",
-      "target": "lib_medication_duemedicationcontext_buildduemedicationcontext",
       "confidence_score": 1.0
     },
     {
@@ -30972,7 +30701,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L10",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
@@ -30984,35 +30713,11 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L10",
+      "source_location": "L8",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route",
       "target": "lib_persona_buildbasepersonaprompt",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route",
-      "target": "lib_session_wakegreeting",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route",
-      "target": "lib_session_wakegreeting_buildmorninggreetingcontext",
       "confidence_score": 1.0
     },
     {
@@ -31021,7 +30726,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L51",
+      "source_location": "L40",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -31033,31 +30738,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L55",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route_get",
-      "target": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L54",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route_get",
-      "target": "lib_medication_duemedicationcontext_buildduemedicationcontext"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L49",
+      "source_location": "L38",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -31069,7 +30750,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L52",
+      "source_location": "L41",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -31081,7 +30762,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L53",
+      "source_location": "L42",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
@@ -31093,23 +30774,11 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L69",
+      "source_location": "L55",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_api_realtime_token_route_get",
       "target": "lib_persona_buildbasepersonaprompt"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "app/api/realtime/token/route.ts",
-      "source_location": "L56",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "app_api_realtime_token_route_get",
-      "target": "lib_session_wakegreeting_buildmorninggreetingcontext"
     },
     {
       "relation": "contains",
@@ -33113,7 +32782,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "app/page.tsx",
-      "source_location": "L247",
+      "source_location": "L236",
       "weight": 1.0,
       "_origin": "ast",
       "source": "app_page_homepage",
@@ -36655,17 +36324,6 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L129",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents",
-      "target": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
       "source_location": "L5",
       "weight": 1.0,
       "_origin": "ast",
@@ -36682,28 +36340,6 @@
       "_origin": "ast",
       "source": "lib_calendar_calendarevents",
       "target": "lib_calendar_calendarevents_handlecalendarturn",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L110",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents",
-      "target": "lib_calendar_calendarevents_taketodaysnewcalendarevents",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L99",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents",
-      "target": "lib_calendar_calendarevents_todaystartkst",
       "confidence_score": 1.0
     },
     {
@@ -36807,18 +36443,6 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L134",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext",
-      "target": "lib_calendar_calendarevents_formatdatelabel",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
       "source_location": "L34",
       "weight": 1.0,
       "_origin": "ast",
@@ -36861,30 +36485,6 @@
       "_origin": "ast",
       "source": "lib_calendar_calendarevents_handlecalendarturn",
       "target": "lib_memory_photocontext_isnegativereply"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L114",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents_taketodaysnewcalendarevents",
-      "target": "lib_calendar_calendarevents_todaystartkst",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/calendar/calendarEvents.ts",
-      "source_location": "L130",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_calendar_calendarevents_buildtodaysnewcalendareventscontext",
-      "target": "lib_calendar_calendarevents_taketodaysnewcalendarevents",
-      "confidence_score": 1.0
     },
     {
       "relation": "contains",
@@ -37015,18 +36615,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_db_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "lib/memory/familyContext.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -37068,18 +36656,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_music_recentplays",
-      "target": "lib_db_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
       "target": "lib_db_prisma",
       "confidence_score": 1.0
     },
@@ -37159,18 +36735,6 @@
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_db_prisma_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "lib/memory/familyContext.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -37212,18 +36776,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_music_recentplays",
-      "target": "lib_db_prisma_prisma",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L1",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
       "target": "lib_db_prisma_prisma",
       "confidence_score": 1.0
     },
@@ -37586,18 +37138,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_db_types",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "lib/moodAnalysis.ts",
       "source_location": "L1",
       "weight": 1.0,
@@ -37772,30 +37312,6 @@
       "weight": 1.0,
       "_origin": "ast",
       "source": "lib_guardian_medicationreminderdispatcher_checkandsendmedicationreminders",
-      "target": "lib_db_types_parseremindertimes"
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L2",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_db_types_parseremindertimes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L30",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
       "target": "lib_db_types_parseremindertimes"
     },
     {
@@ -38231,18 +37747,6 @@
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_guardian_medicationreminderdispatcher",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
       "source_file": "scripts/check-reminder-scheduling.ts",
       "source_location": "L5",
       "weight": 1.0,
@@ -38322,42 +37826,6 @@
       "source": "lib_guardian_medicationreminderdispatcher_checkandsendmedicationreminders",
       "target": "lib_guardian_medicationreminderdispatcher_findduedatekey",
       "confidence_score": 1.0
-    },
-    {
-      "relation": "imports",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L3",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_guardian_medicationreminderdispatcher_findduedatekey",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L31",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
-      "target": "lib_guardian_medicationreminderdispatcher_findduedatekey"
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L55",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext_resolveconfirmationdatekey",
-      "target": "lib_guardian_medicationreminderdispatcher_findduedatekey"
     },
     {
       "relation": "imports",
@@ -38793,73 +38261,6 @@
       "_origin": "ast",
       "source": "lib_llmstream",
       "target": "lib_llmstream_streamchatoptions",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L61",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_buildduemedicationcontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L7",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_due_medication_window_minutes",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L9",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_duemedication",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L53",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_resolveconfirmationdatekey",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/medication/dueMedicationContext.ts",
-      "source_location": "L62",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_medication_duemedicationcontext_buildduemedicationcontext",
-      "target": "lib_medication_duemedicationcontext_finddueunconfirmedmedication",
       "confidence_score": 1.0
     },
     {
@@ -39507,74 +38908,6 @@
       "_origin": "ast",
       "source": "lib_persona_buildbasepersonaprompt",
       "target": "lib_persona_buildstageguidance",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L36",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
-      "target": "lib_session_wakegreeting_buildmorninggreetingcontext",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L6",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
-      "target": "lib_session_wakegreeting_default_morning_window",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L10",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
-      "target": "lib_session_wakegreeting_kstminutesofday",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L22",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting",
-      "target": "lib_session_wakegreeting_todaydatekeykst",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L43",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting_buildmorninggreetingcontext",
-      "target": "lib_session_wakegreeting_kstminutesofday",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "calls",
-      "context": "call",
-      "confidence": "EXTRACTED",
-      "source_file": "lib/session/wakeGreeting.ts",
-      "source_location": "L38",
-      "weight": 1.0,
-      "_origin": "ast",
-      "source": "lib_session_wakegreeting_buildmorninggreetingcontext",
-      "target": "lib_session_wakegreeting_todaydatekeykst",
       "confidence_score": 1.0
     },
     {
@@ -47353,5 +46686,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d1778bf9b38614a683a3955b4276651e19953844"
+  "built_at_commit": "92c50f6cd9b776a62021b6c3437c7f9bfaaeeeed"
 }

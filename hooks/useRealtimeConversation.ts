@@ -326,6 +326,32 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           })();
           return;
         }
+        if (e.type === "response.function_call_arguments.done" && e.name === "confirm_medication" && e.call_id) {
+          void (async () => {
+            let medicationId = "";
+            let reminderTime = "";
+            try {
+              const args = JSON.parse(e.arguments ?? "{}") as { medicationId?: string; reminderTime?: string };
+              medicationId = args.medicationId?.trim() ?? "";
+              reminderTime = args.reminderTime?.trim() ?? "";
+            } catch {}
+            const callId = e.call_id as string;
+            let output = "복약 확인을 저장하지 못했어요.";
+            if (medicationId && reminderTime) {
+              const res = await fetch("/api/realtime/medication-confirm", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ medicationId, reminderTime }),
+              }).catch(() => null);
+              if (res && res.ok) output = "복약 확인을 저장했어요.";
+            }
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output,
+            }}));
+            dataChannel.send(JSON.stringify({ type: "response.create" }));
+          })();
+          return;
+        }
         if (e.type === "response.function_call_arguments.done" && e.name === "play_song" && e.call_id) {
           void (async () => {
             let query = "";

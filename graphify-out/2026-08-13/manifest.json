@@ -230,8 +230,8 @@
     "semantic_hash": "52848bfbf5f771540bc258fc63ea6ea9"
   },
   "app/api/patient/dashboard/route.ts": {
-    "mtime": 1786606994.809818,
-    "ast_hash": "f2f42abfbbc173fd30caeb20f7710d15",
+    "mtime": 1786601511.4137437,
+    "ast_hash": "b04e843f4e52f7700328c4c41b9b5ff4",
     "semantic_hash": ""
   },
   "app/api/patient/memories/route.ts": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "app/page.tsx": {
-    "mtime": 1786606989.1204753,
-    "ast_hash": "c67171647c83073f497d0867ee2675e1",
+    "mtime": 1786601522.382349,
+    "ast_hash": "0a9b18c5c53e2fb8018ca8351117b2ea",
     "semantic_hash": ""
   },
   "app/signup/page.tsx": {
@@ -1280,18 +1280,18 @@
     "semantic_hash": ""
   },
   "app/api/realtime/token/route.ts": {
-    "mtime": 1786606934.6805942,
-    "ast_hash": "1bb742c07af97797f38a416d7915795e",
+    "mtime": 1786588119.4109085,
+    "ast_hash": "6b3474f8a406741ebb1616daefeb0572",
     "semantic_hash": ""
   },
   "hooks/useRealtimeConversation.ts": {
-    "mtime": 1786607004.5332184,
-    "ast_hash": "b89688719e2f22024111bfeeed5e4cc4",
+    "mtime": 1786603309.6246955,
+    "ast_hash": "61f08f3d41671b1d0f1e36f8f385d154",
     "semantic_hash": ""
   },
   "lib/calendar/calendarEvents.ts": {
-    "mtime": 1786606842.3575845,
-    "ast_hash": "e0afdc8190217e2d3fd0f43883707cef",
+    "mtime": 1786496789.702818,
+    "ast_hash": "ac84fb356e9580ed623d13c1fb277c80",
     "semantic_hash": ""
   },
   "lib/calendar/detectCalendarIntent.ts": {
@@ -1417,21 +1417,6 @@
   "docs/superpowers/specs/2026-08-13-dog-mascot-3d-design.md": {
     "mtime": 1786551750.346326,
     "ast_hash": "cef36461c417019dfd7963697d5966ab",
-    "semantic_hash": ""
-  },
-  "app/api/realtime/medication-confirm/route.ts": {
-    "mtime": 1786606976.550361,
-    "ast_hash": "c666d6d5a445096e4e2797022f829f47",
-    "semantic_hash": ""
-  },
-  "lib/medication/dueMedicationContext.ts": {
-    "mtime": 1786606962.4180777,
-    "ast_hash": "c881d3b42a270054f8c35a18aa0cec31",
-    "semantic_hash": ""
-  },
-  "lib/session/wakeGreeting.ts": {
-    "mtime": 1786606881.8416,
-    "ast_hash": "2fa04e2b4231ec9260a3861a5c2cdb1e",
     "semantic_hash": ""
   }
 }
