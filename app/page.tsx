@@ -38,6 +38,7 @@ const DEFAULT_SUBTITLE = "오늘도 기분 좋은 하루네요. 필요한 것이
 interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
   upcomingPlan: { title: string; date: string } | null;
+  upcomingEvent: { title: string; date: string } | null;
   pendingMessageFrom: string | null;
   dueMedication: { name: string; dosage: string; time: string } | null;
 }
@@ -235,6 +236,17 @@ export default function HomePage() {
               dashboard?.upcomingPlan
                 ? `${formatPlanDate(dashboard.upcomingPlan.date)} - ${dashboard.upcomingPlan.title}`
                 : "다가오는 일정이 없어요."
+            }
+          />
+
+          <DashboardCard
+            icon="🗓️"
+            iconClassName="bg-violet-500/20 text-violet-300"
+            title="다가오는 일정"
+            description={
+              dashboard?.upcomingEvent
+                ? `${formatPlanDate(dashboard.upcomingEvent.date)} - ${dashboard.upcomingEvent.title}`
+                : "등록된 일정이 없어요."
             }
           />
 

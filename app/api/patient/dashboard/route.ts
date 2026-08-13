@@ -20,7 +20,7 @@ export async function GET() {
     const now = new Date();
     const until = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [familyMembers, upcomingPlan, pendingMessage, medications] = await Promise.all([
+    const [familyMembers, upcomingPlan, upcomingEvent, pendingMessage, medications] = await Promise.all([
       prisma.familyMember.findMany({
         where: { patientId },
         take: 4,
@@ -28,6 +28,15 @@ export async function GET() {
         select: { name: true, relation: true },
       }),
       prisma.familyPlan.findFirst({
+        where: { patientId, date: { gte: now, lte: until } },
+        orderBy: { date: "asc" },
+        select: { title: true, date: true },
+      }),
+      // FamilyPlan(방문/생일 등 가족 일정)과 별개다 - 보호자가 웹에서 등록하거나
+      // 환자가 대화 중 확인한 실제 캘린더 일정(CalendarEvent)은 지금까지 홈 화면
+      // 어디에도 안 보였다(네이티브 폰 캘린더 동기화나 AI 음성 언급으로만 확인
+      // 가능했음) - "일정란에 안 뜬다"는 보고와 일치해서 카드로 노출한다.
+      prisma.calendarEvent.findFirst({
         where: { patientId, date: { gte: now, lte: until } },
         orderBy: { date: "asc" },
         select: { title: true, date: true },
@@ -57,6 +66,7 @@ export async function GET() {
     return Response.json({
       familyMembers,
       upcomingPlan: upcomingPlan ? { title: upcomingPlan.title, date: upcomingPlan.date.toISOString() } : null,
+      upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: upcomingEvent.date.toISOString() } : null,
       pendingMessageFrom: pendingMessage?.fromName ?? null,
       dueMedication,
     });
