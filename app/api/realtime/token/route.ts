@@ -193,9 +193,6 @@ ${recentPlays}
           model: REALTIME_DEPLOYMENT,
           instructions,
           audio,
-          input_audio_transcription: {
-            model: "whisper-1",
-          },
           tools: [{
             type: "function",
             name: "trigger_emergency",
