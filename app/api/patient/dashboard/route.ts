@@ -80,11 +80,16 @@ export async function GET() {
     ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     const upcomingEvent = combined[0] ?? null;
+    const upcomingEvents = combined.slice(0, 4).map((e) => ({
+      title: e.title,
+      date: new Date(e.date).toISOString(),
+    }));
     const dueMedication = due ? { id: due.id, name: due.name, dosage: due.dosage, time: due.reminderTime } : null;
 
     return Response.json({
       familyMembers,
       upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: new Date(upcomingEvent.date).toISOString() } : null,
+      upcomingEvents,
       recentMessages,
       latestNewMessage,
       dueMedication,

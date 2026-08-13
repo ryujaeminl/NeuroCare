@@ -37,6 +37,7 @@ const DEFAULT_SUBTITLE = "오늘도 기분 좋은 하루네요. 필요한 것이
 interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
   upcomingEvent: { title: string; date: string } | null;
+  upcomingEvents?: { title: string; date: string }[];
   recentMessages: { id: string; fromName: string; content: string; photoUrl: string | null }[];
   latestNewMessage: { id: string; fromName: string; content: string; photoUrl: string | null } | null;
   dueMedication: { id: string; name: string; dosage: string; time: string } | null;
@@ -336,11 +337,24 @@ export default function HomePage() {
             iconClassName="bg-violet-500/20 text-violet-300"
             title="다가오는 일정"
             description={
-              dashboard?.upcomingEvent
-                ? `${formatPlanDate(dashboard.upcomingEvent.date)} - ${dashboard.upcomingEvent.title}`
-                : "등록된 일정이 없어요."
+              dashboard && (dashboard.upcomingEvents?.length || 0) === 0
+                ? "등록된 일정이 없어요."
+                : "다가오는 일정 목록입니다."
             }
-          />
+          >
+            {dashboard && (dashboard.upcomingEvents?.length || 0) > 0 && (
+              <ul className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+                {dashboard.upcomingEvents?.map((event, idx) => (
+                  <li key={idx} className="flex items-center justify-between gap-2 truncate">
+                    <span className="shrink-0 font-semibold text-violet-300">
+                      {formatPlanDate(event.date)}
+                    </span>
+                    <span className="truncate font-medium text-foreground">{event.title}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </DashboardCard>
 
           <DashboardCard
             icon="💬"
