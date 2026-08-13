@@ -10,6 +10,8 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.CalendarContract
 import android.provider.Settings
 import android.webkit.CookieManager
@@ -414,6 +416,19 @@ class MainActivity : AppCompatActivity() {
 
     private val calendarHttpClient = OkHttpClient()
 
+    /** 보호자가 추가한 일정은 원래 onResume() 때만 동기화됐다 - 앱을 계속 켜둔 채
+     * 대화만 하는 게 일반적인 사용 패턴이라(음성 동반 앱), 그러면 다음 앱 재개까지
+     * 새 일정이 네이티브 캘린더에 영영 안 들어갔다("보호자가 추가했는데 안 보인다"는
+     * 보고와 일치). 화면이 떠 있는 동안 주기적으로도 확인한다. */
+    private val calendarSyncHandler = Handler(Looper.getMainLooper())
+    private val calendarSyncIntervalMs = 2 * 60 * 1000L
+    private val calendarSyncRunnable: Runnable = object : Runnable {
+        override fun run() {
+            syncUnsyncedCalendarEvents()
+            calendarSyncHandler.postDelayed(this, calendarSyncIntervalMs)
+        }
+    }
+
     /** onResume()(UI 스레드)과 WebAppBridge.syncCalendarNow()(WebView JS 브릿지 스레드 -
      *  closeApp()의 runOnUiThread 처리에서 보듯 UI 스레드가 아니다)가 겹쳐 호출될 수 있다.
      *  두 스레드가 동시에 건드리므로 단순 @Volatile 불리언의 확인-후-설정은 원자적이지
@@ -549,6 +564,8 @@ class MainActivity : AppCompatActivity() {
         reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
         stopWakeWordService()
         syncUnsyncedCalendarEvents()
+        calendarSyncHandler.removeCallbacks(calendarSyncRunnable)
+        calendarSyncHandler.postDelayed(calendarSyncRunnable, calendarSyncIntervalMs)
         webView.onResume()
         // JS 타이머를 먼저 풀어준 뒤에 재개 신호를 보내야 콜백이 확실히 실행된다.
         webView.evaluateJavascript("window.__neurocareResume && window.__neurocareResume()", null)
@@ -561,6 +578,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
+        calendarSyncHandler.removeCallbacks(calendarSyncRunnable)
         reportToServer("MainActivity.onPause: 웹 대화엔진 정지 + 웨이크워드 서비스 시작")
         // 근본 원인: 액티비티가 onPause되어도 안드로이드가 WebView의 JS(마이크/VAD/TTS
         // 재생 큐)를 자동으로 멈춰주지 않는다. 그대로 두면 네이티브 웨이크워드 감시와 웹
