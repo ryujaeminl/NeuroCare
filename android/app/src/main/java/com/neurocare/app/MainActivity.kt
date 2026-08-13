@@ -92,7 +92,10 @@ class MainActivity : AppCompatActivity() {
     private inner class WebAppBridge {
         @JavascriptInterface
         fun closeApp() {
-            runOnUiThread { finish() }
+            runOnUiThread {
+                moveTaskToBack(true)
+                finish()
+            }
         }
 
         /**

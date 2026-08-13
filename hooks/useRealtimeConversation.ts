@@ -26,7 +26,7 @@ declare global {
 // hooks/useConversationEngine.ts의 END_CONVERSATION_PATTERN과 글자 하나 다르지 않게 복사.
 // 이 훅 하나에서만 쓰고 기존 훅은 곧 삭제될 예정이라 공유 모듈로 뽑지 않는다.
 const END_CONVERSATION_PATTERN =
-  /^(대화종료|이제그만|그만할래|그만하자|끝낼래|끝내자|잘자|잘자요|안녕히주무세요|주무세요)[.!?~,]*$/;
+  /(복실아\s*)?(대화\s*종료|종료|앱\s*종료|이제\s*그만|그만\s*할래|그만\s*하자|끝낼래|끝내자|잘\s*자|잘\s*자요|잘\s*가|잘\s*가요|안녕히\s*주무세요|주무세요|안녕히\s*계세요)/i;
 
 // 연결은 계속 붙어있는데(마이크 살아있음 = 앱을 끈 게 아님) 환자가 이 시간 넘게
 // 한마디도 안 하면 이상 징후로 본다("대화 이어져야 하는데 응답이 없다"는 요청) -
@@ -502,8 +502,14 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ text: transcript }),
             });
-            if (END_CONVERSATION_PATTERN.test(transcript.trim().replace(/\s+/g, ""))) {
-              window.Android?.closeApp?.();
+            if (END_CONVERSATION_PATTERN.test(transcript.trim())) {
+              if (window.Android?.closeApp) {
+                window.Android.closeApp();
+              } else if (typeof navigator !== "undefined" && (navigator as any).app?.exitApp) {
+                (navigator as any).app.exitApp();
+              }
+              try { peerConnectionRef.current?.close(); } catch {}
+              setPhase("listening");
             }
             break;
           }
