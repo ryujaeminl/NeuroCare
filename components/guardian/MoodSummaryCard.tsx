@@ -49,11 +49,11 @@ export function MoodSummaryCard({ patientId, lastSession }: MoodSummaryCardProps
   const moodKey = mood && isMood(mood.mood) ? mood.mood : null;
 
   return (
-    <div className="animate-card-rise flex flex-col gap-3 rounded-lg border border-surface-border bg-surface p-5 transition hover:-translate-y-0.5 hover:shadow-md">
+    <div className="flex flex-col gap-3 rounded-2xl border border-surface-border bg-surface p-5">
       <h3 className="font-semibold">오늘의 기분</h3>
 
       {concerning && (
-        <p className="rounded-xl border border-amber-400/60 bg-amber-500/10 px-3 py-2 text-sm text-amber-800">
+        <p className="rounded-xl border border-amber-400/60 bg-amber-500/10 px-3 py-2 text-sm text-amber-200">
           최근 대화에서 우려되는 정서 신호가 반복되고 있습니다. 전문가 상담을 권장합니다.
         </p>
       )}
