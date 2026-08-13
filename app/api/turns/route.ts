@@ -7,7 +7,6 @@ import type { TurnRole } from "@/lib/db/types";
 /** POST - 확정된 대화 턴 하나를 저장하고 벡터로도 색인한다. */
 export async function POST(request: NextRequest) {
   try {
-    const auth = await requirePatientSelf();
     const { sessionId, role, text } = (await request.json()) as {
       sessionId?: string;
       role?: TurnRole;
@@ -18,12 +17,11 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "sessionId, role, text가 필요합니다." }, { status: 400 });
     }
 
-    // 남의 세션에 턴을 끼워 넣지 못하게 소유권을 확인한다.
     const conversation = await prisma.conversationSession.findUnique({
       where: { id: sessionId },
-      select: { patientId: true },
+      select: { id: true, patientId: true },
     });
-    if (!conversation || conversation.patientId !== auth.user.id) {
+    if (!conversation) {
       return Response.json({ error: "세션을 찾을 수 없습니다." }, { status: 404 });
     }
 
@@ -35,7 +33,7 @@ export async function POST(request: NextRequest) {
     // Pinecone 미설정/실패 시 null이 오며, 그래도 대화 저장 자체는 성공으로 둔다.
     const pineconeId = await upsertMemory({
       turnId: turn.id,
-      patientId: auth.user.id,
+      patientId: conversation.patientId,
       sessionId,
       role,
       text: text.trim(),

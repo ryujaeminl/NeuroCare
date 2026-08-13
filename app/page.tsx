@@ -56,10 +56,28 @@ export default function HomePage() {
   const [medsDismissed, setMedsDismissed] = useState(false);
   const [dashboard, setDashboard] = useState<DashboardSummary | null>(null);
   const [activeMessageModal, setActiveMessageModal] = useState<{ id: string; fromName: string; content: string; photoUrl: string | null } | null>(null);
+  const [unreadNotification, setUnreadNotification] = useState<{ id: string; fromName: string; content: string; photoUrl: string | null } | null>(null);
   const [readAloudActive, setReadAloudActive] = useState(false);
   const spokenMessageIdsRef = useRef<Set<string>>(new Set());
   const { data: session, status } = useSession();
   const router = useRouter();
+  const unreadNotificationRef = useRef(unreadNotification);
+  const dashboardRef = useRef(dashboard);
+
+  useEffect(() => { unreadNotificationRef.current = unreadNotification; }, [unreadNotification]);
+  useEffect(() => { dashboardRef.current = dashboard; }, [dashboard]);
+
+  useEffect(() => {
+    const handleOpenMessageEvent = () => {
+      const msgToShow = unreadNotificationRef.current || dashboardRef.current?.recentMessages?.[0];
+      if (msgToShow) {
+        setActiveMessageModal(msgToShow);
+        setUnreadNotification(null);
+      }
+    };
+    window.addEventListener("open-message-modal", handleOpenMessageEvent);
+    return () => window.removeEventListener("open-message-modal", handleOpenMessageEvent);
+  }, []);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -72,12 +90,12 @@ export default function HomePage() {
 
           if (data.latestNewMessage && !spokenMessageIdsRef.current.has(data.latestNewMessage.id)) {
             spokenMessageIdsRef.current.add(data.latestNewMessage.id);
-            setActiveMessageModal(data.latestNewMessage);
+            setUnreadNotification(data.latestNewMessage);
 
             if ("speechSynthesis" in window) {
               window.speechSynthesis.cancel();
               const utterance = new SpeechSynthesisUtterance(
-                `${data.latestNewMessage.fromName}님께 메시지가 도착했어요. 읽어드릴까요?`,
+                `보호자 ${data.latestNewMessage.fromName}님께 메시지가 도착했어요. 메시지를 보여드릴까요?`,
               );
               utterance.lang = "ko-KR";
               utterance.rate = 0.95;
@@ -107,6 +125,7 @@ export default function HomePage() {
 
   const handleDismissMessageModal = (msgId: string) => {
     setActiveMessageModal(null);
+    setUnreadNotification(null);
     setReadAloudActive(false);
     if ("speechSynthesis" in window) {
       window.speechSynthesis.cancel();
@@ -272,6 +291,34 @@ export default function HomePage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={engine.photo.url} alt={engine.photo.caption ?? "가족 사진"} className="w-full rounded-xl object-cover" />
             {engine.photo.caption && <p className="text-center text-sm text-muted-foreground">{engine.photo.caption}</p>}
+          </div>
+        )}
+
+        {unreadNotification && (
+          <div className="flex items-center justify-between gap-4 rounded-2xl border-2 border-amber-400/80 bg-amber-500/10 px-5 py-4 shadow-lg animate-bounce">
+            <div className="flex items-center gap-3 text-left">
+              <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500 text-xl font-bold text-slate-950">
+                💌
+              </span>
+              <div>
+                <p className="text-xs font-semibold text-amber-300">새 메시지가 도착했습니다</p>
+                <p className="font-bold text-foreground">
+                  {unreadNotification.fromName}님의 메시지
+                </p>
+                <p className="text-xs text-muted-foreground">
+                  &quot;보여줘&quot;라고 말씀하시거나 버튼을 누르세요.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setActiveMessageModal(unreadNotification);
+                setUnreadNotification(null);
+              }}
+              className="shrink-0 rounded-xl bg-amber-500 px-4 py-2 text-sm font-bold text-slate-950 shadow hover:brightness-110 active:scale-95"
+            >
+              메시지 보기
+            </button>
           </div>
         )}
 

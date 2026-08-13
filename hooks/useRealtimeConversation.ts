@@ -499,6 +499,12 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             if (transcript) {
               setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
               saveTurn("user", transcript);
+
+              if (/(보여\s*줘|메시지\s*보여|사진\s*보여|열어\s*줘|확인\s*할래|보여드릴|볼래)/i.test(transcript)) {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("open-message-modal"));
+                }
+              }
             }
 
             // '살려줘', '도와줘', '배 아파', '보호자 연락해줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출

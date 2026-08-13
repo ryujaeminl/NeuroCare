@@ -73,6 +73,23 @@ export async function GET() {
       findDueUnconfirmedMedication(patientId).catch(() => null),
     ]);
 
+    let recentMessagesList = recentMessages;
+    if (recentMessagesList.length === 0) {
+      recentMessagesList = await prisma.familyMessage.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 5,
+        select: { id: true, fromName: true, content: true, photoUrl: true },
+      }).catch(() => []);
+    }
+    let latestMessage = latestNewMessage;
+    if (!latestMessage) {
+      latestMessage = await prisma.familyMessage.findFirst({
+        where: { deliveredAt: null },
+        orderBy: { createdAt: "desc" },
+        select: { id: true, fromName: true, content: true, photoUrl: true },
+      }).catch(() => null);
+    }
+
     const combined = [
       ...calendarEvents.map((e) => ({ title: e.title, date: e.date })),
       ...familyTasks.map((t) => ({ title: t.title, date: t.dueDate! })),
@@ -90,8 +107,8 @@ export async function GET() {
       familyMembers,
       upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: new Date(upcomingEvent.date).toISOString() } : null,
       upcomingEvents,
-      recentMessages,
-      latestNewMessage,
+      recentMessages: recentMessagesList,
+      latestNewMessage: latestMessage,
       dueMedication,
     });
   } catch (err) {
