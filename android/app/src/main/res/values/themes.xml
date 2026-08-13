@@ -1,5 +1,5 @@
 <resources>
-    <style name="Theme.Neurocare" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="Theme.NeurocareGuardian" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="colorPrimary">#7dd3fc</item>
         <item name="colorPrimaryDark">#082f3a</item>
         <item name="android:windowBackground">#0b0f1a</item>

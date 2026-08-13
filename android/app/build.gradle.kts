@@ -4,49 +4,17 @@ plugins {
 }
 
 android {
-    namespace = "com.neurocare.app"
+    namespace = "com.neurocare.guardian"
     compileSdk = 34
 
-    flavorDimensions += "audience"
-
     defaultConfig {
-        applicationId = "com.neurocare.app"
+        applicationId = "com.neurocare.guardian"
         minSdk = 26
         targetSdk = 34
-        versionCode = 32
+        versionCode = 21
         versionName = "2.21"
 
-        // 배포된 Vercel 사이트 + GPU 서버(rookie-s52, systemd 상시구동)의 STT 백엔드
-        // (server/Dockerfile)를 ngrok 고정 도메인으로 노출해서 쓴다. Railway는 GPU 서버가
-        // 안정화되기 전 임시 백엔드였고 지금은 안 쓴다 - 더 이상 로컬 PC/터널에도 의존하지
-        // 않는다. LAN 개발로 되돌리려면 192.168.x/10.0.2.2로.
-        // 이 서버 네트워크가 443만 outbound로 열려있어(다른 포트는 다 막힘) cloudflared
-        // 터널(7844 필요)은 안 되고, 443을 쓰는 ngrok만 통과한다. 무료 고정 도메인이라
-        // 서버 재시작해도 이 값은 안 바뀐다.
-        buildConfigField("String", "BACKEND_HTTP_BASE", "\"https://candle-pointing-replay.ngrok-free.dev\"")
-        buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neuro-care-sand.vercel.app\"")
-        buildConfigField("String", "WAKE_WORD_LABEL", "\"복실아\"")
-        // 태블릿 1대 = 환자 1명 전제. 이 기기에서 등록된 성문의 ID.
-        buildConfigField("String", "SPEAKER_ID", "\"device\"")
-    }
-
-    productFlavors {
-        create("patient") {
-            dimension = "audience"
-            applicationIdSuffix = ".patient"
-            versionNameSuffix = "-patient"
-            buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neuro-care-sand.vercel.app\"")
-            buildConfigField("String", "WEBAPP_START_PATH", "\"/\"")
-            resValue("string", "app_name", "Neurocare Patient")
-        }
-        create("guardian") {
-            dimension = "audience"
-            applicationIdSuffix = ".guardian"
-            versionNameSuffix = "-guardian"
-            buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neurocare-care.vercel.app\"")
-            buildConfigField("String", "WEBAPP_START_PATH", "\"/\"")
-            resValue("string", "app_name", "Neurocare Guardian")
-        }
+        buildConfigField("String", "WEBAPP_BASE_URL", "\"https://neurocare-care.vercel.app\"")
     }
 
     buildFeatures {
@@ -72,9 +40,5 @@ android {
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation("androidx.webkit:webkit:1.12.1")
     implementation(libs.material)
-    implementation(libs.onnxruntime.android)
-    implementation(libs.okhttp)
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.9.0")
 }
