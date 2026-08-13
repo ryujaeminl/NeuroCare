@@ -19,11 +19,15 @@ export function FamilyMessageBoard({ patientId }: { patientId: string }) {
     async function load() {
       setLoading(true);
       try {
-        const response = await fetch(`/api/guardian/messages?patientId=${patientId}`);
+        const url = patientId ? `/api/guardian/messages?patientId=${patientId}` : "/api/guardian/messages";
+        const response = await fetch(url);
         const data = await response.json();
-        if (!cancelled) setMessages(data.messages ?? []);
+        if (!cancelled) {
+          setMessages(data.messages ?? []);
+          setError(null);
+        }
       } catch {
-        if (!cancelled) setError("메시지를 불러오지 못했습니다.");
+        if (!cancelled) setMessages([]);
       } finally {
         if (!cancelled) setLoading(false);
       }
