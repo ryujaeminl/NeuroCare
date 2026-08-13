@@ -27,6 +27,14 @@ declare global {
 const END_CONVERSATION_PATTERN =
   /^(대화종료|이제그만|그만할래|그만하자|끝낼래|끝내자|잘자|잘자요|안녕히주무세요|주무세요)[.!?~,]*$/;
 
+// 연결은 계속 붙어있는데(마이크 살아있음 = 앱을 끈 게 아님) 환자가 이 시간 넘게
+// 한마디도 안 하면 이상 징후로 본다("대화 이어져야 하는데 응답이 없다"는 요청) -
+// session_timeout 트리거(app/api/emergency, PATIENT_TRIGGER_TYPES에 이미 허용돼
+// 있었지만 실제로 만드는 코드가 없었음). 5분은 오탐(단순히 생각하거나 잠깐 조용한
+// 것)과 놓침 사이 절충값 - 너무 예민하면 사용자에게 알려주면 늘린다.
+const SESSION_TIMEOUT_MS = 5 * 60 * 1000;
+const SESSION_TIMEOUT_CHECK_INTERVAL_MS = 30 * 1000;
+
 /** Azure Realtime data channel이 보내는 서버 이벤트 중 이 훅이 실제로 쓰는 필드만 타입화한다. */
 interface RealtimeServerEvent {
   type: string;
@@ -64,6 +72,9 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const audioFrameRef = useRef<number | null>(null);
   const lipsyncRef = useRef<Lipsync | null>(null);
   const startedRef = useRef(false);
+  const lastUserSpeechAtRef = useRef<number | null>(null);
+  const sessionTimeoutFiredRef = useRef(false);
+  const sessionTimeoutIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // effect cleanup가 set(true)하는 취소 플래그. connect()는 await 뒤마다 이 값을 확인해
   // 언마운트가 getUserMedia/offer/answer 대기 중에 끼어든 경우 이미 닫힌 pc를 계속
   // 건드리지 않고 그 시점까지 확보한 리소스만 정리한 뒤 빠져나온다.
@@ -183,6 +194,21 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       }
       micStreamRef.current = mic;
       pc.addTrack(mic.getAudioTracks()[0]);
+
+      lastUserSpeechAtRef.current = Date.now();
+      sessionTimeoutFiredRef.current = false;
+      sessionTimeoutIntervalRef.current = setInterval(() => {
+        if (sessionTimeoutFiredRef.current) return;
+        if (pc.connectionState !== "connected") return; // 연결 자체가 끊긴 건 다른 문제(앱 종료 등)다.
+        if (!lastUserSpeechAtRef.current) return;
+        if (Date.now() - lastUserSpeechAtRef.current < SESSION_TIMEOUT_MS) return;
+        sessionTimeoutFiredRef.current = true;
+        void fetch("/api/emergency", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ triggerType: "session_timeout" }),
+        }).catch(() => {});
+      }, SESSION_TIMEOUT_CHECK_INTERVAL_MS);
 
       const dataChannel = pc.createDataChannel("realtime-channel");
       // 진단용(ponytail: 원인 잡히면 지운다) - 데이터채널이 열린 뒤 조용히 닫히거나
@@ -321,6 +347,8 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           case "input_audio_buffer.speech_started":
             setPhase("transcribing");
             setVadUserSpeaking(true);
+            lastUserSpeechAtRef.current = Date.now();
+            sessionTimeoutFiredRef.current = false;
             break;
           case "input_audio_buffer.speech_stopped":
             setVadUserSpeaking(false);
@@ -407,6 +435,8 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
     // 여기 하나로 모아 재사용한다. pc.close()는 마이크 트랙을 멈추지 않는다(WebRTC 스펙) -
     // 그대로 두면 훅이 정리된 뒤에도 브라우저 마이크 사용중 표시가 계속 떠 있는다.
     function teardownActiveConnection() {
+      if (sessionTimeoutIntervalRef.current !== null) clearInterval(sessionTimeoutIntervalRef.current);
+      sessionTimeoutIntervalRef.current = null;
       if (audioFrameRef.current !== null) cancelAnimationFrame(audioFrameRef.current);
       audioFrameRef.current = null;
       audioAnalyserRef.current = null;
