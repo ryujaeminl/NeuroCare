@@ -324,10 +324,12 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           void (async () => {
             let title = "";
             let date = "";
+            let notes = "";
             try {
-              const args = JSON.parse(e.arguments ?? "{}") as { title?: string; date?: string };
+              const args = JSON.parse(e.arguments ?? "{}") as { title?: string; date?: string; notes?: string };
               title = args.title?.trim() ?? "";
               date = args.date?.trim() ?? "";
+              notes = args.notes?.trim() ?? "";
             } catch {}
             const callId = e.call_id as string;
             let output = "일정을 저장하지 못했어요. 다시 한번 말씀해주시겠어요?";
@@ -336,7 +338,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
                 fetch("/api/realtime/calendar-event", {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify({ title, date }),
+                  body: JSON.stringify({ title, date, notes }),
                 });
               // 네트워크/일시적 DB 오류 대비 1회 재시도 - 그 이상은 모델이 대화로 재시도를 유도한다.
               // 짧은 대기 후 재요청(설계 스펙) - 즉시 재시도는 같은 순간의 장애를 다시 맞기 쉽다.
@@ -408,6 +410,9 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
                   body: JSON.stringify({ title: payload.title, videoId: payload.videoId }),
                 }).catch(() => {});
                 output = `"${payload.title}"을(를) 재생을 시작했어요.`;
+              } else {
+                window.Android?.openYoutubeSearch?.(query);
+                output = `"${query}"을(를) 유튜브에서 열었어요.`;
               }
             }
             dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {

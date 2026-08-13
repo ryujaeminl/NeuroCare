@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
+import { getSession, signIn } from "next-auth/react";
 import { useState } from "react";
 
 export default function LoginPage() {
@@ -25,7 +25,12 @@ export default function LoginPage() {
       return;
     }
 
-    router.push("/");
+    const session = await getSession();
+    if (session?.user?.role === "guardian") {
+      router.push("/guardian");
+    } else {
+      router.push("/");
+    }
     router.refresh();
   }
 

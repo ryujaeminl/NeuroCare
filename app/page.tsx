@@ -76,8 +76,12 @@ export default function HomePage() {
   // 먼저 로그인부터 시키는 게 맞다. status가 "loading"인 동안은 아직 세션 확인 중이라
   // 섣불리 리다이렉트하지 않는다.
   useEffect(() => {
-    if (status === "unauthenticated") router.replace("/login");
-  }, [status, router]);
+    if (status === "unauthenticated") {
+      router.replace("/login");
+    } else if (status === "authenticated" && session?.user?.role === "guardian") {
+      router.replace("/guardian");
+    }
+  }, [status, session?.user?.role, router]);
 
   // 연결은 RealtimeConversationProvider(루트 레이아웃)가 한 번만 만들고 여기서는
   // 구독만 한다 - 화면을 옮겨도(추억/기록/계정) 같은 대화가 그대로 이어진다.

@@ -47,9 +47,9 @@ export async function detectCalendarIntent(
         model: RESPONSES_MODEL,
         instructions:
           `오늘 날짜는 ${today}(${weekday})입니다. 이 요일을 기준으로 요일 계산을 ` +
-          `직접 하지 말고 그대로 활용하세요. 아래 사용자 발화에 "일정으로 등록해달라"는 ` +
-          `의도가 있으면(예: "다음 주 화요일에 병원 가야해", "모레 손녀 온다고 ` +
-          `일정에 넣어줘") {"title": "짧은 제목", "date": "YYYY-MM-DD"} 형식의 JSON ` +
+          `직접 하지 말고 그대로 활용하세요. 아래 사용자 발화에 "일정이나 알림으로 등록해달라"는 ` +
+          `의도가 있으면(예: "다음 주 화요일 8시에 병원 가야해", "8시에 알려줘", "모레 손녀 온다고 ` +
+          `일정에 넣어줘") {"title": "짧은 제목(시각 정보 포함)", "date": "YYYY-MM-DD"} 형식의 JSON ` +
           `만 답하세요. 의도가 없으면(그냥 하는 말, 질문, 과거 이야기 등) 정확히 ` +
           `NONE 이라고만 답하세요. JSON이나 NONE 외의 다른 설명은 절대 붙이지 마세요.`,
         input: latestUserText,

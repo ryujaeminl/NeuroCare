@@ -15,18 +15,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
   }
 
-  const body = (await request.json().catch(() => null)) as { title?: string; date?: string } | null;
+  const body = (await request.json().catch(() => null)) as { title?: string; date?: string; notes?: string } | null;
   const title = body?.title?.trim();
-  const date = body?.date ? new Date(body.date) : null;
+  const dateText = body?.date?.trim() ?? "";
+  const notes = body?.notes?.trim() || null;
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(dateText) ? new Date(`${dateText}T00:00:00.000Z`) : null;
   if (!title || !date || Number.isNaN(date.getTime())) {
-    return NextResponse.json({ error: "title과 유효한 date가 필요합니다." }, { status: 400 });
+    return NextResponse.json({ error: "title과 YYYY-MM-DD date가 필요합니다." }, { status: 400 });
   }
 
   try {
     await prisma.calendarEvent.create({
-      data: { patientId: session.user.id, title, date, source: "patient_voice" },
+      data: { patientId: session.user.id, title, date, notes, source: "patient_voice" },
     });
-  } catch {
+  } catch (err) {
+    console.error("Realtime 일정 저장 실패:", err);
     return NextResponse.json({ error: "일정 저장에 실패했습니다." }, { status: 500 });
   }
 
