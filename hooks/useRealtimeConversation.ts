@@ -16,6 +16,7 @@ declare global {
       closeApp?: () => void;
       syncCalendarNow?: () => void;
       openYoutubeSearch?: (query: string) => void;
+      openYoutubeVideo?: (videoId: string) => void;
     };
     __neurocarePause?: () => void;
     __neurocareResume?: () => void;

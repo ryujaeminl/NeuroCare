@@ -9,6 +9,7 @@ export interface MusicOverlayState {
 
 interface YTPlayer {
   setVolume: (volume: number) => void;
+  playVideo: () => void;
   destroy: () => void;
 }
 
@@ -21,10 +22,11 @@ interface YTPlayerErrorEvent {
 
 interface YTPlayerOptions {
   videoId: string;
-  playerVars?: Record<string, number>;
+  playerVars?: Record<string, number | string>;
   events?: {
     onReady?: (event: { target: YTPlayer }) => void;
     onError?: (event: YTPlayerErrorEvent) => void;
+    onStateChange?: (event: { target: YTPlayer; data: number }) => void;
   };
 }
 
@@ -64,12 +66,13 @@ function reportPlaybackIssue(message: string) {
   }).catch(() => undefined);
 }
 
-function openInYoutubeApp(query: string) {
-  if (window.Android?.openYoutubeSearch) {
-    window.Android.openYoutubeSearch(query);
+function openInYoutubeApp(videoId: string, title: string) {
+  if (window.Android?.openYoutubeVideo) {
+    window.Android.openYoutubeVideo(videoId);
   } else {
-    window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`, "_blank");
+    window.open(`https://www.youtube.com/watch?v=${encodeURIComponent(videoId)}`, "_blank", "noopener,noreferrer");
   }
+  reportPlaybackIssue(`YouTube direct playback fallback: videoId=${videoId} title=${title.slice(0, 80)}`);
 }
 
 const FADE_IN_MS = 1500;
@@ -117,18 +120,47 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
 
   useEffect(() => {
     let cancelled = false;
+    let playbackStarted = false;
+    let fallbackTimer: ReturnType<typeof setTimeout> | null = null;
+    const clearFallbackTimer = () => {
+      if (fallbackTimer !== null) clearTimeout(fallbackTimer);
+      fallbackTimer = null;
+    };
+    const fallBackToYoutube = () => {
+      if (cancelled || playbackStarted) return;
+      clearFallbackTimer();
+      fadeCleanupRef.current?.();
+      fadeCleanupRef.current = null;
+      playerRef.current?.destroy();
+      playerRef.current = null;
+      setHasError(true);
+      openInYoutubeApp(videoId, title);
+    };
     reportPlaybackIssue(`음악 임베드 시도: videoId=${videoId} title=${title.slice(0, 80)}`);
+    fallbackTimer = setTimeout(fallBackToYoutube, 8000);
     void loadYouTubeIframeApi().then(() => {
-      if (cancelled || !containerRef.current || !window.YT) return;
+      if (cancelled) return;
+      if (!containerRef.current || !window.YT) {
+        fallBackToYoutube();
+        return;
+      }
       playerRef.current = new window.YT.Player(containerRef.current, {
         videoId,
-        playerVars: { autoplay: 1, playsinline: 1 },
+        playerVars: { autoplay: 1, playsinline: 1, enablejsapi: 1, origin: window.location.origin },
         events: {
           onReady: (event) => {
+            event.target.playVideo();
             fadeCleanupRef.current?.();
             fadeCleanupRef.current = fadeInVolume(event.target);
           },
+          onStateChange: (event) => {
+            if (event.data !== 1) return;
+            playbackStarted = true;
+            clearFallbackTimer();
+            reportPlaybackIssue(`Music playback started: videoId=${videoId}`);
+          },
           onError: (event) => {
+            clearFallbackTimer();
             reportPlaybackIssue(
               `음악 임베드 실패: videoId=${videoId} title=${title.slice(0, 80)} errorCode=${event.data}`,
             );
@@ -139,13 +171,14 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
             setHasError(true);
             // 이 영상 자체가 임베드로 못 트는 경우(업로더가 막아둠 등)가 흔하다 -
             // 진단은 위에서 서버로 이미 올렸으니, 환자에게는 유튜브에서 바로 열어 준다.
-            openInYoutubeApp(title);
+            openInYoutubeApp(videoId, title);
           },
         },
       });
     });
     return () => {
       cancelled = true;
+      clearFallbackTimer();
       fadeCleanupRef.current?.();
       fadeCleanupRef.current = null;
       playerRef.current?.destroy();
@@ -159,7 +192,7 @@ function VideoContent({ videoId, title }: { videoId: string; title: string }) {
         <div className="flex aspect-video w-full flex-col items-center justify-center gap-2 p-3 text-center">
           <p className="text-sm">여기서는 재생할 수 없어 유튜브에서 열었어요.</p>
           <button
-            onClick={() => openInYoutubeApp(title)}
+            onClick={() => openInYoutubeApp(videoId, title)}
             className="rounded-full bg-accent px-3 py-1 text-xs font-medium text-accent-foreground"
           >
             다시 유튜브에서 열기

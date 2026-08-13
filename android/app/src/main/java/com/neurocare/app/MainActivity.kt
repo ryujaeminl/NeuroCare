@@ -134,6 +134,23 @@ class MainActivity : AppCompatActivity() {
          * 앱으로 바로 뜨고, 없으면 기본 브라우저로 열린다.
          */
         @JavascriptInterface
+        fun openYoutubeVideo(videoId: String) {
+            runOnUiThread {
+                try {
+                    startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("vnd.youtube:${Uri.encode(videoId)}")))
+                } catch (_: Exception) {
+                    try {
+                        startActivity(
+                            Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${Uri.encode(videoId)}")),
+                        )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "YouTube video launch failed: ${e.message}")
+                    }
+                }
+            }
+        }
+
+        @JavascriptInterface
         fun openYoutubeSearch(query: String) {
             runOnUiThread {
                 val searchUrl = "https://www.youtube.com/results?search_query=" +
