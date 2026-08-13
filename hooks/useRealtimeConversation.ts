@@ -32,8 +32,16 @@ const END_CONVERSATION_PATTERN =
 // session_timeout 트리거(app/api/emergency, PATIENT_TRIGGER_TYPES에 이미 허용돼
 // 있었지만 실제로 만드는 코드가 없었음). 5분은 오탐(단순히 생각하거나 잠깐 조용한
 // 것)과 놓침 사이 절충값 - 너무 예민하면 사용자에게 알려주면 늘린다.
+// 곧바로 SOS를 보내지 않는다 - 먼저 모델이 "괜찮으세요?"라고 한 번 안부를 묻고,
+// 그 뒤로도 CHECK_IN_GRACE_MS 동안 응답이 없을 때만 실제로 SOS를 보낸다(사용자
+// 확인 - 무응답 원인이 진짜 위급 상황이 아니라 단순히 조용히 있는 것일 수도 있어서
+// 한 번은 직접 불러 확인한다).
 const SESSION_TIMEOUT_MS = 5 * 60 * 1000;
-const SESSION_TIMEOUT_CHECK_INTERVAL_MS = 30 * 1000;
+const CHECK_IN_GRACE_MS = 90 * 1000;
+const SESSION_TIMEOUT_CHECK_INTERVAL_MS = 15 * 1000;
+const CHECK_IN_INSTRUCTIONS =
+  "환자가 5분 넘게 아무 말도 하지 않았습니다. 하던 이야기와 상관없이 지금 " +
+  "다정하게 이름을 부르며 '~~님, 괜찮으세요?'라고 안부를 물어보세요. 다른 말은 하지 마세요.";
 
 /** Azure Realtime data channel이 보내는 서버 이벤트 중 이 훅이 실제로 쓰는 필드만 타입화한다. */
 interface RealtimeServerEvent {
@@ -73,6 +81,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   const lipsyncRef = useRef<Lipsync | null>(null);
   const startedRef = useRef(false);
   const lastUserSpeechAtRef = useRef<number | null>(null);
+  const checkInSentAtRef = useRef<number | null>(null);
   const sessionTimeoutFiredRef = useRef(false);
   const sessionTimeoutIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   // effect cleanup가 set(true)하는 취소 플래그. connect()는 await 뒤마다 이 값을 확인해
@@ -196,12 +205,30 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       pc.addTrack(mic.getAudioTracks()[0]);
 
       lastUserSpeechAtRef.current = Date.now();
+      checkInSentAtRef.current = null;
       sessionTimeoutFiredRef.current = false;
+
+      const dataChannel = pc.createDataChannel("realtime-channel");
+
       sessionTimeoutIntervalRef.current = setInterval(() => {
         if (sessionTimeoutFiredRef.current) return;
         if (pc.connectionState !== "connected") return; // 연결 자체가 끊긴 건 다른 문제(앱 종료 등)다.
         if (!lastUserSpeechAtRef.current) return;
-        if (Date.now() - lastUserSpeechAtRef.current < SESSION_TIMEOUT_MS) return;
+        if (dataChannel.readyState !== "open") return;
+
+        if (!checkInSentAtRef.current) {
+          if (Date.now() - lastUserSpeechAtRef.current < SESSION_TIMEOUT_MS) return;
+          // 1단계: 곧바로 SOS가 아니라 먼저 모델이 안부를 묻는다.
+          checkInSentAtRef.current = Date.now();
+          dataChannel.send(JSON.stringify({
+            type: "response.create",
+            response: { instructions: CHECK_IN_INSTRUCTIONS },
+          }));
+          return;
+        }
+
+        // 2단계: 안부를 물은 뒤에도 그레이스 기간 동안 응답이 없으면 그때 SOS.
+        if (Date.now() - checkInSentAtRef.current < CHECK_IN_GRACE_MS) return;
         sessionTimeoutFiredRef.current = true;
         void fetch("/api/emergency", {
           method: "POST",
@@ -209,8 +236,6 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           body: JSON.stringify({ triggerType: "session_timeout" }),
         }).catch(() => {});
       }, SESSION_TIMEOUT_CHECK_INTERVAL_MS);
-
-      const dataChannel = pc.createDataChannel("realtime-channel");
       // 진단용(ponytail: 원인 잡히면 지운다) - 데이터채널이 열린 뒤 조용히 닫히거나
       // 에러 나면 그 이후로는 어떤 서버 이벤트(tool 호출 포함)도 영영 못 받는다.
       dataChannel.addEventListener("open", () => {
@@ -348,6 +373,7 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             setPhase("transcribing");
             setVadUserSpeaking(true);
             lastUserSpeechAtRef.current = Date.now();
+            checkInSentAtRef.current = null;
             sessionTimeoutFiredRef.current = false;
             break;
           case "input_audio_buffer.speech_stopped":
