@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRealtimeConversationContext } from "@/components/RealtimeConversationProvider";
 import { EmergencyButton } from "@/components/EmergencyButton";
-import { TodayMoodCard } from "@/components/TodayMoodCard";
 import { DogMascot } from "@/components/DogMascot";
 import { MusicOverlay } from "@/components/MusicOverlay";
 
@@ -37,9 +36,8 @@ const DEFAULT_SUBTITLE = "오늘도 기분 좋은 하루네요. 필요한 것이
 
 interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
-  upcomingPlan: { title: string; date: string } | null;
   upcomingEvent: { title: string; date: string } | null;
-  pendingMessage: { fromName: string; content: string; photoUrl: string | null } | null;
+  recentMessages: { id: string; fromName: string; content: string; photoUrl: string | null }[];
   dueMedication: { name: string; dosage: string; time: string } | null;
 }
 
@@ -230,17 +228,6 @@ export default function HomePage() {
           </DashboardCard>
 
           <DashboardCard
-            icon="📋"
-            iconClassName="bg-sky-500/20 text-sky-300"
-            title="오늘의 계획"
-            description={
-              dashboard?.upcomingPlan
-                ? `${formatPlanDate(dashboard.upcomingPlan.date)} - ${dashboard.upcomingPlan.title}`
-                : "다가오는 일정이 없어요."
-            }
-          />
-
-          <DashboardCard
             icon="🗓️"
             iconClassName="bg-violet-500/20 text-violet-300"
             title="다가오는 일정"
@@ -251,23 +238,27 @@ export default function HomePage() {
             }
           />
 
-          <TodayMoodCard refreshKey={engine.log.length} />
-        </div>
-
-        {dashboard?.pendingMessage && (
-          <div className="flex flex-col gap-2 rounded-xl border border-surface-border bg-surface p-5">
-            <p className="font-semibold">{dashboard.pendingMessage.fromName}님이 남긴 메시지</p>
-            {dashboard.pendingMessage.photoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={dashboard.pendingMessage.photoUrl}
-                alt=""
-                className="w-full max-w-xs rounded-xl object-cover"
-              />
+          <DashboardCard
+            icon="💬"
+            iconClassName="bg-amber-500/20 text-amber-300"
+            title="가족 메시지"
+            description={
+              dashboard && dashboard.recentMessages.length === 0
+                ? "아직 남긴 메시지가 없어요."
+                : "가족들이 남긴 메시지예요."
+            }
+          >
+            {dashboard && dashboard.recentMessages.length > 0 && (
+              <ul className="flex flex-col gap-1.5 text-sm text-muted-foreground">
+                {dashboard.recentMessages.map((message) => (
+                  <li key={message.id} className="truncate">
+                    <span className="font-medium text-foreground">{message.fromName}</span>: {message.content}
+                  </li>
+                ))}
+              </ul>
             )}
-            <p className="text-muted-foreground">{dashboard.pendingMessage.content}</p>
-          </div>
-        )}
+          </DashboardCard>
+        </div>
       </main>
 
       {session?.user?.role === "patient" && <EmergencyButton />}
