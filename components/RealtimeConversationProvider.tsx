@@ -15,8 +15,8 @@ const RealtimeConversationContext = createContext<UseConversationEngineResult | 
  * 구독만 하면, 화면을 옮겨도 같은 WebRTC 연결이 그대로 유지된다.
  */
 export function RealtimeConversationProvider({ children }: { children: React.ReactNode }) {
-  const { status, data: session } = useSession();
-  const enabled = status === "authenticated" && session?.user?.role === "patient";
+  const { data: session } = useSession();
+  const enabled = session?.user?.role !== "guardian";
   const engine = useRealtimeConversation(enabled);
 
   return (

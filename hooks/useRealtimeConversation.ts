@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   ConversationLogEntry,
   ConversationPhase,
@@ -62,6 +62,43 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   // 자체엔 영향 없다.
   const persistence = useConversationPersistence(enabled);
   const { saveTurn } = persistence;
+  const handledTranscriptsRef = useRef<Set<string>>(new Set());
+
+  const handleUserTranscript = useCallback(
+    (text: string) => {
+      const trimmed = text.trim();
+      if (!trimmed || handledTranscriptsRef.current.has(trimmed)) return;
+      handledTranscriptsRef.current.add(trimmed);
+      if (handledTranscriptsRef.current.size > 100) {
+        handledTranscriptsRef.current.clear();
+      }
+
+      setLog((prev) => [{ id: Date.now(), role: "user", text: trimmed }, ...prev]);
+      saveTurn("user", trimmed);
+
+      if (/(보여\s*줘|메시지\s*보여|사진\s*보여|열어\s*줘|확인\s*할래|보여드릴|볼래)/i.test(trimmed)) {
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("open-message-modal"));
+        }
+      }
+
+      const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|아파요|배\s*아파|머리\s*아파|연락|보호자)/i.test(trimmed);
+      if (isDistressKeyword) {
+        void fetch("/api/emergency", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ triggerType: "voice_distress", detail: trimmed }),
+        });
+      }
+
+      void fetch("/api/realtime/distress-check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: trimmed }),
+      });
+    },
+    [saveTurn],
+  );
   const [phase, setPhase] = useState<ConversationPhase>("listening");
   const [assistantDraft, setAssistantDraft] = useState("");
   const [speakingLevel, setSpeakingLevel] = useState(0);
@@ -486,42 +523,15 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             const rawEvent = e as any;
             if (rawEvent.item?.role === "user") {
               const text = (rawEvent.item?.content?.[0]?.transcript || rawEvent.item?.content?.[0]?.text || rawEvent.transcript || "").trim();
-              if (text) {
-                setLog((prev) => [{ id: Date.now(), role: "user", text }, ...prev]);
-                saveTurn("user", text);
-              }
+              if (text) handleUserTranscript(text);
             }
             break;
           }
           case "conversation.item.input_audio_transcription.completed": {
             const rawEvent = e as any;
             const transcript: string = (rawEvent.transcript ?? rawEvent.item?.content?.[0]?.transcript ?? "").trim();
-            if (transcript) {
-              setLog((prev) => [{ id: Date.now(), role: "user", text: transcript }, ...prev]);
-              saveTurn("user", transcript);
+            if (transcript) handleUserTranscript(transcript);
 
-              if (/(보여\s*줘|메시지\s*보여|사진\s*보여|열어\s*줘|확인\s*할래|보여드릴|볼래)/i.test(transcript)) {
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("open-message-modal"));
-                }
-              }
-            }
-
-            // '살려줘', '도와줘', '배 아파', '보호자 연락해줘', 'SOS' 등 위급 키워드 0.1초 즉시 긴급 알림 송출
-            const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|아파요|배\s*아파|머리\s*아파|연락|보호자)/i.test(transcript);
-            if (isDistressKeyword) {
-              void fetch("/api/emergency", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ triggerType: "voice_distress", detail: transcript }),
-              });
-            }
-
-            void fetch("/api/realtime/distress-check", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ text: transcript }),
-            });
             if (END_CONVERSATION_PATTERN.test(transcript.trim())) {
               if (window.Android?.closeApp) {
                 window.Android.closeApp();
