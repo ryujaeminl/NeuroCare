@@ -5,17 +5,17 @@
    WCAG AA 이상(본문 텍스트 7:1 안팎)을 목표로 잡았다 - 고령/치매 환자용 화면이 이
    토큰을 그대로 쓰기 때문에 "예쁘지만 흐릿한" 회색 조합은 피했다. */
 :root {
-  --background: #0b0f1a;
-  --foreground: #f5f7fa;
-  --surface: #141a2b;
-  --surface-2: #1e2638;
-  --surface-border: #232b40;
-  --muted-foreground: #94a3b8;
-  --accent: #7dd3fc;
-  --accent-foreground: #082f3a;
-  --danger-bg: #34121d;
-  --danger-border: #5c1f2e;
-  --danger-foreground: #fca5a5;
+  --background: #ffffff;
+  --foreground: #14161f;
+  --surface: #ffffff;
+  --surface-2: #f7f8fa;
+  --surface-border: #e4e6ef;
+  --muted-foreground: #475569;
+  --accent: #2f6fed;
+  --accent-foreground: #ffffff;
+  --danger-bg: #fdeaea;
+  --danger-border: #f6b8b8;
+  --danger-foreground: #b42323;
 }
 
 /* 고령 가족 구성원도 쓰는 화면이라 글씨 크기를 즉시 조절할 수 있어야 한다 - FontSizeToggle이

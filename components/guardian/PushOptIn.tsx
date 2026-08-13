@@ -63,10 +63,10 @@ export function PushOptIn() {
   if (!VAPID_PUBLIC_KEY || unsupported) return null;
 
   return (
-    <div className="flex flex-col gap-2 rounded-2xl border border-surface-border bg-surface p-5">
+    <div className="animate-card-rise flex flex-col gap-2 rounded-lg border border-surface-border bg-surface p-5">
       <h3 className="font-semibold">브라우저 알림</h3>
       {status === "subscribed" ? (
-        <p className="text-sm text-emerald-300">이 브라우저에서 알림을 받을 수 있어요.</p>
+        <p className="text-sm text-emerald-700">이 브라우저에서 알림을 받을 수 있어요.</p>
       ) : (
         <>
           <p className="text-sm text-muted-foreground">
@@ -75,7 +75,7 @@ export function PushOptIn() {
           <button
             type="button"
             onClick={subscribe}
-            className="w-fit rounded-full bg-accent px-4 py-2 text-sm font-medium text-accent-foreground hover:brightness-110"
+            className="w-fit rounded-lg bg-accent px-4 py-2 text-sm font-medium text-accent-foreground transition hover:-translate-y-0.5 hover:shadow-md hover:brightness-110"
           >
             알림 받기
           </button>
