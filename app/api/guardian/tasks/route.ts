@@ -38,14 +38,26 @@ export async function POST(request: NextRequest) {
     validate(body);
     const session = await requireGuardianAccess(body.patientId!);
 
+    const dueDate = body.dueDate ? new Date(body.dueDate) : new Date();
+
     const task = await prisma.familyTask.create({
       data: {
         patientId: body.patientId!,
         title: body.title!.trim(),
-        dueDate: body.dueDate ? new Date(body.dueDate) : null,
+        dueDate,
         addedBy: session.user.id,
       },
     });
+
+    await prisma.calendarEvent.create({
+      data: {
+        patientId: body.patientId!,
+        title: body.title!.trim(),
+        date: dueDate,
+        source: "guardian_web",
+      },
+    }).catch(() => null);
+
     return Response.json({ task }, { status: 201 });
   } catch (err) {
     const authResponse = authErrorResponse(err);

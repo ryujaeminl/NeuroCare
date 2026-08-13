@@ -34,17 +34,30 @@ export async function GET() {
     const startOfToday = new Date(`${kstDateStr}T00:00:00.000+09:00`);
     const until = new Date(startOfToday.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-    const [familyMembers, upcomingEvent, recentMessages, due] = await Promise.all([
+    const [familyMembers, calendarEvents, familyTasks, familyPlans, recentMessages, due] = await Promise.all([
       prisma.familyMember.findMany({
         take: 4,
         orderBy: { createdAt: "asc" },
         select: { name: true, relation: true },
       }).catch(() => []),
-      prisma.calendarEvent.findFirst({
+      prisma.calendarEvent.findMany({
         where: { date: { gte: startOfToday, lte: until } },
         orderBy: { date: "asc" },
+        take: 5,
         select: { title: true, date: true },
-      }).catch(() => null),
+      }).catch(() => []),
+      prisma.familyTask.findMany({
+        where: { dueDate: { gte: startOfToday, lte: until }, completed: false },
+        orderBy: { dueDate: "asc" },
+        take: 5,
+        select: { title: true, dueDate: true },
+      }).catch(() => []),
+      prisma.familyPlan.findMany({
+        where: { date: { gte: startOfToday, lte: until } },
+        orderBy: { date: "asc" },
+        take: 5,
+        select: { title: true, date: true },
+      }).catch(() => []),
       prisma.familyMessage.findMany({
         orderBy: { createdAt: "desc" },
         take: 5,
@@ -52,11 +65,19 @@ export async function GET() {
       }).catch(() => []),
       findDueUnconfirmedMedication(patientId).catch(() => null),
     ]);
+
+    const combined = [
+      ...calendarEvents.map((e) => ({ title: e.title, date: e.date })),
+      ...familyTasks.map((t) => ({ title: t.title, date: t.dueDate! })),
+      ...familyPlans.map((p) => ({ title: p.title, date: p.date })),
+    ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const upcomingEvent = combined[0] ?? null;
     const dueMedication = due ? { id: due.id, name: due.name, dosage: due.dosage, time: due.reminderTime } : null;
 
     return Response.json({
       familyMembers,
-      upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: upcomingEvent.date.toISOString() } : null,
+      upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: new Date(upcomingEvent.date).toISOString() } : null,
       recentMessages,
       dueMedication,
     });
