@@ -163,6 +163,21 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       const dataChannel = pc.createDataChannel("realtime-channel");
       dataChannel.addEventListener("message", (event) => {
         const e = JSON.parse(event.data as string) as RealtimeServerEvent;
+        // 진단용(ponytail: 원인 잡히면 지운다) - 모델이 play_song 등 tool을 실제로
+        // 호출하는지, 아니면 아예 말로만 때우고 넘어가는지가 서버 로그에서 안 보여서
+        // "재생 안 됨" 보고를 몇 번이나 받고도 어느 단계에서 끊기는지 특정을 못 했다.
+        if (e.type === "response.function_call_arguments.done") {
+          void fetch("/api/client-log", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: `tool 호출: name=${e.name} call_id=${e.call_id} args=${(e.arguments ?? "").slice(0, 200)}` }),
+          }).catch(() => {});
+        }
+        if (e.type === "error") {
+          void fetch("/api/client-log", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ message: `realtime 오류: ${e.error?.message ?? "알 수 없음"}` }),
+          }).catch(() => {});
+        }
         if (e.type === "response.function_call_arguments.done" && e.name === "web_search" && e.call_id) {
           void (async () => {
             let query = "";
