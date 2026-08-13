@@ -49,6 +49,7 @@ export async function GET() {
     dueMedicationContext,
     todaysNewCalendarEventsContext,
     morningGreetingContext,
+    rawFamilyMessages,
   ] = await Promise.all([
     buildFamilyRoster(patientId).catch(() => null),
     prisma.user.findUnique({ where: { id: patientId }, select: { name: true, dementiaStage: true } }).catch(() => null),
@@ -58,9 +59,18 @@ export async function GET() {
     buildDueMedicationContext(patientId).catch(() => null),
     buildTodaysNewCalendarEventsContext(patientId).catch(() => null),
     buildMorningGreetingContext(patientId).catch(() => null),
+    prisma.familyMessage.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 5,
+      select: { fromName: true, content: true, createdAt: true },
+    }).catch(() => []),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
   const patientName = patientRecord?.name?.trim() || "어르신";
+
+  const familyMessagesText = rawFamilyMessages.length > 0
+    ? rawFamilyMessages.map((m) => `- ${m.fromName}님이 남기신 메시지: "${m.content}"`).join("\n")
+    : "현재 보호자가 남긴 메시지가 없습니다.";
 
   // 서버가 UTC로 도는 Vercel이라 그냥 new Date()를 텍스트로 넣으면 한국 자정~오전 9시
   // 사이엔 어제 날짜가 된다 - Asia/Seoul 기준으로 계산한다. 요일도 명시한다 - 모델이
@@ -98,9 +108,11 @@ ${morningGreetingContext}`;
 아래 목록에 없는 가족 관계는 지어내지 마세요.
 ${roster}
 
-[가족 메시지 읽어주기]
-환자가 "메시지 읽어줘", "아빠가 보낸 거 읽어줘", "보호자가 보낸 메시지 알려줘", "엄마 메시지 뭐야?", "가족 메시지 읽어줘" 등 메시지를 읽어달라고 요청하거나 특정 가족(아빠, 엄마, 보호자 등)이 남긴 메시지를 물어보면:
-위 가족 관계 및 아래 등록된 가족 메시지 목록에서 해당 분이 남긴 가장 최근 메시지를 따뜻하고 친근하게 읽어주세요! (예: "아빠(○○님)께서 '오늘 저녁에 따뜻하게 입고 계세요'라고 메시지를 남겨두셨어요.")`;
+[등록된 실제 가족 메시지]
+아래는 보호자가 실제로 작성한 가족 메시지입니다. 메시지 질문이 들어오면 반드시 아래 목록의 내용만 정확히 읽어주세요!
+${familyMessagesText}
+- 목록에 메시지가 없거나 언급한 사람의 메시지가 없으면 "아직 남겨진 가족 메시지가 없어요."라고 사실대로 답하세요.
+- 절대로 실제 목록에 없는 가짜 메시지를 임의로 지어내거나 추측해서 이야기하지 마세요!`;
   }
 
   if (recentCalendarEvents) {

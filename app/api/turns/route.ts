@@ -17,12 +17,27 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: "sessionId, role, text가 필요합니다." }, { status: 400 });
     }
 
-    const conversation = await prisma.conversationSession.findUnique({
+    let conversation = await prisma.conversationSession.findUnique({
       where: { id: sessionId },
       select: { id: true, patientId: true },
     });
     if (!conversation) {
-      return Response.json({ error: "세션을 찾을 수 없습니다." }, { status: 404 });
+      const firstPatient = await prisma.user.findFirst({ where: { role: "patient" } }).catch(() => null);
+      const patientId = firstPatient?.id ?? "patient-default";
+      const dateKey = new Date(Date.now() + 9 * 3600 * 1000).toISOString().slice(0, 10);
+      try {
+        conversation = await prisma.conversationSession.create({
+          data: { id: sessionId, patientId, dateKey },
+          select: { id: true, patientId: true },
+        });
+      } catch {
+        const existing = await prisma.conversationSession.findFirst({
+          where: { patientId },
+          orderBy: { startedAt: "desc" },
+          select: { id: true, patientId: true },
+        });
+        conversation = existing ?? { id: sessionId, patientId };
+      }
     }
 
     const turn = await prisma.turn.create({
