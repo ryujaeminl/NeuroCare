@@ -90,15 +90,14 @@ export default function HomePage() {
 
           if (data.latestNewMessage && !spokenMessageIdsRef.current.has(data.latestNewMessage.id)) {
             spokenMessageIdsRef.current.add(data.latestNewMessage.id);
-            setUnreadNotification(data.latestNewMessage);
+            setActiveMessageModal(data.latestNewMessage);
 
             if ("speechSynthesis" in window) {
               window.speechSynthesis.cancel();
-              const utterance = new SpeechSynthesisUtterance(
-                `보호자 ${data.latestNewMessage.fromName}님께 메시지가 도착했어요. 메시지를 보여드릴까요?`,
-              );
+              const messageText = `보호자 ${data.latestNewMessage.fromName}님께서 메시지를 보내셨어요. "${data.latestNewMessage.content}"`;
+              const utterance = new SpeechSynthesisUtterance(messageText);
               utterance.lang = "ko-KR";
-              utterance.rate = 0.95;
+              utterance.rate = 0.9;
               window.speechSynthesis.speak(utterance);
             }
           }
@@ -106,7 +105,7 @@ export default function HomePage() {
       } catch {}
     };
     fetchDashboard();
-    timer = setInterval(fetchDashboard, 2500);
+    timer = setInterval(fetchDashboard, 1500);
     return () => clearInterval(timer);
   }, []);
 

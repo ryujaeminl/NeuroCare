@@ -500,12 +500,6 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
           case "output_audio_buffer.started":
             setPhase("speaking");
             break;
-          case "response.created":
-            responseActiveRef.current = true;
-            break;
-          case "response.done":
-            onResponseSlotFreed();
-            break;
           case "output_audio_buffer.stopped":
             setPhase("listening");
             setAssistantDraft("");
@@ -527,9 +521,10 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             }
             break;
           }
-          case "conversation.item.input_audio_transcription.completed": {
+          case "conversation.item.input_audio_transcription.completed":
+          case "conversation.item.input_audio_transcription.failed": {
             const rawEvent = e as any;
-            const transcript: string = (rawEvent.transcript ?? rawEvent.item?.content?.[0]?.transcript ?? "").trim();
+            const transcript: string = (rawEvent.transcript ?? rawEvent.item?.content?.[0]?.transcript ?? rawEvent.item?.content?.[0]?.text ?? "").trim();
             if (transcript) handleUserTranscript(transcript);
 
             if (END_CONVERSATION_PATTERN.test(transcript.trim())) {
@@ -541,6 +536,18 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
               try { peerConnectionRef.current?.close(); } catch {}
               setPhase("listening");
             }
+            break;
+          }
+          case "response.done": {
+            const rawEvent = e as any;
+            if (rawEvent.response?.output) {
+              for (const item of rawEvent.response.output) {
+                if (item.role === "user" && item.content?.[0]?.transcript) {
+                  handleUserTranscript(item.content[0].transcript);
+                }
+              }
+            }
+            onResponseSlotFreed();
             break;
           }
           case "error":
