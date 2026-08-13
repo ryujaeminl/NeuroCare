@@ -69,6 +69,17 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
   // 건드리지 않고 그 시점까지 확보한 리소스만 정리한 뒤 빠져나온다.
   const cancelledRef = useRef(false);
 
+  // "생각 중"에서 다음 이벤트 없이 멈춘 채 굳는 사례가 반복 보고됐다(음악 재생 요청
+  // 직후가 가장 흔함) - 정확한 원인을 실시간으로 못 잡아서, 응급처치로 일정 시간
+  // 안에 다음 상태 전이가 없으면 스스로 리스닝으로 복구한다. 사용자가 다시 말을
+  // 걸 수 있는 상태로만 되돌리는 최소한의 안전장치다 - 근본 원인 자체는 아니다.
+  const THINKING_STALL_TIMEOUT_MS = 15000;
+  useEffect(() => {
+    if (phase !== "thinking") return undefined;
+    const timer = setTimeout(() => setPhase("listening"), THINKING_STALL_TIMEOUT_MS);
+    return () => clearTimeout(timer);
+  }, [phase]);
+
   // 페이지 마운트 시 한 번 연결 - 기존 useConversationEngine이 마운트 시 vad.start()를
   // 부르던 것과 동일한 타이밍(app/page.tsx는 이 훅을 호출만 하면 된다). startedRef 가드가
   // 있어 StrictMode의 effect 2회 실행에도 안전하다. connect를 effect 밖 useCallback으로
