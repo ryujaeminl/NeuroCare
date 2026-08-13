@@ -10,8 +10,10 @@ const DUE_DISPLAY_WINDOW_MINUTES = 30;
 /**
  * 환자 홈 화면 하단 카드들이 쓰는 요약 정보. app/page.tsx의 예전 하드코딩된 가짜 데이터
  * (가족 연결/오늘의 계획/가족 메시지/복약 알림)를 대체한다.
- * 가족 메시지는 내용을 여기서 바로 보여주지 않는다 - 대화 중 AI가 동의를 구하고 전달하는
- * 기존 설계(lib/memory/familyContext.ts)와 맞추려고 "누가 남겼는지"만 알려준다.
+ * 가족 메시지는 원래 내용을 안 보여주고 "누가 남겼는지"만 알려줬다(대화 중 AI가 동의를
+ * 구하고 전달하는 설계, lib/memory/familyContext.ts) - 카드 자체가 안 보인다는 사용자
+ * 확인 후, 내용을 카드에 바로 보여주는 쪽으로 바꿨다. 대화 중 AI가 언급하는 기존 흐름은
+ * 그대로 둔다(deliveredAt은 여기서 안 건드림 - 중복이어도 무해하다).
  */
 export async function GET() {
   try {
@@ -44,7 +46,7 @@ export async function GET() {
       prisma.familyMessage.findFirst({
         where: { patientId, deliveredAt: null },
         orderBy: { createdAt: "asc" },
-        select: { fromName: true },
+        select: { fromName: true, content: true, photoUrl: true },
       }),
       prisma.medication.findMany({
         where: { patientId, startDate: { lte: now }, OR: [{ endDate: null }, { endDate: { gte: now } }] },
@@ -67,7 +69,9 @@ export async function GET() {
       familyMembers,
       upcomingPlan: upcomingPlan ? { title: upcomingPlan.title, date: upcomingPlan.date.toISOString() } : null,
       upcomingEvent: upcomingEvent ? { title: upcomingEvent.title, date: upcomingEvent.date.toISOString() } : null,
-      pendingMessageFrom: pendingMessage?.fromName ?? null,
+      pendingMessage: pendingMessage
+        ? { fromName: pendingMessage.fromName, content: pendingMessage.content, photoUrl: pendingMessage.photoUrl }
+        : null,
       dueMedication,
     });
   } catch (err) {

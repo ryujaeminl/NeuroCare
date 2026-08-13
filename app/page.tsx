@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useRealtimeConversation } from "@/hooks/useRealtimeConversation";
+import { useRealtimeConversationContext } from "@/components/RealtimeConversationProvider";
 import { EmergencyButton } from "@/components/EmergencyButton";
 import { TodayMoodCard } from "@/components/TodayMoodCard";
 import { DogMascot } from "@/components/DogMascot";
@@ -39,7 +39,7 @@ interface DashboardSummary {
   familyMembers: { name: string; relation: string }[];
   upcomingPlan: { title: string; date: string } | null;
   upcomingEvent: { title: string; date: string } | null;
-  pendingMessageFrom: string | null;
+  pendingMessage: { fromName: string; content: string; photoUrl: string | null } | null;
   dueMedication: { name: string; dosage: string; time: string } | null;
 }
 
@@ -81,8 +81,9 @@ export default function HomePage() {
     if (status === "unauthenticated") router.replace("/login");
   }, [status, router]);
 
-  // 로그인한 환자 계정일 때만 대화를 서버에 저장한다(보호자는 읽기 전용).
-  const engine = useRealtimeConversation(status === "authenticated");
+  // 연결은 RealtimeConversationProvider(루트 레이아웃)가 한 번만 만들고 여기서는
+  // 구독만 한다 - 화면을 옮겨도(추억/기록/계정) 같은 대화가 그대로 이어진다.
+  const engine = useRealtimeConversationContext();
 
   // 버튼도 웨이크워드도 없이, 이 화면에서 그냥 말하면 바로 대화가 이어진다.
   // 대시보드 레이아웃은 그대로 두고, 인사말 아래 안내 문구만 지금 상태를 보여주도록 바꾼다.
@@ -253,12 +254,18 @@ export default function HomePage() {
           <TodayMoodCard refreshKey={engine.log.length} />
         </div>
 
-        {dashboard?.pendingMessageFrom && (
-          <div className="flex flex-col gap-1 rounded-xl border border-surface-border bg-surface p-5">
-            <p className="font-semibold">가족 메시지</p>
-            <p className="text-muted-foreground">
-              {dashboard.pendingMessageFrom}님이 메시지를 남기셨어요. 대화 중에 들려드릴게요.
-            </p>
+        {dashboard?.pendingMessage && (
+          <div className="flex flex-col gap-2 rounded-xl border border-surface-border bg-surface p-5">
+            <p className="font-semibold">{dashboard.pendingMessage.fromName}님이 남긴 메시지</p>
+            {dashboard.pendingMessage.photoUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={dashboard.pendingMessage.photoUrl}
+                alt=""
+                className="w-full max-w-xs rounded-xl object-cover"
+              />
+            )}
+            <p className="text-muted-foreground">{dashboard.pendingMessage.content}</p>
           </div>
         )}
       </main>
