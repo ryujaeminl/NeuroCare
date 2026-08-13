@@ -157,6 +157,57 @@ export default function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      {activeMessageModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+          <div className="flex w-full max-w-lg flex-col items-center gap-4 rounded-3xl border border-amber-500/50 bg-slate-900 p-6 text-center shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="flex h-14 w-14 items-center justify-center rounded-full bg-amber-500/20 text-3xl">
+              💌
+            </div>
+            <div>
+              <span className="inline-block rounded-full bg-amber-500/20 px-3 py-1 text-xs font-semibold text-amber-300">
+                가족 메시지
+              </span>
+              <h2 className="mt-2 text-xl font-bold text-white">
+                {activeMessageModal.fromName}님이 남기신 메시지
+              </h2>
+            </div>
+
+            {activeMessageModal.photoUrl && (
+              <div className="overflow-hidden rounded-2xl border border-white/10 shadow-lg w-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={activeMessageModal.photoUrl}
+                  alt="가족이 보낸 사진"
+                  className="max-h-64 w-full object-cover"
+                />
+              </div>
+            )}
+
+            <div className="w-full rounded-2xl bg-slate-800/80 p-4 text-left border border-white/10">
+              <p className="text-xs font-medium text-amber-400">{activeMessageModal.fromName}님의 말씀:</p>
+              <p className="mt-1 text-base font-semibold text-white whitespace-pre-wrap">{activeMessageModal.content}</p>
+            </div>
+
+            <div className="flex w-full gap-3 pt-2">
+              <button
+                type="button"
+                onClick={() => handleReadMessageAloud(activeMessageModal)}
+                className="flex-1 rounded-2xl bg-amber-500 py-3.5 text-base font-bold text-slate-950 shadow-lg hover:brightness-110 active:scale-95 transition"
+              >
+                🔊 메시지 읽어주세요
+              </button>
+              <button
+                type="button"
+                onClick={() => handleDismissMessageModal(activeMessageModal.id)}
+                className="rounded-2xl border border-slate-700 bg-slate-800 px-5 py-3.5 text-base font-semibold text-slate-300 hover:bg-slate-700 active:scale-95 transition"
+              >
+                닫기
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <header className="flex items-center justify-between border-b border-surface-border px-6 py-4">
         <h1 className="text-xl font-bold tracking-tight text-accent">뉴로케어</h1>
         <div className="flex items-center gap-4 text-muted-foreground">
