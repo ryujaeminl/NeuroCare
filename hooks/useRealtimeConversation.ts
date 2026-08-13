@@ -131,6 +131,19 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       // 것으론 부족하다.
       pc.onconnectionstatechange = () => {
         setVadListening(pc.connectionState === "connected");
+        // 진단용(ponytail: 원인 잡히면 지운다) - "생각 중"에 굳는 게 tool 호출
+        // 문제가 아니라 WebRTC 연결/데이터채널 자체가 조용히 죽는 것일 가능성을
+        // 확인하려고 연결 상태 변화를 전부 서버로 올린다.
+        void fetch("/api/client-log", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: `pc.connectionState=${pc.connectionState}` }),
+        }).catch(() => {});
+      };
+      pc.oniceconnectionstatechange = () => {
+        void fetch("/api/client-log", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: `pc.iceConnectionState=${pc.iceConnectionState}` }),
+        }).catch(() => {});
       };
 
       const audioEl = document.createElement("audio");
@@ -172,6 +185,26 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
       pc.addTrack(mic.getAudioTracks()[0]);
 
       const dataChannel = pc.createDataChannel("realtime-channel");
+      // 진단용(ponytail: 원인 잡히면 지운다) - 데이터채널이 열린 뒤 조용히 닫히거나
+      // 에러 나면 그 이후로는 어떤 서버 이벤트(tool 호출 포함)도 영영 못 받는다.
+      dataChannel.addEventListener("open", () => {
+        void fetch("/api/client-log", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "dataChannel open" }),
+        }).catch(() => {});
+      });
+      dataChannel.addEventListener("close", () => {
+        void fetch("/api/client-log", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: "dataChannel closed" }),
+        }).catch(() => {});
+      });
+      dataChannel.addEventListener("error", (ev) => {
+        void fetch("/api/client-log", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ message: `dataChannel error: ${JSON.stringify((ev as unknown as { error?: unknown }).error ?? ev)}`.slice(0, 300) }),
+        }).catch(() => {});
+      });
       dataChannel.addEventListener("message", (event) => {
         const e = JSON.parse(event.data as string) as RealtimeServerEvent;
         // 진단용(ponytail: 원인 잡히면 지운다) - 모델이 play_song 등 tool을 실제로
