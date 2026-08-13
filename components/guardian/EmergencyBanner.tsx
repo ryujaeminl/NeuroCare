@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface OpenEvent {
@@ -10,23 +10,27 @@ interface OpenEvent {
   patient: { name: string };
 }
 
-const POLL_MS = 20_000;
+const POLL_MS = 3_000;
 
-/** 보호자 화면 어디서나 미확인 긴급 이벤트가 있으면 눈에 띄게 알린다. */
+/** Active guardian screens jump straight to the emergency page instead of requiring a banner tap. */
 export function EmergencyBanner() {
   const [events, setEvents] = useState<OpenEvent[]>([]);
+  const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
     let cancelled = false;
+
     async function poll() {
       try {
-        const response = await fetch("/api/emergency");
+        const response = await fetch("/api/emergency", { cache: "no-store" });
         const data = await response.json();
         if (!cancelled && response.ok) setEvents(data.events ?? []);
       } catch {
-        // 배너는 참고용이라 실패해도 조용히 넘어간다.
+        // This is a best-effort foreground check; push/SMS still handle fallback paths.
       }
     }
+
     void poll();
     const timer = setInterval(poll, POLL_MS);
     return () => {
@@ -35,28 +39,13 @@ export function EmergencyBanner() {
     };
   }, []);
 
-  if (events.length === 0) return null;
+  useEffect(() => {
+    const firstOpenEvent = events[0];
+    if (!firstOpenEvent) return;
 
-  return (
-    <div className="border-b-2 border-rose-500 bg-danger-bg px-4 py-3 sm:px-6">
-      <div className="mx-auto flex w-full max-w-5xl flex-col gap-2">
-        {events.map((event) => (
-          <Link
-            key={event.id}
-            href={`/guardian/emergency/${event.id}`}
-            className="flex items-center justify-between gap-3 text-sm font-medium text-rose-800"
-          >
-            <span className="flex items-center gap-2">
-              <span className="relative flex h-2.5 w-2.5 shrink-0">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-500 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-rose-600" />
-              </span>
-              🆘 {event.patient.name}님에게 긴급 상황이 발생했습니다 ({new Date(event.createdAt).toLocaleTimeString("ko-KR")})
-            </span>
-            <span className="shrink-0 underline">확인하기 →</span>
-          </Link>
-        ))}
-      </div>
-    </div>
-  );
+    const emergencyPath = `/guardian/emergency/${firstOpenEvent.id}`;
+    if (pathname !== emergencyPath) router.replace(emergencyPath);
+  }, [events, pathname, router]);
+
+  return null;
 }

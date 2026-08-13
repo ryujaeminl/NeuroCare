@@ -34,6 +34,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import com.neurocare.app.emergency.EmergencyAlertActivity
 import com.neurocare.app.emergency.EmergencyNotifier
 import com.neurocare.app.wakeword.WakeWordService
 import kotlin.concurrent.thread
@@ -438,7 +439,7 @@ class MainActivity : AppCompatActivity() {
      * 새 일정이 네이티브 캘린더에 영영 안 들어갔다("보호자가 추가했는데 안 보인다"는
      * 보고와 일치). 화면이 떠 있는 동안 주기적으로도 확인한다. */
     private val calendarSyncHandler = Handler(Looper.getMainLooper())
-    private val calendarSyncIntervalMs = 2 * 60 * 1000L
+    private val calendarSyncIntervalMs = 15 * 1000L
     private val calendarSyncRunnable: Runnable = object : Runnable {
         override fun run() {
             syncUnsyncedCalendarEvents()
@@ -451,6 +452,69 @@ class MainActivity : AppCompatActivity() {
      *  두 스레드가 동시에 건드리므로 단순 @Volatile 불리언의 확인-후-설정은 원자적이지
      *  않아 경합을 못 막는다 - AtomicBoolean.compareAndSet으로 진짜 원자적으로 막는다. */
     private val isCalendarSyncInProgress = java.util.concurrent.atomic.AtomicBoolean(false)
+    private val guardianEmergencyHandler = Handler(Looper.getMainLooper())
+    private val guardianEmergencyPollIntervalMs = 3_000L
+    private val isGuardianEmergencyPollInProgress = java.util.concurrent.atomic.AtomicBoolean(false)
+    private var lastLaunchedEmergencyEventId: String? = null
+    private val guardianEmergencyRunnable: Runnable = object : Runnable {
+        override fun run() {
+            checkOpenGuardianEmergency()
+            guardianEmergencyHandler.postDelayed(this, guardianEmergencyPollIntervalMs)
+        }
+    }
+
+    private fun startGuardianEmergencyPolling() {
+        if (BuildConfig.WEBAPP_START_PATH != "/guardian") return
+        guardianEmergencyHandler.removeCallbacks(guardianEmergencyRunnable)
+        guardianEmergencyHandler.post(guardianEmergencyRunnable)
+    }
+
+    private fun stopGuardianEmergencyPolling() {
+        guardianEmergencyHandler.removeCallbacks(guardianEmergencyRunnable)
+    }
+
+    private fun checkOpenGuardianEmergency() {
+        if (BuildConfig.WEBAPP_START_PATH != "/guardian") return
+        val cookie = webSessionCookie() ?: return
+        if (!isGuardianEmergencyPollInProgress.compareAndSet(false, true)) return
+
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val request = Request.Builder()
+                    .url("${BuildConfig.WEBAPP_BASE_URL}/api/emergency")
+                    .addHeader("Cookie", cookie)
+                    .build()
+                val response = calendarHttpClient.newCall(request).execute()
+                val body = response.body?.string().orEmpty()
+                response.close()
+                if (!response.isSuccessful || body.isBlank()) return@launch
+
+                val events = JSONObject(body).getJSONArray("events")
+                if (events.length() == 0) return@launch
+
+                val event = events.getJSONObject(0)
+                val eventId = event.getString("id")
+                if (eventId == lastLaunchedEmergencyEventId) return@launch
+                val patientName = event.optJSONObject("patient")?.optString("name") ?: ""
+
+                runOnUiThread {
+                    lastLaunchedEmergencyEventId = eventId
+                    val intent = Intent(this@MainActivity, EmergencyAlertActivity::class.java).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        putExtra(EmergencyAlertActivity.EXTRA_EVENT_ID, eventId)
+                    }
+                    startActivity(intent)
+                    if (patientName.isNotBlank()) {
+                        reportToServer("guardian emergency full-screen opened: eventId=$eventId patient=$patientName")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Guardian emergency poll failed", e)
+            } finally {
+                isGuardianEmergencyPollInProgress.set(false)
+            }
+        }
+    }
 
     /**
      * 서버(app/api/calendar-events/unsynced)에서 아직 네이티브 캘린더에 반영 안 된
@@ -581,8 +645,9 @@ class MainActivity : AppCompatActivity() {
         reportToServer("MainActivity.onResume: 웨이크워드 서비스 종료")
         stopWakeWordService()
         syncUnsyncedCalendarEvents()
+        startGuardianEmergencyPolling()
         calendarSyncHandler.removeCallbacks(calendarSyncRunnable)
-        calendarSyncHandler.postDelayed(calendarSyncRunnable, calendarSyncIntervalMs)
+        calendarSyncHandler.post(calendarSyncRunnable)
         webView.onResume()
         // JS 타이머를 먼저 풀어준 뒤에 재개 신호를 보내야 콜백이 확실히 실행된다.
         webView.evaluateJavascript("window.__neurocareResume && window.__neurocareResume()", null)
@@ -596,6 +661,7 @@ class MainActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         calendarSyncHandler.removeCallbacks(calendarSyncRunnable)
+        stopGuardianEmergencyPolling()
         reportToServer("MainActivity.onPause: 웹 대화엔진 정지 + 웨이크워드 서비스 시작")
         // 근본 원인: 액티비티가 onPause되어도 안드로이드가 WebView의 JS(마이크/VAD/TTS
         // 재생 큐)를 자동으로 멈춰주지 않는다. 그대로 두면 네이티브 웨이크워드 감시와 웹
@@ -611,6 +677,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
+        stopGuardianEmergencyPolling()
         reportToServer("MainActivity.onDestroy: WebView 강제 파괴 + 웨이크워드 서비스 시작 보장")
         // onPause()가 웹 대화엔진 정지 신호를 보내지만 evaluateJavascript는 비동기다 -
         // 최근 앱 목록에서 스와이프로 앱을 완전히 닫을 때처럼 onPause 직후 onDestroy가

@@ -37,8 +37,13 @@ const VOICE_DISTRESS_PHRASES = [
 // 이 시간 안에 이미 열린 voice_distress 이벤트가 있으면 추가 발송을 건너뛴다.
 const VOICE_DISTRESS_COOLDOWN_MS = 10 * 60 * 1000;
 
-function detectVoiceDistress(text: string): boolean {
-  return VOICE_DISTRESS_PHRASES.some((phrase) => text.includes(phrase));
+function normalizeDistressText(text: string): string {
+  return text.toLowerCase().replace(/[\s.,!?~"'`()[\]{}:;，。！？]+/g, "");
+}
+
+export function detectVoiceDistress(text: string): boolean {
+  const normalized = normalizeDistressText(text);
+  return VOICE_DISTRESS_PHRASES.some((phrase) => normalized.includes(normalizeDistressText(phrase)));
 }
 
 /**

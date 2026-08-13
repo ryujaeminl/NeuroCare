@@ -125,8 +125,10 @@ async function buildSystemPrompt(
     prompt += `
 
 [등록된 가족 관계]
-아래는 보호자가 미리 등록해 둔, 확인된 가족 관계입니다. 대화 중 가족 이야기가 나오면 이 정보만 사용하세요.
-아래 목록에 없는 가족 관계는 추측하거나 지어내지 마세요.
+아래는 보호자가 미리 등록해 둔, 확인된 가족 관계입니다. 각 줄의 관계는 반드시 "환자 기준"입니다.
+예를 들어 "민수: 환자에게 아빠"면 민수님은 환자의 아빠이지 환자의 아들이 아닙니다.
+대화 중 가족 이야기가 나오면 이 정보만 사용하고, 관계를 절대 반대로 바꾸거나 추측하지 마세요.
+아래 목록에 없는 가족 관계는 지어내지 마세요.
 ${roster}`;
   }
 
@@ -213,9 +215,9 @@ export async function POST(request: NextRequest) {
     console.error(`[chat] 비로그인 상태로 대화 진행 - 세션=${session ? "있음(role 불일치)" : "없음"}`);
   }
 
-  // 응답을 막지 않도록 기다리지 않는다 - 실패해도 대화 자체는 정상 진행돼야 한다
-  // (실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다).
-  if (patientId) void maybeTriggerVoiceDistress(patientId, latestUserText);
+  // 긴급 표현은 서버리스 응답 이후에 유실되지 않도록 먼저 확정 처리한다.
+  // 실패는 maybeTriggerVoiceDistress 안에서 잡아 로그만 남긴다.
+  if (patientId) await maybeTriggerVoiceDistress(patientId, latestUserText);
 
   const { prompt: systemPrompt, photo, calendarJustConfirmed } = await buildSystemPrompt(
     patientId,
