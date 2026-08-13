@@ -57,14 +57,17 @@ export async function maybeTriggerVoiceDistress(patientId: string, latestUserTex
   if (!detectVoiceDistress(latestUserText)) return;
 
   try {
-    const recent = await prisma.emergencyEvent.findFirst({
-      where: {
-        patientId,
-        triggerType: "voice_distress",
-        createdAt: { gte: new Date(Date.now() - VOICE_DISTRESS_COOLDOWN_MS) },
-      },
-    });
-    if (recent) return;
+    const isExplicitDistress = /(살려|도와|119|구해|sos|응급|비상)/i.test(latestUserText);
+    if (!isExplicitDistress) {
+      const recent = await prisma.emergencyEvent.findFirst({
+        where: {
+          patientId,
+          triggerType: "voice_distress",
+          createdAt: { gte: new Date(Date.now() - 30_000) },
+        },
+      });
+      if (recent) return;
+    }
 
     const event = await prisma.emergencyEvent.create({
       data: { patientId, triggerType: "voice_distress", detail: latestUserText.slice(0, 200) },

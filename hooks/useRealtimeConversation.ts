@@ -82,7 +82,8 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
         }
       }
 
-      const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|아파요|배\s*아파|머리\s*아파|연락|보호자)/i.test(trimmed);
+      const cleanText = trimmed.replace(/\s+/g, "");
+      const isDistressKeyword = /(살려|도와|구해|119|sos|에스오에스|응급|비상|긴급|신호|아파|배아파|머리아파|연락|보호자)/i.test(cleanText);
       if (isDistressKeyword) {
         void fetch("/api/emergency", {
           method: "POST",
@@ -364,6 +365,27 @@ export function useRealtimeConversation(enabled = true): UseConversationEngineRe
             method: "POST", headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: `realtime 오류: ${e.error?.message ?? "알 수 없음"}` }),
           }).catch(() => {});
+        }
+        if (e.type === "response.function_call_arguments.done" && e.name === "trigger_emergency" && e.call_id) {
+          void (async () => {
+            let detail = "살려줘 요청";
+            try {
+              const args = JSON.parse(e.arguments ?? "{}") as { detail?: string };
+              detail = args.detail?.trim() || detail;
+            } catch {}
+            const callId = e.call_id as string;
+            await fetch("/api/emergency", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ triggerType: "voice_distress", detail }),
+            }).catch(() => {});
+
+            dataChannel.send(JSON.stringify({ type: "conversation.item.create", item: {
+              type: "function_call_output", call_id: callId, output: "보호자에게 긴급 SOS 신호를 성공적으로 송출했습니다.",
+            }}));
+            sendResponseCreate();
+          })();
+          return;
         }
         if (e.type === "response.function_call_arguments.done" && e.name === "web_search" && e.call_id) {
           void (async () => {
