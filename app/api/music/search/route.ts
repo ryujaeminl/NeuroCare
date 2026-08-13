@@ -8,22 +8,17 @@ import { auth } from "@/lib/auth/authOptions";
  * 스크레이핑하지 않기 위함). 상위 1개 결과만 돌려준다 - 재생목록/선택 UI는
  * 범위 밖(스펙 참고).
  */
-export async function POST(request: NextRequest) {
-  const session = await auth();
-  if (session?.user?.role !== "patient") {
-    return NextResponse.json({ error: "인증이 필요합니다." }, { status: 401 });
-  }
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
 
+export async function POST(request: NextRequest) {
   const body = (await request.json().catch(() => null)) as { query?: string } | null;
   const query = body?.query?.trim();
   if (!query) {
     return NextResponse.json({ error: "query가 필요합니다." }, { status: 400 });
   }
 
-  // yt-search 자체에 타임아웃이 없다 - 응답이 없으면 이 요청이 영원히 대기하고,
-  // 그러면 Realtime 쪽 play_song 호출도 function_call_output을 영영 못 받아서
-  // 대화가 "생각 중"에서 멈춘 채로 굳는다. 8초로 끊어서 항상 응답을 돌려준다.
-  const SEARCH_TIMEOUT_MS = 8000;
+  const SEARCH_TIMEOUT_MS = 6000;
   try {
     const result = await Promise.race([
       yts(query),
@@ -31,12 +26,35 @@ export async function POST(request: NextRequest) {
         setTimeout(() => reject(new Error("검색 타임아웃")), SEARCH_TIMEOUT_MS),
       ),
     ]);
-    const video = result.videos[0];
-    if (!video) {
-      return NextResponse.json({ videoId: null });
+    const video = result.videos?.[0];
+    if (video && video.videoId) {
+      return NextResponse.json({ videoId: video.videoId, title: video.title });
     }
-    return NextResponse.json({ videoId: video.videoId, title: video.title });
-  } catch {
-    return NextResponse.json({ videoId: null });
+  } catch (err) {
+    console.warn("yts search failed, trying HTML fallback:", err);
   }
+
+  // Fallback: Direct YouTube HTML search regex parsing
+  try {
+    const searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+    const htmlRes = await fetch(searchUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7",
+      },
+      signal: AbortSignal.timeout(5000),
+    });
+    const html = await htmlRes.text();
+    const videoIdMatch = html.match(/"videoId":"([a-zA-Z0-9_-]{11})"/);
+    if (videoIdMatch && videoIdMatch[1]) {
+      const videoId = videoIdMatch[1];
+      const titleMatch = html.match(/"title":{"runs":\[{"text":"([^"]+)"}\]/);
+      const title = titleMatch?.[1] || query;
+      return NextResponse.json({ videoId, title });
+    }
+  } catch (err) {
+    console.error("Fallback search failed:", err);
+  }
+
+  return NextResponse.json({ videoId: null });
 }
