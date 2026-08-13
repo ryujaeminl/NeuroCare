@@ -14,18 +14,38 @@ export class UploadError extends Error {}
 
 /** 사진 파일을 저장하고 브라우저에서 바로 쓸 수 있는 URL을 반환한다. */
 export async function putPhoto(file: Blob, patientId: string): Promise<string> {
-  if (!ALLOWED_TYPES.has(file.type)) {
-    throw new UploadError("jpg, png, webp, gif 파일만 업로드할 수 있습니다.");
+  const type = file.type ? file.type.toLowerCase() : "";
+  const filename = (file as File).name ? (file as File).name.toLowerCase() : "";
+  const isImage = type.startsWith("image/") || /\.(jpe?g|png|webp|gif|heic|heif|bmp)$/i.test(filename) || !type;
+  if (!isImage) {
+    throw new UploadError("이미지 파일만 업로드할 수 있습니다.");
   }
   if (file.size > MAX_BYTES) {
     throw new UploadError("파일 크기는 8MB를 넘을 수 없습니다.");
   }
 
-  const ext = file.type.split("/")[1] === "jpeg" ? "jpg" : file.type.split("/")[1];
+  let ext = "jpg";
+  if (type.includes("/")) {
+    const sub = type.split("/")[1];
+    ext = sub === "jpeg" ? "jpg" : sub;
+  } else if (filename.includes(".")) {
+    ext = filename.split(".").pop() || "jpg";
+  }
+
   const pathname = `patients/${patientId}/${randomUUID()}.${ext}`;
 
-  const blob = await put(pathname, file, { access: "public", addRandomSuffix: false });
-  return blob.url;
+  try {
+    const blob = await put(pathname, file, { access: "public", addRandomSuffix: false });
+    return blob.url;
+  } catch (err) {
+    // Vercel Blob 토큰 미설정 또는 스토리지 예외 시 4MB 이하 파일은 data URL로 폴백 처리
+    if (file.size <= 4 * 1024 * 1024) {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const mime = type || "image/jpeg";
+      return `data:${mime};base64,${buffer.toString("base64")}`;
+    }
+    throw new UploadError(`사진 업로드 실패: ${err instanceof Error ? err.message : String(err)}`);
+  }
 }
 
 /** url이 이 스토리지가 발급한 Blob URL일 때만 실제 파일을 지운다. */

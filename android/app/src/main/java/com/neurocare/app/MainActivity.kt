@@ -25,6 +25,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebResourceResponse
 import android.webkit.WebViewClient
 import android.widget.Toast
+import android.webkit.ValueCallback
+import android.webkit.WebChromeClient.FileChooserParams
 import androidx.webkit.WebViewCompat
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
@@ -191,6 +193,25 @@ class MainActivity : AppCompatActivity() {
             // 결과와 상관없이 마이크 권한 요청은 WebView의 onPermissionRequest에서 다시 확인한다.
             // 웨이크워드 서비스는 여기서 켜지 않는다 - onPause에서 백그라운드로 갈 때만 띄운다.
             webView.loadUrl(BuildConfig.WEBAPP_BASE_URL + BuildConfig.WEBAPP_START_PATH)
+        }
+
+    private var filePathCallback: ValueCallback<Array<Uri>>? = null
+
+    private val filePickerLauncher =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            val data = result.data
+            val uris = if (result.resultCode == RESULT_OK && data != null) {
+                val clipData = data.clipData
+                if (clipData != null) {
+                    Array(clipData.itemCount) { i -> clipData.getItemAt(i).uri }
+                } else {
+                    data.data?.let { arrayOf(it) } ?: emptyArray()
+                }
+            } else {
+                emptyArray()
+            }
+            filePathCallback?.onReceiveValue(uris)
+            filePathCallback = null
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -363,6 +384,32 @@ class MainActivity : AppCompatActivity() {
                 ) == PackageManager.PERMISSION_GRANTED
                 callback?.invoke(origin, granted, false)
             }
+
+            override fun onShowFileChooser(
+                view: WebView?,
+                callback: ValueCallback<Array<Uri>>,
+                params: FileChooserParams?,
+            ): Boolean {
+                filePathCallback?.onReceiveValue(null)
+                filePathCallback = callback
+                val intent = try {
+                    params?.createIntent()
+                } catch (e: Exception) {
+                    null
+                } ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                    type = "image/*"
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                }
+                try {
+                    filePickerLauncher.launch(intent)
+                } catch (e: Exception) {
+                    Log.e(TAG, "파일 선택창을 열지 못함: ${e.message}")
+                    filePathCallback?.onReceiveValue(null)
+                    filePathCallback = null
+                    return false
+                }
+                return true
+            }
         }
     }
 
@@ -424,6 +471,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startWakeWordService() {
+        if (BuildConfig.WEBAPP_START_PATH == "/guardian") return
         val intent = Intent(this, WakeWordService::class.java)
         ContextCompat.startForegroundService(this, intent)
     }
