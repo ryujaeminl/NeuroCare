@@ -1,6 +1,7 @@
 package com.neurocare.app
 
 import android.Manifest
+import android.app.KeyguardManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -144,18 +145,21 @@ class MainActivity : AppCompatActivity() {
         // 부를 때도, 긴급 알림 때도 화면이 자동으로 안 뜬다. 한 번 켜두면 계속 유지된다.
         EmergencyNotifier.ensureFullScreenIntentPermission(this)
 
-        // 전체화면 알림은 잠금화면에서만 자동으로 앱을 띄운다 - 화면이 켜져 있고 다른 앱을
-        // 쓰는 중이거나 홈화면일 땐 배너만 뜨고 자동으로 안 열린다(안드로이드가 의도적으로
-        // 막아둔 동작). "다른 앱 위에 그리기" 권한이 있으면 WakeWordService가 짧게 오버레이
-        // 창을 띄워 그 제약을 풀고 바로 앱을 띄울 수 있다.
-        if (!Settings.canDrawOverlays(this)) {
-            startActivity(
-                Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName")),
-            )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            setShowWhenLocked(true)
+            setTurnScreenOn(true)
+            val keyguardManager = getSystemService(KeyguardManager::class.java)
+            keyguardManager?.requestDismissKeyguard(this, null)
         }
 
-        // 태블릿을 탁자에 세워두고 쓰는 사용 방식이라, 화면이 꺼지면 마이크도 함께 멎는다.
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        // 잠금화면 위에서도 즉시 켜지고 화면이 꺼지지 않도록 윈도우 플래그를 설정한다.
+        window.addFlags(
+            WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_ALLOW_LOCK_WHILE_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or
+            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or
+            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
+        )
 
         registerReceiver(
             screenPowerReceiver,

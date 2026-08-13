@@ -51,7 +51,7 @@ export async function GET() {
     morningGreetingContext,
   ] = await Promise.all([
     buildFamilyRoster(patientId).catch(() => null),
-    prisma.user.findUnique({ where: { id: patientId }, select: { dementiaStage: true } }).catch(() => null),
+    prisma.user.findUnique({ where: { id: patientId }, select: { name: true, dementiaStage: true } }).catch(() => null),
     buildRecentCalendarEvents(patientId).catch(() => null),
     buildPreviousSessionContext(patientId).catch(() => null),
     buildRecentPlaysContext(patientId).catch(() => null),
@@ -60,6 +60,7 @@ export async function GET() {
     buildMorningGreetingContext(patientId).catch(() => null),
   ]);
   const dementiaStage = (patientRecord?.dementiaStage as DementiaStage | null) ?? "moderate";
+  const patientName = patientRecord?.name?.trim() || "어르신";
 
   // 서버가 UTC로 도는 Vercel이라 그냥 new Date()를 텍스트로 넣으면 한국 자정~오전 9시
   // 사이엔 어제 날짜가 된다 - Asia/Seoul 기준으로 계산한다. 요일도 명시한다 - 모델이
@@ -71,6 +72,11 @@ export async function GET() {
   const todayWeekday = new Intl.DateTimeFormat("ko-KR", { timeZone: "Asia/Seoul", weekday: "long" }).format(nowKst);
 
   let instructions = buildBasePersonaPrompt(dementiaStage) + `
+
+[환자 정보]
+현재 대화 중인 환자분의 성함(이름)은 '${patientName}'님입니다.
+- 환자가 "내 이름이 뭐야?", "내가 누구야?", "내 이름 알아?", "이름이 뭔데?" 등 자신의 이름에 대해 물어보면 망설임 없이 즉시 "${patientName}님"이라고 정확하고 명확하게 알려주세요.
+- 대화 중 환자분을 친근하고 따뜻하게 "${patientName}님"이라고 불러주세요.
 
 [오늘 날짜]
 오늘은 ${todayDate}(${todayWeekday})입니다. "내일"/"모레"/"다음 주 화요일"처럼

@@ -274,8 +274,16 @@ class WakeWordService : Service() {
      * 알림 하나에만 맡긴다 - EmergencyAlertActivity도 원래 이렇게만 한다.
      */
     private fun launchMainActivity() {
+        val powerManager = getSystemService(PowerManager::class.java)
+        // 화면이 꺼져있으면 5초 동안 켜서 앱이 즉시 뜰 수 있게 한다.
+        val screenWakeLock = powerManager?.newWakeLock(
+            PowerManager.FULL_WAKE_LOCK or PowerManager.ACQUIRE_CAUSES_WAKEUP or PowerManager.ON_AFTER_RELEASE,
+            "neurocare:wakeword_screen_on",
+        )
+        screenWakeLock?.acquire(5000L)
+
         val intent = Intent(this, MainActivity::class.java).apply {
-            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP)
         }
 
         val pendingIntent = PendingIntent.getActivity(
@@ -306,34 +314,12 @@ class WakeWordService : Service() {
             .build()
         NotificationManagerCompat.from(this).notify(WAKE_NOTIFICATION_ID, notification)
 
-        // 전체화면 알림은 잠금화면(또는 화면 꺼짐)에서만 자동으로 액티비티를 띄운다.
-        // 화면이 켜져 있고 잠금 해제된 상태(다른 앱 사용 중/홈화면)에서는 배너만 뜨고
-        // 자동으로 안 열려서, 그럴 때만 오버레이 트릭으로 직접 startActivity()한다 -
-        // 잠금/화면꺼짐 상태에서 둘 다 실행하면 액티비티가 두 번 떠 TTS가 겹치는(위에서
-        // 이미 겪은) 문제가 재발하므로 반드시 상호 배타적으로 나눈다.
-        val keyguardManager = getSystemService(KeyguardManager::class.java)
-        val powerManager = getSystemService(PowerManager::class.java)
-        val isLockedOrScreenOff = keyguardManager.isKeyguardLocked || !powerManager.isInteractive
-        val canOverlay = Settings.canDrawOverlays(this)
-        // ponytail: 진단용. 잠금해제+배경 상태에서 앱이 안 열리는 사례가 있어 원인을
-        // 원격에서 확인하려고 남긴다. 원인이 잡히면 이 report 호출만 지운다.
-        reportToServer(
-            "launchMainActivity: isKeyguardLocked=${keyguardManager.isKeyguardLocked} " +
-                "isInteractive=${powerManager.isInteractive} canOverlay=$canOverlay",
-        )
-        if (!isLockedOrScreenOff && canOverlay) {
+        // 잠금화면, 화면꺼짐, 배경화면 무관하게 즉시 앱 화면을 강제로 띄운다
+        if (Settings.canDrawOverlays(this)) {
             launchViaOverlay(intent)
-        } else if (!isLockedOrScreenOff) {
-            // 오버레이("다른 앱 위에 그리기") 권한이 없으면 위 트릭을 못 쓴다 - 그런데 잠금
-            // 해제+화면 켜짐 상태라 전체화면 알림도 자동으로는 안 열려서, 지금까지는 배너
-            // 알림만 뜨고 아무것도 열리지 않았다("태블릿에서 호출어로 앱 실행이 안 됨" 실사용
-            // 보고와 정확히 일치하는 상태 조합 - 위 진단 로그가 이 사례를 의심해 이미 남겨져
-            // 있었다). 포그라운드 서비스에서의 startActivity()가 항상 통하진 않는다는 걸
-            // 알고 오버레이 트릭을 만들었지만(launchViaOverlay 주석 참고), 오버레이 권한이
-            // 아예 없는 이 경우엔 그것도 시도조차 못 하므로 안 하는 것보다는 시도하는 게 낫다.
-            reportToServer("오버레이 권한 없음 - startActivity() 직접 시도(최선의 노력)")
+        } else {
             runCatching { startActivity(intent) }
-                .onFailure { e -> reportToServer("startActivity() 직접 시도 실패: ${e.javaClass.simpleName}") }
+            runCatching { pendingIntent.send() }
         }
     }
 
